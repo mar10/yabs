@@ -1,4 +1,7 @@
 # ![logo](https://raw.githubusercontent.com/mar10/yabs/master/docs/sphinx/yabs_48x48.png) yabs
+
+> Test, Build, Deliver!
+
 [![Build Status](https://travis-ci.org/mar10/yabs.svg?branch=master)](https://travis-ci.org/mar10/yabs)
 [![Latest Version](https://img.shields.io/pypi/v/yabs.svg)](https://pypi.python.org/pypi/yabs/)
 [![License](https://img.shields.io/pypi/l/yabs.svg)](https://github.com/mar10/yabs/blob/master/LICENSE.txt)
@@ -6,11 +9,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/mar10/yabs/badge.svg?branch=master)](https://coveralls.io/github/mar10/yabs?branch=master)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![StackOverflow: yabs](https://img.shields.io/badge/StackOverflow-yabs-blue.svg)](https://stackoverflow.com/questions/tagged/yabs)
-
-> Test, Build, Deliver!
-
-
-# <abbrev title="Yet Another Build Script">YABS</abbrev>
 
 
 (See [grunt-yabs](https://github.com/mar10/grunt-yabs) for a JavaScript-based variant.)
