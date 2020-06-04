@@ -12,7 +12,7 @@ class BumpTask(WorkflowTask):
     DEFAULT_OPTS = {
         "inc": None,
         "check": True,
-        "prerelease_prefix": "pre",
+        "prerelease_prefix": "a",
     }
 
     def __init__(self, opts):

@@ -2,11 +2,6 @@
 Writing Scripts
 ---------------
 
-..
-    .. toctree::
-    :hidden:
-
-
 Overview
 ========
 

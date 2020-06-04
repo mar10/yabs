@@ -346,6 +346,7 @@ class VersionFileManager:
             )
         pre = pre_tuple[0]
         # We already have a prerelease like "1.2.3-0", "1.2.3-alpha3", "1.2.3-rc1"
+        # TODO: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
         match = re.match(r"^([a-zA-Z]*)([0-9]+)(.*)", pre)
         cur_prefix, number, rest = match.groups()
         number = int(number)
@@ -378,7 +379,7 @@ class VersionFileManager:
             self.set_version(self.org_version, write)
         return
 
-    def bump(self, inc, write=False, prerelease_prefix="pre", calc_only=False):
+    def bump(self, inc, write=False, prerelease_prefix="a", calc_only=False):
         check_arg(inc, str, condition=inc in INCREMENTS)
         v = self.master_version
         if inc == "major":

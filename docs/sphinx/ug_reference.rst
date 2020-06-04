@@ -2,167 +2,79 @@
 Script Reference
 ----------------
 
-..
-    .. toctree::
-    :hidden:
+Workflow Configuration
+======================
+
+.. code-block:: yaml
+
+    config:
+      # Options used as default for all following tasks in this workflow
+      repo: 'mar10/test-release-tool'
+      gh_auth:
+        oauth_token_var: GITHUB_OAUTH_TOKEN
+      version:
+        - type: __version__
+          file: src/test_release_tool/__init__.py
+      max_increment: minor
+      branches:
+        - master
+
+repo
+    'mar10/test-release-tool'
+gh_auth:
+    oauth_token_var: GITHUB_OAUTH_TOKEN
+version:
+    - type: __version__        # First entry is master for synchronizing
+        file: src/test_release_tool/__init__.py
+        # match: '__version__\s*=\s*[''\"](\d+\.\d+\.\d+).*[''\"]'
+        # template: '__version__ = "{version}"'
+        # - type: setup_cfg        # First entry is master for synchronizing
+        #  entry: metadata.version
+        #  template:
+max_increment:
+    minor
+branches:
+    # Allowed git branches
+    - master
 
 
-Session Configuration
-=====================
+Tasks
+=====
 
-users
-    The current user that is assigned to this session.
-    ``users: $load(users.yaml)``
-count:
-    ...
-base_url
-    Default: null
-basic_auth
-    Default: false
-verify_ssl
-    Default: true
-ramp_up_delay
-    Default: 0
-
-
-Activities
-==========
-
-
-Common Args
------------
+Common Task Options
+-------------------
 All activites share these common arguments
-(see also :class:`~yabs.plugins.base.ActivityBase`).
+(see also :class:`~yabs.cmd_common.WorkflowTask`).
 
-debug (bool, optional)
-    Default: false
-ignore_timing (bool, optional)
+verbose (int, optional)
+    Default: 3
+dry_run (bool, optional)
     Default: false, except for `Sleep` activities
-monitor (bool, optional)
-    Default: false
-name (str, optional)
-    ...
-assert_match
-    Check if the result matches a regular expression. |br|
-    Tip: Prepend ``(?i)`` to the expression to enable case insensitive match::
 
-        assert_match: "(?i).*foobar.*"
+'bump' Task
+-----------
 
+.. code-block:: yaml
 
-assert_max_time
-    ...
-if_session
-    ...
-if_session_not
-    ...
-mock_result:
-    ...
-store_json
-    ...
+   - task: bump
+     inc: null
+     check: false
+     prerelease_prefix: "a"
 
+inc (str|null), optional, default: *null*
+    If *null*, the value that was passed as ``--inc`` argument on the command
+    line is used.
+    Otherwise the value must be one of *major*, *minor*, *patch*,
+    *postrelease*, or *prerelease*.
 
-HTTP Request Activities
------------------------
+check (bool), optional, default: *false*
+    If *true*, ``setup.py --version`` is called after bumping the version and
+    an error is raised if it does not match the expected value.
 
-The following arguments are passed directly to the
-`requests <https://requests.readthedocs.io>`_ library:
+prerelease_prefix (str), optional, default: *"a"*
+    This value is used to prefix pre- or post-release version numbers.
+    For example if ``"a"`` (the default) is passed, the pre-release version
+    for ``1.2.3`` could be ``1.2.3-a0``.
 
-auth (2-tuple, optional):
-    ...
-data (dict):
-    Used to pass form-encoded data with POST requests.
-json (dict):
-    Used to pass JSON data with POST requests.
-headers (dict):
-    ...
-params (dict):
-    Pass URL arguments with GET/POST, ... requests.
-timeout (float, optional):
-    Request timneout in seconds (default: 10).
-verify (bool, optional):
-    False: ignore SSL certificate verification errors (default: True).
+(see also :class:`~yabs.cmd_bump.BumpTask`).
 
-Additional arguments:
-
-assert_html
-    ...
-assert_json
-    ...
-assert_match_headers
-    Check if the headers match a regular expression, for example::
-
-        assert_match_headers: ".*'DAV'.*"
-
-    Note: Prepend ``(?i)`` to the expression to enable case insensitive match:
-    ``"(?i).*'DAV'.*"``
-assert_status
-    ...
-
-
-'RunScript' Activity
---------------------
-(see also :class:`~yabs.plugins.script_activities.RunScriptActivity`).
-
-export (bool|null|list, optional)
-    List of local variable names (defined by the script) should be exported
-    into the run context.
-    Pass `null` or `false` to define 'no export wanted'.
-    Omitting this argumet is considered 'undefined' and will emit a warning if
-    the script defines variables.
-
-path (str, optional)
-    Path to a python file.
-
-    .. code-block:: yaml
-
-        - activity: RunScript
-            export: ["the_answer"]
-            path: "my_script.py"
-
-script (str, optional)
-    Python script code, e.g.
-
-    .. code-block:: yaml
-
-        - activity: RunScript
-            export: ["the_answer"]
-            script: |
-            the_answer = 6 * 7
-            print("The answer is {}".format(loclhost))
-
-    Afterwars the context contains the result and can be accessed like
-    ``$(the_answer)``.
-
-'Sleep' Activity
-----------------
-:class:`~yabs.plugins.common.SleepActivity`
-
-duration
-    ...
-duration_2
-    ...
-
-
-Context Variables
-=================
-
-user
-    The current user that is assigned to this session.
-
-base_url
-    Default: null
-
-
-Macros
-======
-
-``$(context_var)``:
-    This macro looks-up and returns a variable of the current run context,
-    for examle ``$(base_url)``. Use dots ('.') to address sub-members, e.g.
-    ``$(user.name)``.
-
-``$sleep(duration)`` or ``$sleep(min, max)``:
-    A shortcut to the ``Sleep`` activity (see above).
-
-``$debug``:
-    Dump the current run context (useful when debuggin scripts).

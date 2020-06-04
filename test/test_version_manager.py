@@ -43,7 +43,7 @@ class TestVersionManager:
             v = version_manager.bump("prerelease", calc_only=True)
 
         v = version_manager.bump("postrelease", calc_only=True)
-        assert v == Version("1.2.4-pre0")
+        assert v == Version("1.2.4-a0")
 
         v = version_manager.bump("postrelease", prerelease_prefix="rc", calc_only=True)
         assert v == Version("1.2.4-rc0")
@@ -63,10 +63,10 @@ class TestVersionManager:
         assert v == Version("1.2.3")  # we are coming from a pre-release!
 
         v = version_manager.bump("prerelease", calc_only=True)
-        assert v == Version("1.2.3-pre1")  # we are coming from a pre-release!
+        assert v == Version("1.2.3-a1")  # we are coming from a pre-release!
 
         v = version_manager.bump("postrelease", calc_only=True)
-        assert v == Version("1.2.3-pre1")  # we are coming from a pre-release!
+        assert v == Version("1.2.3-a1")  # we are coming from a pre-release!
 
         v = version_manager.bump("minor", calc_only=True)
         assert v == Version("1.3.0")

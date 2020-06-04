@@ -41,3 +41,14 @@ Workflow Tasks
 .. inheritance-diagram:: yabs.cmd_common yabs.cmd_bump yabs.cmd_check yabs.cmd_commit yabs.cmd_exec yabs.cmd_gh_release yabs.cmd_push yabs.cmd_pypi_release yabs.cmd_tag
    :parts: 2
    :caption: Workflow Tasks
+
+
+Context Variables
+=================
+:class:`~yabs.cmd_common.TaskContext`
+
+inc (str)
+    ...
+
+repo (str)
+    The GitHub repository name, e.g. *"mar10/wsgidav"*.
