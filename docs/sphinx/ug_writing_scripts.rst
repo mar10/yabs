@@ -24,30 +24,122 @@ A simple confuguration script may look like this: |br|
     :language: yaml
 
 
-Script Activities
+Task Types
+==========
+
+See reference: TODO
+
+Template Macros
+===============
+
+See reference: TODO
+
+Versions
+========
+
+Pre-Releases
+------------
+
+See also [PEP 440](https://www.python.org/dev/peps/pep-0440/#id27).
+
+Version Locations
 -----------------
 
-`RunScript` activities are the swiss army knife for the scenario definitions.
-The follwing example shows inline script definitions.
+Following some typical patterns how Python projects store version numbers.
+In order for YAML to find and bump this versions, we need to pass a hint in
+the YAML configuration can be configured in `yabs.yaml` like so:
+```yaml
+file_version: yabs#1
+config:
+  ...
+  version:
+    - mode: pyproject
+...
+```
 
-.. code-block:: yaml
-    :linenos:
+**Note:** YAML assumes that a version number consists of three parts and
+optional extension, as described in [Semantic Versioning](https://semver.org).
 
-    main:
+`pyproject.toml` in the project's root folder
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```toml
+[project]
+name = "my_project"
+version =  "1.2.3"
+```
+can be configured in `yabs.yaml` like so:
+```yaml
+config:
+  version:
+    - mode: pyproject
+```
 
-    - activity: RunScript
-        export: ["the_answer"]
-        script: |
-        the_answer = 6 * 7
-        print("The answer is {}".format(the_answer))
+`__init__.py` of the project's root package
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```py
+__version__ = "1.2.3"
+```
+can be configured in `yabs.yaml` like so:
+```yaml
+- file: setup.cfg
+  entry: metadata.version
+  template:
+```
+Or a variant the mimics Python's `sys.version_info` style:
+```py
+version_info = (1, 2, 3)
+version = ".".join(str(c) for c in version_info)
+```
+can be configured in `yabs.yaml` like so:
+```yaml
+- file: setup.cfg
+  entry: metadata.version
+  template:
+```
 
-    - activity: RunScript
-        name: "GET example.com"
-        # debug: true
-        script: |
-        r = session.browser.get("http://example.com")
-        result = r.status_code
+A Plain Text File
+~~~~~~~~~~~~~~~~~
+For example a `_version.txt` file in the procect's `src` folder containing:
+```py
+1.2.3
+```
+can be configured in `yabs.yaml` like so:
+```yaml
+- file: src/version.txt
+  template:
+```
 
+
+`setup.cfg` of the project's root folder
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+See also [PEP-396](https://www.python.org/dev/peps/pep-0396/#distutils2) and [setuptools](https://setuptools.readthedocs.io/en/latest/setuptools.html#id47).
+```ini
+[metadata]
+name = my_package
+version = 1.2.3
+```
+can be configured in `yabs.yaml` like so:
+```yaml
+- file: setup.cfg
+  entry: metadata.version
+  template:
+```
+
+However the follwing examples for setup.cfg assume that the version is stored
+in a separate text or Python file, which is covered above:
+```ini
+[metadata]
+name = my_package
+version = attr: src.VERSION
+```
+```ini
+[metadata]
+version-file = version.txt
+```
+```ini
+[metadata]
+version-from-file = elle.py
+```
 
 Debugging
 =========

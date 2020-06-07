@@ -47,7 +47,7 @@ Use the ``--help`` or ``-h`` argument to get help::
 
 
 `run` command
--------------
+=============
 
 The main purpose of the yabs command line tool is to execute a test
 scenario::
@@ -80,7 +80,7 @@ See the :doc:`user_guide` example for details.
 
 
 Verbosity Level
----------------
+===============
 
 The verbosity level can have a value from 0 to 6:
 
@@ -98,7 +98,7 @@ Verbosity  Option  Log level    Remarks
 
 
 Exit Codes
-----------
+==========
 
 The CLI returns those exit codes::
 

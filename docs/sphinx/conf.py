@@ -22,7 +22,7 @@ import sys
 import os
 # import shlex
 
-from recommonmark.parser import CommonMarkParser
+# from recommonmark.parser import CommonMarkParser
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
@@ -127,6 +127,7 @@ except pkg_resources.DistributionNotFound:
     print('development environment or run "setup.py develop" to setup the')
     print('metadata.  A virtualenv is recommended!')
     sys.exit(1)
+    # release = "0.0.0"
     # # TODO: 2015-09-05: fails since last month: workaround like this:
     # # (Maybe a better solution here: https://github.com/google/oauth2client/commit/a39aa25091946e33b17b52cbe19b5b88d79a28b0)
     # g_dict = {}
