@@ -34,112 +34,161 @@ Template Macros
 
 See reference: TODO
 
-Versions
-========
-
-Pre-Releases
-------------
-
-See also [PEP 440](https://www.python.org/dev/peps/pep-0440/#id27).
-
-Version Locations
------------------
+Versions Locations
+==================
 
 Following some typical patterns how Python projects store version numbers.
-In order for YAML to find and bump this versions, we need to pass a hint in
-the YAML configuration can be configured in `yabs.yaml` like so:
-```yaml
-file_version: yabs#1
-config:
-  ...
-  version:
-    - mode: pyproject
-...
-```
+In order for Yabs to find and bump this versions, we need to pass a hint in
+the configuration `yabs.yaml` like so:
 
-**Note:** YAML assumes that a version number consists of three parts and
-optional extension, as described in [Semantic Versioning](https://semver.org).
+.. code-block:: yaml
 
-`pyproject.toml` in the project's root folder
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-```toml
-[project]
-name = "my_project"
-version =  "1.2.3"
-```
-can be configured in `yabs.yaml` like so:
-```yaml
-config:
-  version:
-    - mode: pyproject
-```
+    file_version: yabs#1
+    config:
+      ...
+      version:
+        - type: pyproject  # Example!
+    ...
+
+See below for different use cases.
+
+
+pyproject.toml
+--------------
+
+See also `PEP-518 <https://www.python.org/dev/peps/pep-0518/>`_ .
+For example `poetry <https://python-poetry.org/docs/pyproject/#version>`_
+seems to store the version here:
+
+**TODO:** or is it the ``[tool.poetry]`` section?
+
+``pyproject.toml``:
+
+.. code-block:: toml
+
+    [project]
+    name = "my_project"
+    version =  "1.2.3"
+
+``yabs.yaml``:
+
+.. code-block:: yaml
+
+    config:
+      version:
+        - type: pyproject
+
 
 `__init__.py` of the project's root package
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-```py
-__version__ = "1.2.3"
-```
-can be configured in `yabs.yaml` like so:
-```yaml
-- file: setup.cfg
-  entry: metadata.version
-  template:
-```
+-------------------------------------------
+
+``__init__.py``::
+
+    __version__ = "1.2.3"
+
+``yabs.yaml``:
+
+.. code-block:: yaml
+
+    config:
+      version:
+        - type: __version__
+          file: src/my_project/__init__.py
+
 Or a variant the mimics Python's `sys.version_info` style:
-```py
-version_info = (1, 2, 3)
-version = ".".join(str(c) for c in version_info)
-```
-can be configured in `yabs.yaml` like so:
-```yaml
-- file: setup.cfg
-  entry: metadata.version
-  template:
-```
 
-A Plain Text File
-~~~~~~~~~~~~~~~~~
-For example a `_version.txt` file in the procect's `src` folder containing:
-```py
-1.2.3
-```
-can be configured in `yabs.yaml` like so:
-```yaml
-- file: src/version.txt
-  template:
-```
+``__init__.py``::
+
+    version_info = (1, 2, 3)
+    version = ".".join(str(c) for c in version_info)
+
+``yabs.yaml``:
+
+.. code-block:: yaml
+
+    config:
+      version:
+        # TODO
+
+Plain Text File
+---------------
+
+For example a `_version.txt` file in the project's `src` folder containing:
+
+``_version.txt``::
+
+    1.2.3
+
+``yabs.yaml``:
+
+.. code-block:: yaml
+
+    config:
+      version:
+        # TODO
 
 
-`setup.cfg` of the project's root folder
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-See also [PEP-396](https://www.python.org/dev/peps/pep-0396/#distutils2) and [setuptools](https://setuptools.readthedocs.io/en/latest/setuptools.html#id47).
-```ini
-[metadata]
-name = my_package
-version = 1.2.3
-```
-can be configured in `yabs.yaml` like so:
-```yaml
-- file: setup.cfg
-  entry: metadata.version
-  template:
-```
+setup.cfg
+---------
 
-However the follwing examples for setup.cfg assume that the version is stored
-in a separate text or Python file, which is covered above:
-```ini
-[metadata]
-name = my_package
-version = attr: src.VERSION
-```
-```ini
-[metadata]
-version-file = version.txt
-```
-```ini
-[metadata]
-version-from-file = elle.py
-```
+See also `PEP-396 <https://www.python.org/dev/peps/pep-0396/#distutils2>`_
+and `setuptools <https://setuptools.readthedocs.io/en/latest/setuptools.html#id47>`_ .
+
+``setup.cfg`` in the project's root folder:
+
+.. code-block:: ini
+
+    [metadata]
+    name = my_package
+    version = 1.2.3
+
+``yabs.yaml``:
+
+.. code-block:: yaml
+
+    config:
+      version:
+        # TODO
+
+The follwing two examples for setup.cfg use the special ``attr:`` and ``file:``
+directives that where introduced with
+`setuptools v39.2 <https://setuptools.readthedocs.io/en/latest/setuptools.html#metadata>`_).
+
+**Note:** This assumes that the version is stored in a separate text- or Python file,
+which is covered in the examples above.
+
+.. code-block:: ini
+
+    [metadata]
+    name = my_package
+    version = attr: src.VERSION
+
+.. code-block:: ini
+
+    [metadata]
+    name = my_package
+    version = file: path/to/file
+
+The follwing two examples for setup.cfg use the special ``version-file`` and
+``version-from-file`` options that where proposed for
+`distutils2 <https://www.python.org/dev/peps/pep-0396/#distutils2>`_.
+
+**Note:** This assumes that the version is stored in a separate text- or Python file,
+which is covered in the examples above.
+
+.. code-block:: ini
+
+    [metadata]
+    # The entire contents of the file contains the version number
+    version-file = version.txt
+
+.. code-block:: ini
+
+    [metadata]
+    # The version number is contained within a larger file, e.g. of Python code,
+    # such that the file must be parsed to extract the version
+    version-from-file = elle.py
+
 
 Debugging
 =========
