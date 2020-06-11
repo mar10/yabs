@@ -2,10 +2,16 @@
 yabs.yaml
 =============
 
-Scenarios are defined in YAML-formatted configuration files.
-It can then be executed like so::
+The following file lists all available tasks with all available options and
+respective defaults.
 
-    $ yabs run SCENARIO.yaml --monitor
+.. note::
+    This is not a meaningful or realistic workflow definition, but rather
+    a demonstration of what's available. |br|
+    A realistic workflow would omit default options and execute tasks in a
+    more useful order. |br|
+    See :doc:`ug_writing_scripts` for an example.
+
 
 Annotated Sample Configuration
 ------------------------------

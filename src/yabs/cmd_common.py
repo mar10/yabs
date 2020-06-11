@@ -30,18 +30,19 @@ class TaskContext:
     def __init__(self, args, task_runner):
         self.errors = []
         self.completed = []
-        #: (str) 'major', 'minor', 'patch', 'postrelease'
+        #: (str) value of ``--inc`` argument
+        #: ('major', 'minor', 'patch', 'postrelease')
         self.inc = args.inc
-        #: (bool)
+        #: (bool) true if ``--dry-run`` was passed
         self.dry_run = args.dry_run
-        #: (str) the repo's latest tag name
+        #: (str) the repo's latest tag name (before 'bump')
         self.org_tag_name = None
         #: (str) the current tag name (after 'bump')
         self.tag_name = None
         #: (dict) all files that 'pypi_release' created, e.g.
-        #: `{"sdist": <path>, "bdist_msi": <path>)`
+        #: ``{"sdist": <path>, "bdist_msi": <path>}``
         self.artefacts = {}
-        #: (:class:`task_runner.TaskRunner`)
+        #: (:class:`~yabs.task_runner.TaskRunner`)
         self.task_runner = task_runner
         #: (str) GitHub repo name, e.g. 'USER/PROJECT'
         self.repo = None
@@ -49,11 +50,13 @@ class TaskContext:
         self.repo_path = None
         #: (:class:`git.repo.base.Repo`)
         self.repo_obj = None
-        #: (dict) GitHub authentication
+        #: (str) GitHub authentication token
         self.gh_auth_token = None
-        #: (:class:`semantic_version.Version`)
+        #: (:class:`semantic_version.Version`) latest version (before 'bump')
+        self.org_version = None
+        #: (:class:`semantic_version.Version`) current version (after 'bump')
         self.version = None
-        #: (:class:`version_manager.VersionManager`)
+        #: (:class:`~yabs.version_manager.VersionManager`)
         self.version_manager = None
 
         self.initialize()
@@ -69,6 +72,7 @@ class TaskContext:
             self.repo = tr.get("repo")
             self.version_manager = tr.version_manager
             self.version = self.version_manager.master_version
+            self.org_version = self.version
             auth = tr.get("gh_auth")
             if isinstance(auth, str):
                 self.gh_auth_token = auth

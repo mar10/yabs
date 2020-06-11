@@ -13,7 +13,9 @@ Quickstart
     ```
 
     Use the `--dry-run` or `-n` argument test the workflow without really releasing.<br>
-    Use the `--workflow` argument to specify the location of the coniguration file if it is not the default `./yabs.yaml` verbosity.
+    Use the `--verbose` or `-v` to increase verbosity. <br>
+    Use the `--workflow` argument to specify the location of the configuration
+    file if it is not at the default location *./yabs.yaml*.
 
     ```bash
     $ yabs run --inc minor --workflow /path/to/yabs.yaml --dry-run

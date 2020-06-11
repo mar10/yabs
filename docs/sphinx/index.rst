@@ -25,6 +25,8 @@ Yabs
    development
    changes
 
+*Yabs* is a commandline tool, that runs a sequence of tasks in order to test,
+build, and deliver a Python software project.
 
 .. image:: ../teaser.png
   :target: https://github.com/mar10/yabs

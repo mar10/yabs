@@ -5,9 +5,8 @@ Writing Scripts
 Overview
 ========
 
-Run configuration scripts are text files, that are read and compiled by the
-*Context Manager*. This configuration is then passed to the *Run Manager*
-for execution.
+Workflow deinitions are text files in `YAML <https://en.wikipedia.org/wiki/YAML>`_
+format, that are read, compiled, and executed by the *Task Runner*.
 
 .. note::
 
@@ -23,6 +22,9 @@ A simple confuguration script may look like this: |br|
     :linenos:
     :language: yaml
 
+See :doc:`ug_sample_yabs_yaml` for a complete configuration with all available
+options and defaults.
+
 
 Task Types
 ==========
@@ -30,12 +32,29 @@ Task Types
 .. todo::
   Documentation missing.
 
+For now, look at :doc:`ug_sample_yabs_yaml` for a complete configuration file
+with all available tasks.
+
 
 Template Macros
 ===============
 
-.. todo::
-  Documentation missing.
+Some tasks have string options such as tag names, commit messges, etc.
+These strings may contain inline *macros* that will be expanded.
+
+Typical macros are *version*, *tag_name*, *repo*, ... |br|
+Macro names must be embedded in curly braces, for example:
+
+.. code-block:: yaml
+
+    - task: github_release
+      name: 'v{version}'
+      message: |
+        Released {version}
+        [Commit details](https://github.com/{repo}/compare/{org_tag_name}...{tag_name}).
+
+All attributes of the task context are available as macros. |br|
+See :class:`~yabs.cmd_common.TaskContext` for a complete list.
 
 
 Version Locations
@@ -233,17 +252,3 @@ Use the ``--dry-run`` (short ``-n``) option to run all tasks in a simulation mod
 
     $ yabs run --inc patch -vn
 
-The `monitor` argument will add the activity as distinct entry of a special
-section of the monitor dashboard (use with the ``--monitor`` option):
-
-.. code-block:: yaml
-
-    sequences:
-      main:
-        - activity: GetRequest
-          url: $(base_url)/
-          assert_match: ".*Index of /.*"
-          assert_html:
-            "//*[@class='logo']": true
-          debug: true
-          monitor: true
