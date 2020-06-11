@@ -8,7 +8,7 @@ import os
 from github import Github, GithubObject
 
 from .cmd_common import WorkflowTask, GH_USER_AGENT
-from .util import YabsError, check_arg, log_dry, log_error, log_info, log_ok
+from .util import ConfigError, check_arg, log_dry, log_error, log_info, log_ok
 
 
 class GithubReleaseTask(WorkflowTask):
@@ -84,11 +84,11 @@ class GithubReleaseTask(WorkflowTask):
 
         repo_name = opts.get("repo") or context.repo
         if not repo_name or "/" not in repo_name:
-            raise YabsError("Missing repo name (expected `GH-USER/PROJECT`).")
+            raise ConfigError("Missing repo name (expected `GH-USER/PROJECT`).")
 
         repo = gh.get_repo(repo_name, lazy=False)
         if not repo:
-            raise YabsError("Could not open repo '{}'.".format(repo_name))
+            raise ConfigError("Could not open repo '{}'.".format(repo_name))
 
         # collaborators = repo.get_collaborators("all")
         # for collab in collaborators:

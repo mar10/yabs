@@ -7,22 +7,22 @@ Architecture
     :hidden:
 
 
-Overview
-========
+.. Overview
+.. ========
 
-|yabs| is a tool, that runs a sequence of tasks om order to test, build, and
-deliver a Python software project. |br|
-The workflow is defined in a configuration file, using a simple YAML format.
+.. |yabs| is a tool, that runs a sequence of tasks om order to test, build, and
+.. deliver a Python software project. |br|
+.. The workflow is defined in a configuration file, using a simple YAML format.
 
 
-Concepts
-========
+.. Concepts
+.. ========
 
-The :class:`yabs.task_runner.TaskRunner` ...
+.. The :class:`yabs.task_runner.TaskRunner` ...
 
-  - Run manager
-  - Session manager
-  - Config manager
+..   - Run manager
+..   - Session manager
+..   - Config manager
 
 
 Class Overview
@@ -45,7 +45,7 @@ Workflow Tasks
 
 Context Variables
 =================
-:class:`~yabs.cmd_common.TaskContext`
+:class:`~yabs.task_runner.TaskContext`
 
 inc (str)
     ...

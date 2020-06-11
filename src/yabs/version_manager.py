@@ -245,6 +245,10 @@ class PyprojectTomlParser(VersionFileParser):
     # def __init__(self, root_path, opts):
     #     super().__init__(root_path, opts)
 
+    # TODO:
+    # - support poetry
+    # - support flit
+
     def _find_config_file(self, root):
         fspec = self.opts.get("file", "pyproject.toml")
         fspec = resolve_path(self.root_path, fspec, must_exist=True)
@@ -260,6 +264,7 @@ class PyprojectTomlParser(VersionFileParser):
 
     def write(self):
         """Patch the version into self.fspec and extract the version string."""
+        # TODO: assume that the section is `[tool.poetry]`!!
         raise NotImplementedError
 
 

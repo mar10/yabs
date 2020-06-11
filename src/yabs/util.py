@@ -17,22 +17,24 @@ from yabs.log import log
 
 logger = logging.getLogger("yabs")
 
-#: Check if a a string may be used as YAML dictionary key without using quotes.
-#: NOTE: YAML evaluates `0_` as "0" and `0_1_` as "1", so we don't accept leading numbers
-RE_YAML_KEYWORD = re.compile(r"^[a-zA-Z_]+\w*$")
 
-
-class YabsError(SystemExit):
-    """Raised for erros that don't need a stack trace."""
-
-
-# class ReleaseToolError(RuntimeError):
-class ReleaseToolError(YabsError):
+class YabsError(RuntimeError):
     """Base class for all exception that we deliberatly throw."""
 
 
-class CheckError(ReleaseToolError):
+class ExitingYabsError(SystemExit, YabsError):
+    """
+    YabsError the will cause sys.exit().
+    Raised for errors that don't need a stack trace.
+    """
+
+
+class CheckError(ExitingYabsError):
     """--check condition failed."""
+
+
+class ConfigError(ExitingYabsError):
+    """Invalid yabs.yaml or command line (terninates without stacktrace)."""
 
 
 class NO_DEFAULT:

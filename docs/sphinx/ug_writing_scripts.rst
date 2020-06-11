@@ -27,18 +27,27 @@ A simple confuguration script may look like this: |br|
 Task Types
 ==========
 
-See reference: TODO
+.. todo::
+  Documentation missing.
+
 
 Template Macros
 ===============
 
-See reference: TODO
+.. todo::
+  Documentation missing.
 
-Versions Locations
-==================
 
-Following some typical patterns how Python projects store version numbers.
-In order for Yabs to find and bump this versions, we need to pass a hint in
+Version Locations
+=================
+
+(**TODO:** verify this section.)
+
+Although there seems to be consent that Python projects should have a version
+number that is stored at *one* central location, the community has not agreed
+upon that location yet.
+
+In order to find and bump this versions, we need to pass a hint in
 the configuration `yabs.yaml` like so:
 
 .. code-block:: yaml
@@ -47,26 +56,45 @@ the configuration `yabs.yaml` like so:
     config:
       ...
       version:
-        - type: pyproject  # Example!
+        - type: __version__  # Example!
+          file: src/my_project/__init__.py
     ...
+
+Yabs supports some common approaches. |br|
+Following some typical patterns how Python projects store version numbers.
+
+.. note::
+  Currently we would recommend this variant (unless Poetry is used): |br|
+  Store the version in ``__init__.py`` of the project's root folder::
+
+    __version__ = "1.2.3"
+
+  Then reference this in ``setup.cfg``::
+
+    [metadata]
+    name = my_package
+    version = attr: my_project.__version__
+
 
 See below for different use cases.
 
+Poetry
+------
 
-pyproject.toml
---------------
+.. todo::
+  Not yet implemented.
 
-See also `PEP-518 <https://www.python.org/dev/peps/pep-0518/>`_ .
-For example `poetry <https://python-poetry.org/docs/pyproject/#version>`_
-seems to store the version here:
-
-**TODO:** or is it the ``[tool.poetry]`` section?
+`Poetry <https://python-poetry.org/docs/pyproject/#version>`_ stores the version
+number in its own section in ``pyproject.toml``
+(defined in `PEP-518 <https://www.python.org/dev/peps/pep-0518/>`_):
 
 ``pyproject.toml``:
 
 .. code-block:: toml
 
     [project]
+    ...
+    [tool.poetry]
     name = "my_project"
     version =  "1.2.3"
 
@@ -76,11 +104,18 @@ seems to store the version here:
 
     config:
       version:
-        - type: pyproject
+        - type: poetry
 
 
-`__init__.py` of the project's root package
--------------------------------------------
+flit
+----
+
+.. todo::
+  Not yet implemented.
+
+
+__init__.py of the project's root package
+-----------------------------------------
 
 ``__init__.py``::
 
@@ -152,7 +187,7 @@ and `setuptools <https://setuptools.readthedocs.io/en/latest/setuptools.html#id4
 
 The follwing two examples for setup.cfg use the special ``attr:`` and ``file:``
 directives that where introduced with
-`setuptools v39.2 <https://setuptools.readthedocs.io/en/latest/setuptools.html#metadata>`_).
+`setuptools v39.2 <https://setuptools.readthedocs.io/en/latest/setuptools.html#metadata>`_ ).
 
 **Note:** This assumes that the version is stored in a separate text- or Python file,
 which is covered in the examples above.
@@ -161,7 +196,7 @@ which is covered in the examples above.
 
     [metadata]
     name = my_package
-    version = attr: src.VERSION
+    version = attr: my_project.__version__
 
 .. code-block:: ini
 

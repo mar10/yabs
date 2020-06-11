@@ -2,7 +2,7 @@
 
 ## Overview
 
-*yabs* is a commandline tool, that runs a sequence of tasks in order to test,
+*Yabs* is a commandline tool, that runs a sequence of tasks in order to test,
 build, and deliver a Python software project.
 
 The workflow is defined in a configuration file, using a simple YAML format and
@@ -114,7 +114,7 @@ PyYAML = "~=5.2"
 See also [PEP 440](https://www.python.org/dev/peps/pep-0440/).<br>
 Yabs assumes that a version number consists of three parts and optional
 extension, as described in [Semantic Versioning](https://semver.org),
-e.g. `"1.2.3"`.
+e.g. `"1.2.3"`, `"1.2.3-a1"`.
 
 
 ### After-Release Versions
@@ -152,8 +152,6 @@ Yabs suggests this pattern:
 
 
 ### Version Locations
-
-(**TODO:** verify this section.)
 
 Although there seems to be consent that Python projects should have a version
 number that is stored at *one* central location, the community has not agreed

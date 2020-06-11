@@ -4,7 +4,7 @@
 """
 """
 from .cmd_common import WorkflowTask
-from .util import check_arg, YabsError, log_error
+from .util import check_arg, ConfigError, log_error
 from .version_manager import INCREMENTS
 
 
@@ -58,11 +58,11 @@ class BumpTask(WorkflowTask):
             if context.inc:
                 inc = context.inc
             else:
-                raise YabsError(
+                raise ConfigError(
                     "Missing bump increment: either define `inc` option or pass `inc` argument."
                 )
         if inc not in INCREMENTS:
-            raise YabsError(
+            raise ConfigError(
                 "Invalid `inc` option '{}' (expected {}).".format(
                     inc, ", ".join(INCREMENTS)
                 )

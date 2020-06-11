@@ -7,7 +7,7 @@ from pathlib import Path
 
 from .cmd_common import WorkflowTask
 from .util import (
-    YabsError,
+    ConfigError,
     check_arg,
     log_dry,
     log_error,
@@ -44,7 +44,7 @@ class PypiReleaseTask(WorkflowTask):
         check_arg(opts["build"], list)
         unknown = set(opts["build"]).difference(set(self.KNOWN_TARGETS))
         if unknown:
-            raise YabsError(
+            raise ConfigError(
                 "Unkown `pypi_release.build` value: {}".format(", ".join(unknown))
             )
         check_arg(opts["upload"], bool)

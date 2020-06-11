@@ -20,7 +20,7 @@ from .cmd_tag import TagTask
 from .log import log
 from .util import (
     NO_DEFAULT,
-    YabsError,
+    ConfigError,
     check_arg,
     format_elap,
     log_debug,
@@ -79,7 +79,7 @@ class TaskRunner:
         if not isinstance(res, dict) or not res.get("file_version", "").startswith(
             "yabs#"
         ):
-            raise YabsError("Not a `yabs` file (missing 'yabs#VERSION' tag).")
+            raise ConfigError("Not a `yabs` file (missing 'yabs#VERSION' tag).")
         self.all = res
         self.config = res["config"]
         check_arg(self.config, dict)
@@ -99,7 +99,7 @@ class TaskRunner:
             task_type = task_def.pop("task")
             task_cls = TaskRunner.handler_map.get(task_type)
             if not task_cls:
-                raise YabsError(
+                raise ConfigError(
                     "Invalid task type: {} (expected {})".format(
                         task_type, ", ".join(self.handler_map.keys())
                     )
