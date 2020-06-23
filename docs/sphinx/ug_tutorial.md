@@ -146,9 +146,10 @@ and developmental releases.
 Yabs suggests this pattern:
 > After a release, bump & commit a patch-incremented version with pre-release
 > appendix, for example:<br>
-> `v1.2.3` => `v1.2.4a0`<br>
-> The next release will be a major, minor, or patch increment, that brings us
-> to `v1.2.4`, `v1.3.0`, or `v2.0.0`.
+> `v1.2.3` &#x21d2; `v1.2.4a0`<br>
+> The next release will be a patch, minor, or major increment, which brings us
+> to <br>
+> &#x21d2; `v1.2.4`, `v1.3.0`, or `v2.0.0`.
 
 
 ### Version Locations

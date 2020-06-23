@@ -39,7 +39,7 @@ class BumpTask(WorkflowTask):
         )
         sp.add_argument(
             "inc",
-            choices=["major", "minor", "patch", "post-release"],
+            choices=["major", "minor", "patch", "postrelease"],
             # default="patch",
             help="bump semantic version by this increment",
         )

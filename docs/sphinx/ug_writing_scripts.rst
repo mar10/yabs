@@ -86,16 +86,23 @@ Following some typical patterns how Python projects store version numbers.
   Currently we would recommend this variant (unless Poetry is used): |br|
   Store the version in ``__init__.py`` of the project's root folder::
 
-    __version__ = "1.2.3"
+      <__version__ = "1.2.3"
 
   Then reference this in ``setup.cfg``::
 
-    [metadata]
-    name = my_package
-    version = attr: my_project.__version__
+      [metadata]
+      name = my_package
+      version = attr: my_project.__version__
+
+  This would then configured in ``yabs.yaml`` like so::
+
+      config:
+        version:
+          - type: __version__
+            file: my_project/__init__.py
 
 
-See below for different use cases.
+See below for details about the different use cases.
 
 Poetry
 ------
