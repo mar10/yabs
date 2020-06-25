@@ -14,7 +14,8 @@ from semantic_version import Version
 
 from .util import check_arg, log_debug, log_info, log_warning, resolve_path
 
-INCREMENTS = frozenset(("major", "minor", "patch", "prerelease", "postrelease"))
+ORDERED_INCREMENTS = ("postrelease", "prerelease", "patch", "minor", "major")
+INCREMENTS = frozenset(ORDERED_INCREMENTS)
 
 
 def copy_version(v, prerelease=None):

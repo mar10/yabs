@@ -29,7 +29,7 @@ from .util import (
     log_warning,
     resolve_path,
 )
-from .version_manager import VersionFileManager
+from .version_manager import VersionFileManager, ORDERED_INCREMENTS
 
 
 class TaskRunner:
@@ -56,6 +56,7 @@ class TaskRunner:
         self.tasks = None
         self.version_manager = None
         self._load()
+        self._check_config(parser, args)
         # register_command_handlers(self.handler_map)
 
     def get(self, key, default=NO_DEFAULT):
@@ -86,15 +87,35 @@ class TaskRunner:
         self.tasks = res["tasks"]
         check_arg(self.tasks, list)
 
-        # Early command line syntax checks, so we don't run all preceeding
-        # tasks before we find out
+        self.version_manager = VersionFileManager(self)
+        return
+
+    def _check_config(self, parser, args):
+        """Early command line syntax checks, so we don't have to run all
+        preceeding tasks before we find out."""
         task_types = set((t.get("task") for t in self.tasks))
         args = self.args
         if "bump" in task_types and args and not (args.inc or args.no_bump):
             self.parser.error("'bump' tasks require `--inc` argument")
 
-        self.version_manager = VersionFileManager(self)
-        return
+        max_increment = self.config.get("max_increment", "minor")
+        max_idx = ORDERED_INCREMENTS.index(max_increment)
+        inc_idx = ORDERED_INCREMENTS.index(args.inc)
+        if inc_idx > max_idx:
+            if args.force:
+                log_warning(
+                    "Enforcing `--inc {}` although `max_increment` option is set to '{}'".format(
+                        args.inc, max_increment
+                    )
+                )
+            else:
+                raise ConfigError(
+                    "`--inc {}` was passed, but the `max_increment` option is set to '{}'\n"
+                    "Pass --force to ignore this warning.".format(
+                        args.inc, max_increment
+                    )
+                )
+        return True
 
     def run(self):
         context = TaskContext(self.args, self)

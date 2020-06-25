@@ -105,6 +105,11 @@ def run():
         action="store_true",
         help="don't upload tags and assets to GitHub or PyPI (but still build assets)",
     )
+    sp.add_argument(
+        "--force",
+        action="store_true",
+        help="allow to ignore some errors (like bumping above `max_increment`)",
+    )
     sp.set_defaults(command=handle_run_command)
 
     # --- Let all sublasses of `WorkflowTask` add their arguments --------------

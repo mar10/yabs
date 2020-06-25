@@ -31,15 +31,14 @@ tasks:
 
   # run `tox -e lint`
   - task: exec
-    args: ["tox", "-e", "lint"]     # shell command and optional arguments
-    # dry_run_args: ["pwd"]   #
+    args: ["tox", "-e", "lint"]
     always: true            # `true`: run even in dry-run mode
     silent: true            # `true`: suppress output
     ignore_errors: false    # `true`: show warning, but proceed on errors (exit code != 0)
 
   # run `tox`
   - task: exec
-    args: ["tox"]           # shell command and optional arguments
+    args: ["tox"]
     always: true            # `true`: run even in dry-run mode
     silent: true            # `true`: suppress output
     ignore_errors: false    # `true`: show warning, but proceed on errors (exit code != 0)
