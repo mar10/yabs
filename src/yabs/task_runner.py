@@ -85,7 +85,9 @@ class TaskRunner:
         check_arg(self.config, dict)
         self.tasks = res["tasks"]
         check_arg(self.tasks, list)
-        # Early command line syntax checks, so we don't run all preceeding tasks
+
+        # Early command line syntax checks, so we don't run all preceeding
+        # tasks before we find out
         task_types = set((t.get("task") for t in self.tasks))
         args = self.args
         if "bump" in task_types and args and not (args.inc or args.no_bump):
