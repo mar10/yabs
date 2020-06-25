@@ -8,7 +8,15 @@ import os
 from github import Github, GithubObject
 
 from .cmd_common import WorkflowTask, GH_USER_AGENT
-from .util import ConfigError, check_arg, log_dry, log_error, log_info, log_ok
+from .util import (
+    ConfigError,
+    check_arg,
+    log_dry,
+    log_error,
+    log_info,
+    log_ok,
+    log_warning,
+)
 
 
 class GithubReleaseTask(WorkflowTask):
@@ -69,6 +77,10 @@ class GithubReleaseTask(WorkflowTask):
 
     def run(self, context):
         opts = self.opts
+
+        if context._args.no_release:
+            log_warning("`--no-release` was passed: skipping 'gh_release' task.")
+            return True
 
         ok = True
         # GitHub access token

@@ -13,6 +13,7 @@ from .util import (
     log_error,
     log_info,
     log_ok,
+    log_warning,
     logger,
     remove_directory,
 )
@@ -173,7 +174,11 @@ class PypiReleaseTask(WorkflowTask):
         ok = ok and (ret_code == 0)
 
         if opts["upload"]:
-            if self.dry_run:
+            if context._args.no_release:
+                log_warning(
+                    "`--no-release` was passed: skipping `twine upload` of 'pypi_release' task."
+                )
+            elif self.dry_run:
                 log_dry("twine upload {}".format(twine_pattern))
             else:
                 # TODO: uses .pypirc

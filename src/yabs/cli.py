@@ -100,6 +100,11 @@ def run():
         action="store_true",
         help="don't let the 'check' task stop the workflow (log warnings instead)",
     )
+    sp.add_argument(
+        "--no-release",
+        action="store_true",
+        help="skip all 'gh-release' and 'pypi-release' tasks",
+    )
     sp.set_defaults(command=handle_run_command)
 
     # --- Let all sublasses of `WorkflowTask` add their arguments --------------

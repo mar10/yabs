@@ -56,9 +56,11 @@ scenario::
 
 See also the help::
 
+    $ yabs run --help
     usage: yabs run [-h] [-v | -q] [-n] [--no-color]
-                    [--inc {major,minor,patch,postrelease}]
-                    [workflow]
+                [--inc {major,minor,patch,postrelease}] [--no-bump]
+                [--no-check] [--no-release]
+                [workflow]
 
     positional arguments:
     workflow              run a workflow definition
@@ -73,6 +75,10 @@ See also the help::
     --inc {major,minor,patch,postrelease}
                             bump semantic version (used as default for `bump`
                             tasks)
+    --no-bump             skip all 'bump' tasks
+    --no-check            don't let the 'check' task stop the workflow (log
+                            warnings instead)
+    --no-release          skip all 'gh-release' and 'pypi-release' tasks
     $
 
 
