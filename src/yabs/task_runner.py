@@ -85,6 +85,9 @@ class TaskRunner:
         check_arg(self.config, dict)
         self.tasks = res["tasks"]
         check_arg(self.tasks, list)
+        task_types = set((t.get("task") for t in self.tasks))
+        if "bump" in task_types and self.args and not self.args.inc:
+            self.parser.error("'bump' tasks require `--inc` argument")
 
         self.version_manager = VersionFileManager(self)
         return

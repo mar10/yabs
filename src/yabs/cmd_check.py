@@ -14,6 +14,8 @@ from .cmd_common import WorkflowTask, GH_USER_AGENT
 
 from .util import (
     check_arg,
+    log_info,
+    log_warning,
     to_list,
     write,
 )
@@ -249,5 +251,9 @@ class CheckTask(WorkflowTask):
 
         if err_list:
             write("Checks failed:\n  - {}".format("\n  - ".join(err_list)), "error")
-            return False
+            if context._args.no_check:
+                log_warning("--no-check was passed: ignoring the errors above.")
+            else:
+                log_info("Use --no-check argument to ignore the errors above.")
+                return False
         return True

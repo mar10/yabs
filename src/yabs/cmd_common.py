@@ -30,6 +30,8 @@ class TaskContext:
     def __init__(self, args, task_runner):
         self.errors = []
         self.completed = []
+        #: CLI arguments namespace object
+        self._args = args
         #: (str) value of ``--inc`` argument
         #: ('major', 'minor', 'patch', 'postrelease')
         self.inc = args.inc

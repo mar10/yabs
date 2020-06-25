@@ -92,6 +92,11 @@ def run():
         default=None,
         help="bump semantic version (used as default for `bump` tasks)",
     )
+    sp.add_argument(
+        "--no-check",
+        action="store_true",
+        help="don't let the 'check' task stop the workflow (log warnings instead)",
+    )
     sp.set_defaults(command=handle_run_command)
 
     # --- Let all sublasses of `WorkflowTask` add their arguments --------------
