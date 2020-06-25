@@ -103,7 +103,7 @@ def run():
     sp.add_argument(
         "--no-release",
         action="store_true",
-        help="skip all 'gh-release' and 'pypi-release' tasks",
+        help="don't upload tags and assets to GitHub or PyPI (but still build assets)",
     )
     sp.set_defaults(command=handle_run_command)
 
