@@ -4,7 +4,7 @@
 """
 """
 from .cmd_common import WorkflowTask
-from .util import check_arg, ConfigError, log_error
+from .util import check_arg, ConfigError, log_error, log_warning
 from .version_manager import INCREMENTS
 
 
@@ -53,6 +53,10 @@ class BumpTask(WorkflowTask):
     def run(self, context):
         opts = self.opts
         dry_run = context.dry_run
+        if context._args.no_bump:
+            log_warning("`--no-bump` was passed: forcing dry-run mode for 'bump' task.")
+            dry_run = True
+
         inc = opts.get("inc")
         if not inc:
             if context.inc:
@@ -72,7 +76,7 @@ class BumpTask(WorkflowTask):
         vm.bump(inc, prerelease_prefix=opts["prerelease_prefix"], write=not dry_run)
         context.version = vm.master_version
 
-        if opts["check"] and not self.dry_run:
+        if opts["check"] and not dry_run:
             _ret_code, real_version = self._exec(["python", "setup.py", "--version"])
             if real_version != str(vm.master_version):
                 log_error(

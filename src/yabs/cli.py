@@ -93,6 +93,9 @@ def run():
         help="bump semantic version (used as default for `bump` tasks)",
     )
     sp.add_argument(
+        "--no-bump", action="store_true", help="skip all 'bump' tasks",
+    )
+    sp.add_argument(
         "--no-check",
         action="store_true",
         help="don't let the 'check' task stop the workflow (log warnings instead)",

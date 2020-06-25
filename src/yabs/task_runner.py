@@ -85,8 +85,10 @@ class TaskRunner:
         check_arg(self.config, dict)
         self.tasks = res["tasks"]
         check_arg(self.tasks, list)
+        # Early command line syntax checks, so we don't run all preceeding tasks
         task_types = set((t.get("task") for t in self.tasks))
-        if "bump" in task_types and self.args and not self.args.inc:
+        args = self.args
+        if "bump" in task_types and args and not (args.inc or args.no_bump):
             self.parser.error("'bump' tasks require `--inc` argument")
 
         self.version_manager = VersionFileManager(self)
