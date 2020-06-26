@@ -110,6 +110,11 @@ def run():
         action="store_true",
         help="allow to ignore some errors (like bumping above `max_increment`)",
     )
+    sp.add_argument(
+        "--prerelease",
+        action="store_true",
+        help="tell the gh_release task to create a pre-release",
+    )
     sp.set_defaults(command=handle_run_command)
 
     # --- Let all sublasses of `WorkflowTask` add their arguments --------------

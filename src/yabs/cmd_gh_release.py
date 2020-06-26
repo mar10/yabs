@@ -26,7 +26,7 @@ class GithubReleaseTask(WorkflowTask):
         "message": "Released {version}\n"
         + "[Commit details](https://github.com/{repo}/compare/{org_tag_name}...{tag_name}).",
         "name": "v{version}",
-        "prerelease": None,
+        "prerelease": None,  # None: guess from version number; Use --prerelease to override
         "repo": None,  # `owner/repo`, defaults to yaml setting
         "tag": None,
         "target_commitish": None,
@@ -139,10 +139,15 @@ class GithubReleaseTask(WorkflowTask):
 
         target_commitish = opts["target_commitish"] or GithubObject.NotSet
 
-        prerelease = opts["prerelease"]
-        if prerelease is None:
-            prerelease = "-" in tag_name or "+" in tag_name
-            log_info("Tag '{}': assuming prerelease={}".format(tag_name, prerelease))
+        if context._args.prerelease:
+            prerelease = True
+        else:
+            prerelease = opts["prerelease"]
+            if prerelease is None:
+                prerelease = "-" in tag_name or "+" in tag_name
+                log_info(
+                    "Tag '{}': assuming prerelease={}".format(tag_name, prerelease)
+                )
 
         name = opts["name"].format(**vars(context))
         message = opts["message"].format(**vars(context))
