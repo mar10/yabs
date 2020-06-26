@@ -60,9 +60,9 @@ tasks:
     prerelease: false
 
   #  'npmPublish': Submit to npm repository
-  - task: npmPublish
-    message: |
-      Released {%= version %}
+  # - task: npmPublish
+  #   message: |
+  #     Released {%= version %}
 
   #  'push': Push changes and tags
   - task: push
@@ -72,18 +72,18 @@ tasks:
                             #  (requires git 1.8.3+)
 
   #  'replace': In-place string replacements
-  - task: replace
-    files: null               #  minimatch globbing pattern
-    patterns: []              #  See https://github.com/outaTiME/applause
-    #  Shortcut patterns (pass false to disable):
-    setTimestamp: "{%= grunt.template.today('isoUtcDateTime') %}"
-                              #  Replace '@@timestamp' with current datetime
-    setVersion: '{%= version %}'   #  Replace '@@version' with current version
+  # - task: replace
+  #   files: null               #  minimatch globbing pattern
+  #   patterns: []              #  See https://github.com/outaTiME/applause
+  #   #  Shortcut patterns (pass false to disable):
+  #   setTimestamp: "{%= grunt.template.today('isoUtcDateTime') %}"
+  #                             #  Replace '@@timestamp' with current datetime
+  #   setVersion: '{%= version %}'   #  Replace '@@version' with current version
 
   #  'run': Run arbitrary tasks
-  - task: run
-    tasks: []                 #  (Tasks must be defined in the current Gruntfile)
-    silent: false             #  `true`: suppress output
+  # - task: run
+  #   tasks: []                 #  (Tasks must be defined in the current Gruntfile)
+  #   silent: false             #  `true`: suppress output
 
   #  'tag': Create an annotated tag
   - task: tag

@@ -26,9 +26,6 @@ class CheckTask(WorkflowTask):
         "branches": None,
         "can_push": None,
         "clean": None,
-        # "cmp_version": None,
-        # "connected": None,
-        # "gh_auth": None,  # use `config.gh_auth`
         "github": None,
         "os": None,
         "python": None,
@@ -101,6 +98,10 @@ class CheckTask(WorkflowTask):
             help="check current operating system",
         )
         sp.set_defaults(command=cls.handle_cli_command)
+
+    @classmethod
+    def check_task_def(cls, task_def, parser, args, yaml):
+        return True
 
     def run(self, context):
         opts = self.opts

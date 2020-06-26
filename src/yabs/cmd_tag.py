@@ -47,6 +47,10 @@ class TagTask(WorkflowTask):
         )
         sp.set_defaults(command=cls.handle_cli_command)
 
+    @classmethod
+    def check_task_def(cls, task_def, parser, args, yaml):
+        return True
+
     def run(self, context):
         opts = self.opts
         name = opts["name"].format(**vars(context))

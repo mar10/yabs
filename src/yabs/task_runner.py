@@ -29,7 +29,7 @@ from .util import (
     log_warning,
     resolve_path,
 )
-from .version_manager import VersionFileManager, ORDERED_INCREMENTS
+from .version_manager import VersionFileManager
 
 
 class TaskRunner:
@@ -91,30 +91,35 @@ class TaskRunner:
         return
 
     def _check_config(self, parser, args):
-        """Early command line syntax checks, so we don't have to run all
-        preceeding tasks before we find out."""
-        task_types = set((t.get("task") for t in self.tasks))
-        args = self.args
-        if "bump" in task_types and args and not (args.inc or args.no_bump):
-            self.parser.error("'bump' tasks require `--inc` argument")
+        """Early option and command line syntax checks.
 
-        max_increment = self.config.get("max_increment", "minor")
-        max_idx = ORDERED_INCREMENTS.index(max_increment)
-        inc_idx = ORDERED_INCREMENTS.index(args.inc)
-        if inc_idx > max_idx:
-            if args.force:
-                log_warning(
-                    "Enforcing `--inc {}` although `max_increment` option is set to '{}'".format(
-                        args.inc, max_increment
-                    )
+        This is done after reading the YAML and parsing the command line,
+        but before the workflow starts.
+        Note that `parser` and `args` may be None, when the TaskRunner was
+        created by a srcipt (or test fixture).
+        """
+        errors = []
+
+        for task_def in self.tasks:
+            task_type = task_def["task"]
+            task_cls = TaskRunner.handler_map.get(task_type)
+            if task_cls is None:
+                errors.append(
+                    "Invalid task definition: '{}': {}".format(task_type, task_def)
                 )
-            else:
-                raise ConfigError(
-                    "`--inc {}` was passed, but the `max_increment` option is set to '{}'\n"
-                    "Pass --force to ignore this warning.".format(
-                        args.inc, max_increment
-                    )
-                )
+                continue
+            res = task_cls.check_task_def(task_def, parser, args, self.all)
+            if res in (None, True):
+                continue
+            if res is False:
+                res = "{}({}): check failed.".format(task_cls, task_def)
+            if isinstance(res, str):
+                res = [res]
+            check_arg(res, (list, tuple), or_none=True)
+            errors.extend(res)
+
+        if errors:
+            raise ConfigError("ConfigError:\n  - {}".format("\n  - ".join(errors)))
         return True
 
     def run(self):

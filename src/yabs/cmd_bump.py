@@ -5,7 +5,7 @@
 """
 from .cmd_common import WorkflowTask
 from .util import check_arg, ConfigError, log_error, log_warning
-from .version_manager import INCREMENTS
+from .version_manager import INCREMENTS, ORDERED_INCREMENTS
 
 
 class BumpTask(WorkflowTask):
@@ -49,6 +49,34 @@ class BumpTask(WorkflowTask):
             help="test afterwards if `setup.py --version` matches",
         )
         sp.set_defaults(command=cls.handle_cli_command)
+
+    @classmethod
+    def check_task_def(cls, task_def, parser, args, yaml):
+        # We cannot check if we don't have CLI args (like in test fixtures)
+        if not args:
+            return True
+        if args.no_bump:
+            return True
+        inc = task_def.get("inc", args.inc)
+        if not inc:
+            return "'bump' tasks require `--inc` argument or `inc` option"
+        config = yaml["config"]
+        max_increment = config.get("max_increment", "minor")
+        max_idx = ORDERED_INCREMENTS.index(max_increment)
+        inc_idx = ORDERED_INCREMENTS.index(inc)
+        if inc_idx > max_idx:
+            if args.force:
+                log_warning(
+                    "Enforcing `--inc {}` although `max_increment` option is set to '{}'".format(
+                        args.inc, max_increment
+                    )
+                )
+            else:
+                return (
+                    "`--inc {}` was passed, but the `max_increment` option is set to '{}'"
+                    " (pass `--force` to ignore).".format(args.inc, max_increment)
+                )
+        return True
 
     def run(self, context):
         opts = self.opts

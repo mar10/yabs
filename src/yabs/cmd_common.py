@@ -174,6 +174,17 @@ class WorkflowTask(ABC):
             write(msg, "debug", True, output)
         return ret_code, output
 
+    @abstractclassmethod
+    def check_task_def(cls, task_def, parser, args, yaml):  # noqa: B902 'use cls'
+        """Check task definition for errors.
+
+        This allows static pre-checks before the actual workflow starts.
+
+        Returns:
+            (str|list|bool) Error message(s)
+        """
+        return True
+
     @classmethod
     def handle_cli_command(cls, parser, args):
         """Default implementation, when run as stand-alone CLI command."""

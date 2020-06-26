@@ -45,6 +45,10 @@ class CommitTask(WorkflowTask):
         )
         sp.set_defaults(command=cls.handle_cli_command)
 
+    @classmethod
+    def check_task_def(cls, task_def, parser, args, yaml):
+        return True
+
     def run(self, context):
         opts = self.opts
         message = opts["message"].format(**vars(context))

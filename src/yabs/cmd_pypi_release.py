@@ -222,6 +222,10 @@ class PypiReleaseTask(WorkflowTask):
 
         return ok
 
+    @classmethod
+    def check_task_def(cls, task_def, parser, args, yaml):
+        return True
+
     def run(self, context):
         try:
             res = self._run(context)
