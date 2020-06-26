@@ -34,7 +34,7 @@ class PushTask(WorkflowTask):
     #     )
 
     @classmethod
-    def register_cli_command(cls, subparsers, parents):
+    def register_cli_command(cls, subparsers, parents, run_parser):
         """"""
         sp = subparsers.add_parser(
             "push",

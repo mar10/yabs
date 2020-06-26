@@ -32,8 +32,21 @@ class BumpTask(WorkflowTask):
         return "{}({!r})".format(self.__class__.__name__, self.opts["inc"])
 
     @classmethod
-    def register_cli_command(cls, subparsers, parents):
+    def register_cli_command(cls, subparsers, parents, run_parser):
         """"""
+        # Additional arguments for the 'run' command
+        run_parser.add_argument(
+            "--inc",
+            choices=["major", "minor", "patch", "postrelease"],
+            default=None,
+            help="bump semantic version (used as default for `bump` task's `inc` option)",
+        )
+        run_parser.add_argument(
+            "--no-bump",
+            action="store_true",
+            help="run all 'bump' tasks in dry-run mode",
+        )
+
         sp = subparsers.add_parser(
             "bump", parents=parents, help="increment current project version",
         )

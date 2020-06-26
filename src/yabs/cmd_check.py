@@ -59,8 +59,14 @@ class CheckTask(WorkflowTask):
         return "{}({})".format(self.__class__.__name__, checks)
 
     @classmethod
-    def register_cli_command(cls, subparsers, parents):
-        """"""
+    def register_cli_command(cls, subparsers, parents, run_parser):
+        # Additional arguments for the 'run' command
+        run_parser.add_argument(
+            "--no-check",
+            action="store_true",
+            help="don't let the 'check' task stop the workflow (log warnings instead)",
+        )
+
         sp = subparsers.add_parser(
             "check", parents=parents, help="check preconditions",
         )
