@@ -122,13 +122,13 @@ class TestBasics:
         assert format_rate(12345, 1000000.0) == "0.012"
 
     def test_log(self):
-        from yabs.log import Log
+        from yabs.stylish import Stylish
 
-        log = Log("yabs", False)
+        log = Stylish(False)
         assert log.red("error") == "error"
         assert log.green("ok") == "ok"
 
-        log = Log("yabs", True)
+        log = Stylish(True)
         if sys.version_info < (3, 6):
             assert log.red("error") == "error", "Python 3.5 must disable colors"
             assert log.green("ok") == "ok"
