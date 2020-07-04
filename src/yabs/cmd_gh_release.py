@@ -22,7 +22,7 @@ from .util import (
 class GithubReleaseTask(WorkflowTask):
     DEFAULT_OPTS = {
         "gh_auth": None,  # use `config.gh_auth`
-        "draft": True,  # Use `--gh-draft` to override
+        "draft": False,  # Use `--gh-draft` to override
         "message": "Released {version}\n"
         + "[Commit details](https://github.com/{repo}/compare/{org_tag_name}...{tag_name}).",
         "name": "v{version}",
