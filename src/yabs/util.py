@@ -108,7 +108,8 @@ def write(msg, level="info", prefix=False, output=None, output_level=None):
                 "warning": log.yellow("WARNING") + ": ",
                 "error": log.red("ERROR") + ": ",
             },
-            "check": {"info": "    ✅ ", "warning": "    ❗ ", "error": "    ❌ "},
+            "check": {"info": log.green("    ✔ "), "warning": log.yellow("    ! "), "error": log.red("    ✘ ")},
+            # "check": {"info": "    ✅ ", "warning": "    ❗ ", "error": "    ❌ "},
         }
         if log._initialized:
             _prefix_map_valid = True
