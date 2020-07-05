@@ -12,7 +12,7 @@ isort = "*"
 pylint = "*"
 pytest = "*"
 pytest-cov = "*"
-tox = "~=3.2"
+tox = "*"
 # yabs = {path = ".", editable = true}
 
 [packages]
@@ -20,7 +20,7 @@ GitPython = "*"
 PyGithub = "*"
 PyYAML = "~=5.2"
 semantic_version = "*"
-setuptools = "~=40.2"
+setuptools = ">=42.0"
 sty = "==1.0.0-beta.12"
 toml = "*"
 twine = "~=3.2"
