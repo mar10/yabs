@@ -3,8 +3,6 @@
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """
-import sys
-
 import pytest
 
 from yabs.util import (
@@ -13,9 +11,6 @@ from yabs.util import (
     format_elap,
     format_rate,
     get_dict_attr,
-    # get_random_number,
-    # is_yaml_keyword,
-    # parse_args_from_str,
     shorten_string,
 )
 
@@ -122,16 +117,12 @@ class TestBasics:
         assert format_rate(12345, 1000000.0) == "0.012"
 
     def test_log(self):
-        from yabs.stylish import Stylish
+        from yabs.stylish import red, green, enable_colors, colors_enabled
 
-        log = Stylish(False)
-        assert log.red("error") == "error"
-        assert log.green("ok") == "ok"
+        assert not colors_enabled()
+        assert red("error") == "error"
+        assert green("ok") == "ok"
 
-        log = Stylish(True)
-        if sys.version_info < (3, 6):
-            assert log.red("error") == "error", "Python 3.5 must disable colors"
-            assert log.green("ok") == "ok"
-        else:
-            assert log.red("error") == "\x1b[91merror\x1b[39m"
-            assert log.green("ok") == "\x1b[32mok\x1b[39m"
+        enable_colors(True, True)
+        assert red("error") == "\x1b[91merror\x1b[39m"
+        assert green("ok") == "\x1b[32mok\x1b[39m"

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# (c) 2020 Martin Wendt and contributors; see https://github.com/mar10/yabs
+# (c) 2020 Martin Wendt and contributors; see https://github.com/mar10/stylish
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 Simple helper for colored terminal output.
@@ -7,11 +7,12 @@ Simple helper for colored terminal output.
 Examples:
     from stylish import colored as _c
 
-    print
+    if not args.no_color and sys.stdout.isatty():
+        enable_colors(True)
+
 """
 import os
 import sys
-
 
 # Foreground ANSI codes using SGR format:
 _SGR_FG_COLOR_MAP = {
@@ -117,6 +118,14 @@ _SGR_EFFECT__MAP = {
 EFFECT_MAP = {color: "\033[{}m".format(num) for color, num in _SGR_EFFECT__MAP.items()}
 
 
+def rgb_fg(r, g, b):
+    return "\x1b[38;2;{};{};{}m".format(r, g, b)
+
+
+def rgb_bg(r, g, b):
+    return "\x1b[48;2;{};{};{}m".format(r, g, b)
+
+
 # In 2016, Microsoft released the Windows 10 Version 1511 update which unexpectedly
 # implemented support for ANSI escape sequences.[13] The change was designed to
 # complement the Windows Subsystem for Linux, adding to the Windows Console Host
@@ -132,27 +141,58 @@ EFFECT_MAP = {color: "\033[{}m".format(num) for color, num in _SGR_EFFECT__MAP.i
 
 class Stylish:
     """
+    This is basically a namespace, since the core functionality is implemented
+    as classmethods.
+
+    However an instance is required to use a context manager.
+    Examples:
+
+        with Stylish("yellow", bg="blue"):
+            print("hey")
+
     """
 
+    #: (bool)
+    _enabled = False
     _initialized = False
 
-    def __init__(self, enable_color=True):
-        self.enable_color(enable_color)
+    def __init__(self, fg, bg=None, bold=False, underline=False, italic=False):
+        self.format = (fg, bg, bold, underline, italic)
+
+    def __enter__(self):
+        print(self.ansi(*self.format), end="")
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        print(self.reset(*self.format), end="")
 
     @classmethod
     def _initialize(cls):
+        """"""
         if cls._initialized:
             return
         cls._initialized = True
-        # Shim to make colors work on Windows
+        # Shim to make colors work on Windows 10
+        # See https://github.com/feluxe/sty/issues/2
         if sys.platform == "win32":
             os.system("color")
 
+    # TODO:
+    # https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
+
     @classmethod
-    def enable_color(cls, flag):
+    def enable(cls, flag, force=False):
+        if flag and not force and not sys.stdout.isatty():
+            print("SSS", sys.stdout.isatty())
+            flag = False
+
         if flag:
             cls._initialize()
-        cls.use_colors = flag
+        cls._enabled = flag
+
+    @classmethod
+    def is_enabled(cls):
+        return cls._enabled
 
     @classmethod
     def reset_all(cls):
@@ -160,34 +200,44 @@ class Stylish:
 
     @classmethod
     def reset(cls, fg=True, bg=True, bold=True, underline=True, italic=True):
-        if not cls.use_colors:
+        if not cls._enabled:
             return ""
         if fg and bg and bold and underline and italic:
             return cls.reset_all()
 
         sl = []
         if fg:
-            sl.append(EFFECT_MAP.get("reset_fg"))
+            sl.append(EFFECT_MAP["reset_fg"])
         if bg:
-            sl.append(EFFECT_MAP.get("reset_bg"))
+            sl.append(EFFECT_MAP["reset_bg"])
         if bold:
-            sl.append(EFFECT_MAP.get("reset_bold"))
+            sl.append(EFFECT_MAP["reset_bold_dim"])
         if underline:
-            sl.append(EFFECT_MAP.get("reset_underline"))
+            sl.append(EFFECT_MAP["reset_underline"])
         if italic:
-            sl.append(EFFECT_MAP.get("reset_italic"))
+            sl.append(EFFECT_MAP["reset_italic"])
         res = "".join(sl)
         return res
 
     @classmethod
-    def set(cls, fg, bg=None, bold=False, underline=False, italic=False):
-        if not cls.use_colors:
+    def ansi(cls, fg, bg=None, bold=False, underline=False, italic=False):
+        if not cls._enabled:
             return ""
         sl = []
+
         if fg is not None:
-            sl.append(FG_MAP[fg])
+            # TODO: in simple cases, fg and bg can be combined into a single sequence
+            if isinstance(fg, (list, tuple)):
+                sl.append(rgb_fg(*fg))
+            else:
+                sl.append(FG_MAP[fg])
+
         if bg is not None:
-            sl.append(BG_MAP[bg])
+            if isinstance(bg, (list, tuple)):
+                sl.append(rgb_bg(*bg))
+            else:
+                sl.append(BG_MAP[bg])
+        # Effects
         if bold:
             sl.append(EFFECT_MAP["bold"])
         if underline:
@@ -206,8 +256,10 @@ class Stylish:
         Examples:
             print("Hello " + color("beautiful", "green") + " world.")
         """
+        if not cls._enabled:
+            return text
         sl = []
-        sl.append(cls.set(fg=fg, bg=bg, bold=bold, underline=underline, italic=italic))
+        sl.append(cls.ansi(fg=fg, bg=bg, bold=bold, underline=underline, italic=italic))
         if text is not None:
             sl.append(text)
             # Only reset what we have set before
@@ -219,57 +271,85 @@ class Stylish:
         return text
 
     @classmethod
-    def red(cls, text):
-        return cls.wrap(text, "li_red")
-
-    @classmethod
-    def yellow(cls, text):
-        return cls.wrap(text, "yellow")
-
-    @classmethod
-    def green(cls, text):
-        return cls.wrap(text, "green")
-
-    @classmethod
-    def gray(cls, text):
-        return cls.wrap(text, "li_black")
+    def set_cursor(cls, x, y, apply=True):
+        # https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
+        if not cls._enabled:
+            return ""
+        ansi = ""
+        if apply:
+            print(ansi, end="")
+        return ansi
 
 
-stylish = Stylish()
+def enable_colors(flag=True, force=False):
+    return Stylish.enable(flag, force)
 
 
-def enable_color(flag):
-    return Stylish.enable_color(flag)
+def colors_enabled():
+    return Stylish.is_enabled()
 
 
-def colors_enabled(flag):
-    return Stylish.use_colors
+def ansi_reset(fg=True, bg=True, bold=True, underline=True, italic=True):
+    """Reset color attributes to console default."""
+    return Stylish.reset(fg, bg, bold, underline, italic)
 
 
-def rgb_fg(r, g, b):
-    return "\x1b[38;2;{};{};{}m".format(r, g, b)
+def ansi(fg, bg=None, bold=False, underline=False, italic=False):
+    """Return ANSI control string that enables the requested console formatting."""
+    return Stylish.ansi(fg, bg, bold, underline, italic)
 
 
-def rgb_bg(r, g, b):
-    return "\x1b[48;2;{};{};{}m".format(r, g, b)
+def wrap(text, fg, bg=None, bold=False, underline=False, italic=False):
+    """Wrap text in ANSI sequences that enable and disable console formatting."""
+    return Stylish.wrap(text, fg, bg, bold, underline, italic)
+
+
+def set_cursor(x, y):
+    return Stylish.set_cursor(x, y)
 
 
 def red(text):
-    return stylish.wrap(text, "li_red")
+    return wrap(text, "li_red")
 
 
 def yellow(text):
-    return stylish.wrap(text, "yellow")
+    return wrap(text, "li_yellow")
 
 
 def green(text):
-    return stylish.wrap(text, "green")
+    return wrap(text, "green")
 
 
 def gray(text):
-    return stylish.wrap(text, "li_black")
+    return wrap(text, "li_black")
 
 
 if __name__ == "__main__":
-    print(Stylish.red("rötlich"))
-    print(Stylish.wrap("rötlich2", "red", "yellow", underline=True) + "more")
+    enable_colors(True)
+
+    with Stylish("li_yellow", bg="blue"):
+        print("yellow on blue")
+
+    with Stylish((255, 255, 0), bg=(0, 0, 255)):
+        print("yellow on blue (rgb)")
+
+    with Stylish("li_white", bg="black"):
+        print("white on black")
+
+    with Stylish((255, 255, 255), bg="black"):
+        print("white on black (rgb)")
+
+    print("before " + red("reddish") + " after")
+    print("before " + yellow("yellow") + " after")
+    print("before " + wrap("yellow on blue", "yellow", bg="blue") + " after")
+    print("before " + wrap("green underlined", "green", underline=True) + " after")
+    print("before " + wrap("blue bold", "blue", bold=True) + " after")
+    print("before " + wrap("red italic", "red", italic=True) + " after")
+
+    for color in FG_MAP.keys():
+        print(wrap(color, color), end=", ")
+    print(".")
+
+    for color in BG_MAP.keys():
+        print(wrap(color, None, bg=color), end=", ")
+    print(".")
