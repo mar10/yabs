@@ -16,7 +16,7 @@ import sys
 from yabs import __version__
 
 from .cmd_common import register_cli_commands
-from .log import log
+from .stylish import enable_colors
 from .task_runner import handle_run_command
 from .util import init_logging
 
@@ -113,8 +113,9 @@ def run():
     # print("verbose", args.verbose)
     init_logging(args.verbose)  # , args.log_file)
 
-    if not args.no_color and sys.stdout.isatty():
-        log.enable_color(True)
+    if not args.no_color:
+        # Enable terminal colors (if sys.stdout.isatty())
+        enable_colors(True, force=False)
 
     if getattr(args, "version", None):
         if args.verbose >= 4:
