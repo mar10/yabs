@@ -17,7 +17,7 @@ from .cmd_gh_release import GithubReleaseTask
 from .cmd_push import PushTask
 from .cmd_pypi_release import PypiReleaseTask
 from .cmd_tag import TagTask
-from .log import log
+from .stylish import colors_enabled
 from .util import (
     NO_DEFAULT,
     ConfigError,
@@ -156,14 +156,14 @@ class TaskRunner:
 
         elap = time.monotonic() - start
         if ok:
-            emoji = " ✨ 🍰 ✨" if log.use_colors else ""
+            emoji = " ✨ 🍰 ✨" if colors_enabled() else ""
             log_ok(
                 "Workkflow finished successfully in {}{}".format(
                     format_elap(elap), emoji
                 )
             )
         else:
-            emoji = " 💥 💔 💥" if log.use_colors else ""
+            emoji = " 💥 💔 💥" if colors_enabled() else ""
             msg = "Workkflow failed in {}{}".format(format_elap(elap), emoji)
             log_error(msg)
             context.errors.append(msg)

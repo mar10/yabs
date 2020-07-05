@@ -58,7 +58,7 @@ class PypiReleaseTask(WorkflowTask):
         return "{}(build {})".format(self.__class__.__name__, args)
 
     @classmethod
-    def register_cli_command(cls, subparsers, parents):
+    def register_cli_command(cls, subparsers, parents, run_parser):
         """"""
         sp = subparsers.add_parser(
             "pypi-release",

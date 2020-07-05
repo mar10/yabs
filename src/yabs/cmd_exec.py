@@ -41,7 +41,7 @@ class ExecTask(WorkflowTask):
         return "{}(`{}`)".format(self.__class__.__name__, " ".join(args))
 
     @classmethod
-    def register_cli_command(cls, subparsers, parents):
+    def register_cli_command(cls, subparsers, parents, run_parser):
         """"""
         sp = subparsers.add_parser(
             "exec", parents=parents, help="execute shell command",

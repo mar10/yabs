@@ -22,11 +22,11 @@ from .util import (
 class GithubReleaseTask(WorkflowTask):
     DEFAULT_OPTS = {
         "gh_auth": None,  # use `config.gh_auth`
-        "draft": True,
+        "draft": False,  # Use `--gh-draft` to override
         "message": "Released {version}\n"
         + "[Commit details](https://github.com/{repo}/compare/{org_tag_name}...{tag_name}).",
         "name": "v{version}",
-        "prerelease": None,  # None: guess from version number; Use --prerelease to override
+        "prerelease": None,  # None: guess from version number; Use `--gh-pre` to override
         "repo": None,  # `owner/repo`, defaults to yaml setting
         "tag": None,
         "target_commitish": None,
@@ -62,8 +62,19 @@ class GithubReleaseTask(WorkflowTask):
     #     )
 
     @classmethod
-    def register_cli_command(cls, subparsers, parents):
-        """"""
+    def register_cli_command(cls, subparsers, parents, run_parser):
+        # Additional arguments for the 'run' command
+        run_parser.add_argument(
+            "--gh-draft",
+            action="store_true",
+            help="tell the gh_release task to create a draft-release",
+        )
+        run_parser.add_argument(
+            "--gh-pre",
+            action="store_true",
+            help="tell the gh_release task to create a pre-release",
+        )
+        # New sub-command
         sp = subparsers.add_parser(
             "gh-release", parents=parents, help="create a release on GitHub",
         )
@@ -143,7 +154,9 @@ class GithubReleaseTask(WorkflowTask):
 
         target_commitish = opts["target_commitish"] or GithubObject.NotSet
 
-        if context._args.prerelease:
+        draft = bool(context._args.gh_draft or opts["draft"])
+
+        if context._args.gh_pre:
             prerelease = True
         else:
             prerelease = opts["prerelease"]
@@ -161,7 +174,7 @@ class GithubReleaseTask(WorkflowTask):
             tag=tag_name,
             name=name,
             message=message,
-            draft=opts["draft"],
+            draft=draft,
             prerelease=prerelease,
             target_commitish=target_commitish,
         )

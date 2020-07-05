@@ -33,7 +33,7 @@ class CommitTask(WorkflowTask):
         return "{}(add: {}, '{}')".format(self.__class__.__name__, add, message.strip())
 
     @classmethod
-    def register_cli_command(cls, subparsers, parents):
+    def register_cli_command(cls, subparsers, parents, run_parser):
         """"""
         sp = subparsers.add_parser(
             "commit",

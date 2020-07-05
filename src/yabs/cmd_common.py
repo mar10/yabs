@@ -203,18 +203,18 @@ class WorkflowTask(ABC):
         return res
 
     @abstractclassmethod
-    def register_cli_command(cls, subparsers, parents):  # noqa: B902 'use cls'
-        """"""
+    def register_cli_command(cls, subparsers, parents, run_parser):  # noqa: B902
+        """Let tasks add a sub-command and/or arguments to the 'run' command."""
 
     @abstractmethod
     def run(self, context):
         """"""
 
 
-def register_cli_commands(subparsers, parents):
+def register_cli_commands(subparsers, parents, run_parser):
     for task_cls in WorkflowTask.__subclasses__():
         log_debug("Register {}".format(task_cls))
-        task_cls.register_cli_command(subparsers, parents)
+        task_cls.register_cli_command(subparsers, parents, run_parser)
 
 
 # def register_command_handlers(handler_map):

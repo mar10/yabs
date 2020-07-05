@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from shutil import rmtree
 
-from yabs.log import log
+from yabs.stylish import red, green, yellow, gray, Stylish
 
 logger = logging.getLogger("yabs")
 
@@ -98,19 +98,27 @@ _prefix_map_valid = False
 def write(msg, level="info", prefix=False, output=None, output_level=None):
     """
     """
+    # We want to cache the color formatted strings, however the
+    # `stylish` formatter may not be initialized yet.
+    # So we may have to defer this caching here:
     global _prefix_map, _prefix_map_valid
 
     if not _prefix_map_valid:
         _prefix_map = {
             False: {},
             True: {
-                "info": log.green("OK") + ": ",
-                "warning": log.yellow("WARNING") + ": ",
-                "error": log.red("ERROR") + ": ",
+                "info": green("OK") + ": ",
+                "warning": yellow("WARNING") + ": ",
+                "error": red("ERROR") + ": ",
             },
-            "check": {"info": "    ✅ ", "warning": "    ❗ ", "error": "    ❌ "},
+            "check": {
+                "info": green("    ✔ "),
+                "warning": yellow("    ! "),
+                "error": red("    ✘ "),
+            },
+            # "check": {"info": "    ✅ ", "warning": "    ❗ ", "error": "    ❌ "},
         }
-        if log._initialized:
+        if Stylish._initialized:
             _prefix_map_valid = True
 
     level_name = level
@@ -133,7 +141,7 @@ def write(msg, level="info", prefix=False, output=None, output_level=None):
         output = prefix + ("\n" + prefix).join(lines)
 
         if output_level == "debug":
-            output = log.gray(output)
+            output = gray(output)
         logger.log(output_level, output)
 
     return

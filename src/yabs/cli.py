@@ -16,7 +16,7 @@ import sys
 from yabs import __version__
 
 from .cmd_common import register_cli_commands
-from .log import log
+from .stylish import enable_colors
 from .task_runner import handle_run_command
 from .util import init_logging
 
@@ -87,39 +87,21 @@ def run():
         "workflow", nargs="?", default="./yabs.yaml", help="run a workflow definition",
     )
     sp.add_argument(
-        "--inc",
-        choices=["major", "minor", "patch", "postrelease"],
-        default=None,
-        help="bump semantic version (used as default for `bump` tasks)",
-    )
-    sp.add_argument(
-        "--no-bump", action="store_true", help="skip all 'bump' tasks",
-    )
-    sp.add_argument(
-        "--no-check",
+        "--force",
         action="store_true",
-        help="don't let the 'check' task stop the workflow (log warnings instead)",
+        help="allow to ignore some errors (like bumping above `max_increment`)",
     )
     sp.add_argument(
         "--no-release",
         action="store_true",
         help="don't upload tags and assets to GitHub or PyPI (but still build assets)",
     )
-    sp.add_argument(
-        "--force",
-        action="store_true",
-        help="allow to ignore some errors (like bumping above `max_increment`)",
-    )
-    sp.add_argument(
-        "--prerelease",
-        action="store_true",
-        help="tell the gh_release task to create a pre-release",
-    )
     sp.set_defaults(command=handle_run_command)
+    run_parser = sp
 
     # --- Let all sublasses of `WorkflowTask` add their arguments --------------
 
-    register_cli_commands(subparsers, parents)
+    register_cli_commands(subparsers, parents, run_parser)
 
     # --- Parse command line ---------------------------------------------------
 
@@ -131,8 +113,9 @@ def run():
     # print("verbose", args.verbose)
     init_logging(args.verbose)  # , args.log_file)
 
-    if not args.no_color and sys.stdout.isatty():
-        log.enable_color(True)
+    if not args.no_color:
+        # Enable terminal colors (if sys.stdout.isatty())
+        enable_colors(True, force=False)
 
     if getattr(args, "version", None):
         if args.verbose >= 4:
