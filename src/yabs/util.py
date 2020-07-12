@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from shutil import rmtree
 
-from yabs.snazzy import red, green, yellow, gray, Snazzy
+from yabs.snazzy import emoji, red, green, yellow, gray, Snazzy
 
 logger = logging.getLogger("yabs")
 
@@ -111,12 +111,12 @@ def write(msg, level="info", prefix=False, output=None, output_level=None):
                 "warning": yellow("WARNING") + ": ",
                 "error": red("ERROR") + ": ",
             },
+            # Use emoji if terminal supports it, colored ASCII otherwise
             "check": {
-                "info": green("    ✔ "),
-                "warning": yellow("    ! "),
-                "error": red("    ✘ "),
+                "info": "    {} ".format(emoji("✅", green("    * "))),
+                "warning": "    {} ".format(emoji("❗", yellow("    ! "))),
+                "error": "    {} ".format(emoji("❌", red("    X "))),
             },
-            # "check": {"info": "    ✅ ", "warning": "    ❗ ", "error": "    ❌ "},
         }
         if Snazzy._initialized:
             _prefix_map_valid = True

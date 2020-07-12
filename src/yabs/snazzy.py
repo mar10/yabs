@@ -156,9 +156,12 @@ class Snazzy:
 
     """
 
-    #: (bool)
-    _enabled = False
+    #: (bool) True if Snazzy feature detection was run and initialion finished
     _initialized = False
+    #: (bool) True if `enable(True)` was called
+    _enabled = False
+    #: (bool) True if the terminal supports fancy unicode
+    _support_emoji = None
 
     def __init__(
         self, fg=None, bg=None, bold=False, underline=False, italic=False, stream=None
@@ -183,12 +186,22 @@ class Snazzy:
         # See https://github.com/feluxe/sty/issues/2
         if sys.platform == "win32":
             os.system("color")
+        # TODO: this is a dumb/pessimistic guess.
+        # The new Windows Terminal for example *will* support emojis, for example
+        cls._support_emoji = not sys.platform == "win32"
 
     # TODO:
     # https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
 
     @classmethod
-    def enable(cls, flag, force=False):
+    def enable(cls, flag, force=False, support_emoji=None):
+        """Set 'enabled'-status.
+
+        Args:
+            flag (bool):
+            force (bool):
+            support_emoji (bool, optional):
+        """
         if flag and not force and not sys.stdout.isatty():
             flag = False
 
@@ -276,6 +289,12 @@ class Snazzy:
         text = "".join(str(s) for s in sl)
         return text
 
+    @classmethod
+    def emoji(cls, s, fallback="", force=None):
+        """Return an emoji-string if the terminal supports it, fallback otherwise."""
+        enable = cls._support_emoji if force is None else force
+        return s if enable else fallback
+
     # @classmethod
     # def set_cursor(cls, x, y, apply=True):
     #     # https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
@@ -293,6 +312,10 @@ def enable_colors(flag=True, force=False):
 
 def colors_enabled():
     return Snazzy.is_enabled()
+
+
+def emoji(s, fallback="", force=None):
+    return Snazzy.emoji(s, fallback, force)
 
 
 def ansi_reset(fg=True, bg=True, bold=True, underline=True, italic=True):
