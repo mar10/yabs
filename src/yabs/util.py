@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from shutil import rmtree
 
-from yabs.stylish import red, green, yellow, gray, Stylish
+from yabs.snazzy import red, green, yellow, gray, Snazzy
 
 logger = logging.getLogger("yabs")
 
@@ -99,7 +99,7 @@ def write(msg, level="info", prefix=False, output=None, output_level=None):
     """
     """
     # We want to cache the color formatted strings, however the
-    # `stylish` formatter may not be initialized yet.
+    # `snazzy` formatter may not be initialized yet.
     # So we may have to defer this caching here:
     global _prefix_map, _prefix_map_valid
 
@@ -118,7 +118,7 @@ def write(msg, level="info", prefix=False, output=None, output_level=None):
             },
             # "check": {"info": "    ✅ ", "warning": "    ❗ ", "error": "    ❌ "},
         }
-        if Stylish._initialized:
+        if Snazzy._initialized:
             _prefix_map_valid = True
 
     level_name = level

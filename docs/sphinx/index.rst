@@ -52,7 +52,7 @@ be installed using `pipenv <https://pipenv.pypa.io/>`_
   (yabs) $ pipenv install yabs --upgrade
   (yabs) $ yabs --version -v
   (yabs) $ yabs --help
-  (yabs) $ yabs run patch
+  (yabs) $ yabs run --inc patch
 
 
 ..

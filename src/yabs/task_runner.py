@@ -17,7 +17,7 @@ from .cmd_gh_release import GithubReleaseTask
 from .cmd_push import PushTask
 from .cmd_pypi_release import PypiReleaseTask
 from .cmd_tag import TagTask
-from .stylish import colors_enabled
+from .snazzy import colors_enabled
 from .util import (
     NO_DEFAULT,
     ConfigError,

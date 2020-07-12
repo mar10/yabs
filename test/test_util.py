@@ -117,7 +117,7 @@ class TestBasics:
         assert format_rate(12345, 1000000.0) == "0.012"
 
     def test_log(self):
-        from yabs.stylish import red, green, enable_colors, colors_enabled
+        from yabs.snazzy import red, green, enable_colors, colors_enabled
 
         assert not colors_enabled()
         assert red("error") == "error"
