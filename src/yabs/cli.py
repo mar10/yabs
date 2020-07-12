@@ -122,9 +122,13 @@ def run():
             PYTHON_VERSION = "{}.{}.{}".format(
                 sys.version_info[0], sys.version_info[1], sys.version_info[2]
             )
-            version_info = "yabs/{} Python/{} {}".format(
-                __version__, PYTHON_VERSION, platform.platform()
+            version_info = "yabs/{} Python/{}({} bit) {}".format(
+                __version__,
+                PYTHON_VERSION,
+                "64" if sys.maxsize > 2 ** 32 else "32",
+                platform.platform(),
             )
+            version_info += "\nPython from: {}".format(sys.executable)
         else:
             version_info = __version__
         print(version_info)
