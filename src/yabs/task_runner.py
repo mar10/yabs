@@ -8,6 +8,8 @@ import time
 
 import yaml
 
+from snazzy import emoji
+
 from .cmd_bump import BumpTask
 from .cmd_check import CheckTask
 from .cmd_commit import CommitTask
@@ -17,7 +19,6 @@ from .cmd_gh_release import GithubReleaseTask
 from .cmd_push import PushTask
 from .cmd_pypi_release import PypiReleaseTask
 from .cmd_tag import TagTask
-from .snazzy import emoji
 from .util import (
     NO_DEFAULT,
     ConfigError,

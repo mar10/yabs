@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from shutil import rmtree
 
-from yabs.snazzy import emoji, red, green, yellow, gray, Snazzy
+from snazzy import Snazzy, emoji, gray, green, red, yellow
 
 logger = logging.getLogger("yabs")
 

@@ -29,9 +29,8 @@ A typical release workflow may look like this:
 7. Create a new release on [GitHub](https://github.com) and upload assets.
 8. Bump, tag, commit, and push for post-release.
 
-(See [grunt-yabs](https://github.com/mar10/grunt-yabs) for a node.js variant if you have a JavaScript based development stack.)
-
-https://yabs.readthedocs.io/en/latest/ug_tutorial.html
+[Read the documentation](https://yabs.readthedocs.io/en/latest/ug_tutorial.html)
+for details.
 
 
 ## Preconditions
@@ -41,4 +40,5 @@ https://yabs.readthedocs.io/en/latest/ug_tutorial.html
 - The project's version number is maintained in
   [one of the supported locations](https://yabs.readthedocs.io/)
 
-
+(See [grunt-yabs](https://github.com/mar10/grunt-yabs) for a node.js variant
+if you have a JavaScript based development stack.)

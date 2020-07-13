@@ -21,6 +21,7 @@ PyGithub = "*"
 PyYAML = "~=5.2"
 semantic_version = "*"
 setuptools = ">=42.0"
+snazzy = "*"
 toml = "*"
 twine = "~=3.2"
 wheel = "*"
@@ -29,5 +30,5 @@ wheel = "*"
 python_version = "3.7"
 
 [pipenv]
-# TODO: remove this when black and sty releases a real version
+# TODO: remove this when black releases a real version
 allow_prereleases = true

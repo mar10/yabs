@@ -13,10 +13,10 @@ import argparse
 import platform
 import sys
 
+from snazzy import enable_colors
 from yabs import __version__
 
 from .cmd_common import register_cli_commands
-from .snazzy import enable_colors
 from .task_runner import handle_run_command
 from .util import init_logging
 
