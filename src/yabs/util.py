@@ -113,9 +113,9 @@ def write(msg, level="info", prefix=False, output=None, output_level=None):
             },
             # Use emoji if terminal supports it, colored ASCII otherwise
             "check": {
-                "info": "    {} ".format(emoji("✅", green("    * "))),
-                "warning": "    {} ".format(emoji("❗", yellow("    ! "))),
-                "error": "    {} ".format(emoji("❌", red("    X "))),
+                "info": "    {} ".format(emoji("✅", green("*"))),
+                "warning": "    {} ".format(emoji("❗", yellow("!"))),
+                "error": "    {} ".format(emoji("❌", red("X"))),
             },
         }
         if Snazzy._initialized:
