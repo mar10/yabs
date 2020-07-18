@@ -75,16 +75,10 @@ class GithubReleaseTask(WorkflowTask):
             help="tell the gh_release task to create a pre-release",
         )
         # New sub-command
-        sp = subparsers.add_parser(
-            "gh-release", parents=parents, help="create a release on GitHub",
-        )
-        # sp.add_argument(
-        #     "--draft", action="store_true", help="",
+        # sp = subparsers.add_parser(
+        #     "gh-release", parents=parents, help="create a release on GitHub",
         # )
-        # sp.add_argument(
-        #     "--opts", help="YAML file with conversion options",
-        # )
-        sp.set_defaults(command=cls.handle_cli_command)
+        # sp.set_defaults(command=cls.handle_cli_command)
 
     @classmethod
     def check_task_def(cls, task_def, parser, args, yaml):

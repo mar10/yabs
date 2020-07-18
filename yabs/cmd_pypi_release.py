@@ -60,26 +60,26 @@ class PypiReleaseTask(WorkflowTask):
     @classmethod
     def register_cli_command(cls, subparsers, parents, run_parser):
         """"""
-        sp = subparsers.add_parser(
-            "pypi-release",
-            parents=parents,
-            help="Make sdist, wheel, and upload on PyPI",
-        )
-        sp.add_argument(
-            "--clean", action="store_true", help="erase dist folder before building",
-        )
-        sp.add_argument(
-            "--upload",
-            action="store_true",
-            help="upload built artefacts to PyPI using twine",
-        )
-        sp.add_argument(
-            "--build",
-            choices=cls.KNOWN_TARGETS,
-            nargs="*",
-            help="call setup.py to build artefacts (option may be repeated, default: sdist, bdist_wheel)",
-        )
-        sp.set_defaults(command=cls.handle_cli_command)
+        # sp = subparsers.add_parser(
+        #     "pypi-release",
+        #     parents=parents,
+        #     help="Make sdist, wheel, and upload on PyPI",
+        # )
+        # sp.add_argument(
+        #     "--clean", action="store_true", help="erase dist folder before building",
+        # )
+        # sp.add_argument(
+        #     "--upload",
+        #     action="store_true",
+        #     help="upload built artefacts to PyPI using twine",
+        # )
+        # sp.add_argument(
+        #     "--build",
+        #     choices=cls.KNOWN_TARGETS,
+        #     nargs="*",
+        #     help="call setup.py to build artefacts (option may be repeated, default: sdist, bdist_wheel)",
+        # )
+        # sp.set_defaults(command=cls.handle_cli_command)
 
     def _run(self, context):
         opts = self.opts

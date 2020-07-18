@@ -67,43 +67,43 @@ class CheckTask(WorkflowTask):
             help="don't let the 'check' task stop the workflow (log warnings instead)",
         )
 
-        sp = subparsers.add_parser(
-            "check", parents=parents, help="check preconditions",
-        )
+        # sp = subparsers.add_parser(
+        #     "check", parents=parents, help="check preconditions",
+        # )
 
-        sp.add_argument(
-            "--branch",
-            nargs="*",
-            metavar="BRANCH",
-            dest="branches",
-            help="check if current branch is allowed",
-        )
-        sp.add_argument(
-            "--can-push", action="store_true", help="assert `git push` would work",
-        )
-        sp.add_argument(
-            "--venv",
-            action="store_true",
-            help="assert running inside a virtual environment",
-        )
-        sp.add_argument(
-            "--github", action="store_true", help="assert gitub repo is available",
-        )
-        sp.add_argument(
-            "--twine", action="store_true", help="assert twine is available",
-        )
-        sp.add_argument(
-            "--clean",
-            action="store_true",
-            help="assert that all changes are committed",
-        )
-        sp.add_argument(
-            "--os",
-            choices=["Linux", "Darwin", "Windows"],
-            nargs="*",
-            help="check current operating system",
-        )
-        sp.set_defaults(command=cls.handle_cli_command)
+        # sp.add_argument(
+        #     "--branch",
+        #     nargs="*",
+        #     metavar="BRANCH",
+        #     dest="branches",
+        #     help="check if current branch is allowed",
+        # )
+        # sp.add_argument(
+        #     "--can-push", action="store_true", help="assert `git push` would work",
+        # )
+        # sp.add_argument(
+        #     "--venv",
+        #     action="store_true",
+        #     help="assert running inside a virtual environment",
+        # )
+        # sp.add_argument(
+        #     "--github", action="store_true", help="assert gitub repo is available",
+        # )
+        # sp.add_argument(
+        #     "--twine", action="store_true", help="assert twine is available",
+        # )
+        # sp.add_argument(
+        #     "--clean",
+        #     action="store_true",
+        #     help="assert that all changes are committed",
+        # )
+        # sp.add_argument(
+        #     "--os",
+        #     choices=["Linux", "Darwin", "Windows"],
+        #     nargs="*",
+        #     help="check current operating system",
+        # )
+        # sp.set_defaults(command=cls.handle_cli_command)
 
     @classmethod
     def check_task_def(cls, task_def, parser, args, yaml):

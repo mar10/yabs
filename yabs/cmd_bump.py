@@ -47,21 +47,21 @@ class BumpTask(WorkflowTask):
             help="run all 'bump' tasks in dry-run mode",
         )
 
-        sp = subparsers.add_parser(
-            "bump", parents=parents, help="increment current project version",
-        )
-        sp.add_argument(
-            "inc",
-            choices=["major", "minor", "patch", "postrelease"],
-            # default="patch",
-            help="bump semantic version by this increment",
-        )
-        sp.add_argument(
-            "--check",
-            action="store_true",
-            help="test afterwards if `setup.py --version` matches",
-        )
-        sp.set_defaults(command=cls.handle_cli_command)
+        # sp = subparsers.add_parser(
+        #     "bump", parents=parents, help="increment current project version",
+        # )
+        # sp.add_argument(
+        #     "inc",
+        #     choices=["major", "minor", "patch", "postrelease"],
+        #     # default="patch",
+        #     help="bump semantic version by this increment",
+        # )
+        # sp.add_argument(
+        #     "--check",
+        #     action="store_true",
+        #     help="test afterwards if `setup.py --version` matches",
+        # )
+        # sp.set_defaults(command=cls.handle_cli_command)
 
     @classmethod
     def check_task_def(cls, task_def, parser, args, yaml):

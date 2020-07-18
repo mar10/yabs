@@ -36,15 +36,15 @@ class PushTask(WorkflowTask):
     @classmethod
     def register_cli_command(cls, subparsers, parents, run_parser):
         """"""
-        sp = subparsers.add_parser(
-            "push",
-            parents=parents,
-            help="increment current 'patch' version (add `--minor` or `--major`)",
-        )
-        sp.add_argument(
-            "--tags", action="store_true", help="push missing but relevant tags",
-        )
-        sp.set_defaults(command=cls.handle_cli_command)
+        # sp = subparsers.add_parser(
+        #     "push",
+        #     parents=parents,
+        #     help="increment current 'patch' version (add `--minor` or `--major`)",
+        # )
+        # sp.add_argument(
+        #     "--tags", action="store_true", help="push missing but relevant tags",
+        # )
+        # sp.set_defaults(command=cls.handle_cli_command)
 
     @classmethod
     def check_task_def(cls, task_def, parser, args, yaml):

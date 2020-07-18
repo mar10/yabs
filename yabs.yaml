@@ -14,7 +14,6 @@ config:
   branches:
     - master
 
-
 tasks:
   # 'check': Assert preconditons and fail otherwise
   - task: check
@@ -68,7 +67,6 @@ tasks:
       - sdist
       - bdist_wheel
     upload: true
-    # revert_bump_on_error: true
 
   # 'github_release': Create a release on GitHub
   - task: github_release
@@ -88,6 +86,7 @@ tasks:
 
   - task: commit
     add_known: true
+    # `[ci skip]´ tells travis to ignore
     message: |
       Bump prerelease ({version}) [ci skip]
 

@@ -35,15 +35,15 @@ class CommitTask(WorkflowTask):
     @classmethod
     def register_cli_command(cls, subparsers, parents, run_parser):
         """"""
-        sp = subparsers.add_parser(
-            "commit",
-            parents=parents,
-            help="increment current 'patch' version (add `--minor` or `--major`)",
-        )
-        sp.add_argument(
-            "--add-known", action="store_true", help="",
-        )
-        sp.set_defaults(command=cls.handle_cli_command)
+        # sp = subparsers.add_parser(
+        #     "commit",
+        #     parents=parents,
+        #     help="increment current 'patch' version (add `--minor` or `--major`)",
+        # )
+        # sp.add_argument(
+        #     "--add-known", action="store_true", help="",
+        # )
+        # sp.set_defaults(command=cls.handle_cli_command)
 
     @classmethod
     def check_task_def(cls, task_def, parser, args, yaml):
