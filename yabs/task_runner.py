@@ -19,6 +19,7 @@ from .cmd_gh_release import GithubReleaseTask
 from .cmd_push import PushTask
 from .cmd_pypi_release import PypiReleaseTask
 from .cmd_tag import TagTask
+from .plugin_manager import PluginManager
 from .util import (
     NO_DEFAULT,
     ConfigError,
@@ -56,6 +57,7 @@ class TaskRunner:
         self.config = None
         self.tasks = None
         self.version_manager = None
+        self.plugin_manager = PluginManager()
         self._load()
         self._check_config(parser, args)
         # register_command_handlers(self.handler_map)
