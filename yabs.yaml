@@ -7,7 +7,7 @@ config:
   repo: 'mar10/yabs'
   version:
     - type: __version__
-      file: src/yabs/__init__.py
+      file: yabs/__init__.py
   gh_auth:
     oauth_token_var: GITHUB_OAUTH_TOKEN
   max_increment: minor
