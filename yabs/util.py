@@ -60,6 +60,9 @@ def init_logging(verbose=3, path=None):
         # format="%(asctime)s.%(msecs)03d <%(process)d.%(thread)d> %(levelname)-8s %(message)s",
         datefmt="%H:%M:%S",
     )
+    # If basicConfig() was already called before, the above call was a no-op.
+    # Make sure, we adjust the level still:
+    logging.root.setLevel(level)
 
     if path:
         if os.path.isdir(path):
@@ -89,6 +92,24 @@ def init_logging(verbose=3, path=None):
         warnings.filterwarnings("once", message="Unverified HTTPS request")
 
     return logger
+
+
+def check_verbose_qnd():
+    """Guess verbosity before argparse was initialized."""
+    args = sys.argv[1:]
+    return "-v" in args or "--verbose" in args
+
+
+# def log_qnd(level, msg, exc_info=False):
+#     # Some methods of the plugin manager are called before the logging
+#     # system is inititalized, because logging is configured by the command
+#     # line and plugins are allowed to modify argparse.parser
+#     if len(logging.root.handlers) > 0:
+#         # Logging is already initialized:
+#         return logging.log(level, msg, exc_info=exc_info)
+#     prefix = logging.getLevelName(level)
+#     if level > logging.DEBUG or check_verbose_qnd():
+#         print("{}: {}".format(prefix, msg))
 
 
 _prefix_map = None

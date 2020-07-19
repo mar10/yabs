@@ -9,13 +9,7 @@ from abc import ABC, abstractclassmethod, abstractmethod
 
 from git import Repo
 
-from .util import (
-    check_arg,
-    log_debug,
-    log_warning,
-    write,
-)
-
+from .util import check_arg, log_warning, write
 
 GH_USER_AGENT = "Yabs/Python"
 
@@ -121,7 +115,6 @@ class WorkflowTask(ABC):
     #: (dict) define all supported arguments and their default values.
     #: This attribute must be defined by derived classes.
     DEFAULT_OPTS = None
-    # CLI_COMMAND = None
 
     def __init__(self, opts):
         assert self.DEFAULT_OPTS is not None
@@ -195,10 +188,6 @@ class WorkflowTask(ABC):
         # The TaskRunner would maintain a `context` dict, when running a
         # sequence of workflow tasks. Here we need to set-up a simple one:
         context = TaskContext(args, None)
-        # context = {
-        #     "dry_run": opts["dry_run"],
-        #     # "version_manager": None,
-        # }
         res = task.run(context=context)
         return res
 
@@ -209,15 +198,3 @@ class WorkflowTask(ABC):
     @abstractmethod
     def run(self, context):
         """"""
-
-
-def register_cli_commands(subparsers, parents, run_parser):
-    for task_cls in WorkflowTask.__subclasses__():
-        log_debug("Register {}".format(task_cls))
-        task_cls.register_cli_command(subparsers, parents, run_parser)
-
-
-# def register_command_handlers(handler_map):
-#     for task_cls in WorkflowTask.__subclasses__():
-#         handler_map[task_cls.CLI_COMMAND] = task_cls
-#     return handler_map

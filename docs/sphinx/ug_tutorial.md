@@ -37,6 +37,9 @@ Some **preconditions** are assumed:
 - The project's version number is maintained in
   [one of the supported locations](#versions).
 
+**Note:**<br>
+Yabs can be extended using the [plugin API](ug_writing_plugins.html).
+
 
 ## Workflow Definition
 
