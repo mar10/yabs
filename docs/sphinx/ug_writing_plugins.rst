@@ -59,5 +59,4 @@ for a usage example.
     If you publish your own custom extension on PyPI, choose a name like
     ``yabs-USER-TASKNAME`` or similar.
 
-    Also add 'yabs-plugin' to the keywords and ``Framework :: Yabs`` to the
-    classifiers, to make it more discoverable.
+    Also add 'yabs-plugin' to the keywords, to make it more discoverable.
