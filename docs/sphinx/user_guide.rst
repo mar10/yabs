@@ -11,3 +11,4 @@ User Guide
     ug_sample_yabs_yaml
     ug_reference
     ug_cli
+    ug_writing_plugins

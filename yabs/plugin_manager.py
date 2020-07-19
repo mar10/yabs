@@ -3,51 +3,63 @@
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """
+from inspect import isclass
 from pkg_resources import iter_entry_points
-from abc import ABC, abstractmethod
 
 # from semantic_version import Version
 
-from .util import check_arg, log_debug, log_info, log_warning, resolve_path
-
-
-class Plugin(ABC):
-    """Base class for plugin wrappers."""
-    namespace = None
-
-    def __init__(self, name):
-        self.name = name
-        self.version = None
-        self._plugin = None
-
-    def __str__(self):
-        return "{}(v{})@{}".format(self.__class__.__name__, self.name, self.version)
-
-    @abstractmethod
-    def run(self):
-        pass
-
-
-class TaskPlugin(Plugin):
-    """Base class for yabs task plugin wrappers."""
+from .util import log_info, log_warning, logger
+from .cmd_common import WorkflowTask
 
 
 class PluginManager:
     """
     Maintain a list of plugins.
     """
+
     plugin_map = {}
 
-    def __init__(self):
+    def __init__(self, task_manager):
+        self.task_manager = task_manager
         self.namespace = "yabs.tasks"
         self._load_plugins()
 
     def _load_plugins(self):
+        handler_map = self.task_manager.handler_map
         log_info("Load plugins for namespace '{}'...".format(self.namespace))
+
         for ep in iter_entry_points(group=self.namespace, name=None):
             log_info("Load entry point '{}' {}...".format(ep.name, ep.module_name))
+            if ep.name in self.plugin_map:
+                log_warning(
+                    "Duplicate entry point name: {}; skipping...".format(ep.name)
+                )
+                continue
+            if ep.name in handler_map:
+                log_warning(
+                    "Task name exists in standard: {}; skipping...".format(ep.name)
+                )
+                continue
             self.plugin_map[ep.name] = ep.load()
+
         log_info("map: {}".format(self.plugin_map))
 
-        for name, fn in self.plugin_map.items():
-            res = fn()
+        for name, register_fn in self.plugin_map.items():
+            try:
+                plugin = register_fn(self, WorkflowTask)
+            except Exception:
+                logger.exception("Could not register {}".format(name))
+                continue
+            # Some checks
+            if issubclass(plugin, WorkflowTask):
+                # Rely on ABC interface
+                pass
+            elif not isclass(plugin):
+                logger.error(
+                    "Plugin.register {} did not return a class: {}".format(name, plugin)
+                )
+            else:
+                # Do some interface checks
+                if getattr(plugin, "name", None) != name:
+                    raise RuntimeError("Plugin must contain `name`")
+            handler_map[name] = plugin

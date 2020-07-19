@@ -57,7 +57,7 @@ class TaskRunner:
         self.config = None
         self.tasks = None
         self.version_manager = None
-        self.plugin_manager = PluginManager()
+        self.plugin_manager = PluginManager(self)
         self._load()
         self._check_config(parser, args)
         # register_command_handlers(self.handler_map)
