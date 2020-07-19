@@ -7,18 +7,9 @@ import os
 import time
 
 import yaml
-
 from snazzy import emoji
 
-from .cmd_bump import BumpTask
-from .cmd_check import CheckTask
-from .cmd_commit import CommitTask
 from .cmd_common import TaskContext
-from .cmd_exec import ExecTask
-from .cmd_gh_release import GithubReleaseTask
-from .cmd_push import PushTask
-from .cmd_pypi_release import PypiReleaseTask
-from .cmd_tag import TagTask
 from .plugin_manager import PluginManager
 from .util import (
     NO_DEFAULT,
@@ -37,18 +28,6 @@ from .version_manager import VersionFileManager
 class TaskRunner:
     """"""
 
-    # TODO: automate this map creation:
-    handler_map = {
-        "bump": BumpTask,
-        "check": CheckTask,
-        "commit": CommitTask,
-        "exec": ExecTask,
-        "github_release": GithubReleaseTask,
-        "push": PushTask,
-        "pypi_release": PypiReleaseTask,
-        "tag": TagTask,
-    }
-
     def __init__(self, fspec, parser=None, args=None):
         self.fspec = fspec
         self.parser = parser
@@ -57,7 +36,7 @@ class TaskRunner:
         self.config = None
         self.tasks = None
         self.version_manager = None
-        self.plugin_manager = PluginManager(self)
+        # self.plugin_manager = PluginManager(self)
         self._load()
         self._check_config(parser, args)
         # register_command_handlers(self.handler_map)
@@ -105,11 +84,9 @@ class TaskRunner:
 
         for task_def in self.tasks:
             task_type = task_def["task"]
-            task_cls = TaskRunner.handler_map.get(task_type)
+            task_cls = PluginManager.task_class_map.get(task_type)
             if task_cls is None:
-                errors.append(
-                    "Invalid task definition: '{}': {}".format(task_type, task_def)
-                )
+                errors.append("Invalid task type: '{}': {}".format(task_type, task_def))
                 continue
             res = task_cls.check_task_def(task_def, parser, args, self.all)
             if res in (None, True):
@@ -127,17 +104,18 @@ class TaskRunner:
 
     def run(self):
         context = TaskContext(self.args, self)
+        task_map = PluginManager.task_class_map
         ok = True
         start = time.monotonic()
         for task_def in self.tasks:
             task_def = task_def.copy()
             # log_info(task_def)
             task_type = task_def.pop("task")
-            task_cls = TaskRunner.handler_map.get(task_type)
+            task_cls = task_map.get(task_type)
             if not task_cls:
                 raise ConfigError(
                     "Invalid task type: {} (expected {})".format(
-                        task_type, ", ".join(self.handler_map.keys())
+                        task_type, ", ".join(task_map.keys())
                     )
                 )
             # TODO: task_def can force - but not prevent - dry-run:

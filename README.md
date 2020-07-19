@@ -29,6 +29,8 @@ A typical release workflow may look like this:
 7. Create a new release on [GitHub](https://github.com) and upload assets.
 8. Bump, tag, commit, and push for post-release.
 
+Custom tasks may be added using the plugin framework.
+
 [Read the documentation](https://yabs.readthedocs.io/en/latest/ug_tutorial.html)
 for details.
 

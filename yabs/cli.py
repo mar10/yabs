@@ -10,15 +10,17 @@ Usage examples:
     $ yabs check --clean --branch master
 """
 import argparse
+import logging
 import platform
 import sys
 
 from snazzy import enable_colors
+
 from yabs import __version__
 
-from .cmd_common import register_cli_commands
+from .plugin_manager import PluginManager
 from .task_runner import handle_run_command
-from .util import init_logging
+from .util import check_verbose_qnd, init_logging
 
 # --- verbose_parser ----------------------------------------------------------
 
@@ -100,8 +102,10 @@ def run():
     run_parser = sp
 
     # --- Let all sublasses of `WorkflowTask` add their arguments --------------
-
-    register_cli_commands(subparsers, parents, run_parser)
+    # We want to see some logging, even if init_logging() wasn't called yet:
+    level = logging.DEBUG if check_verbose_qnd() else logging.INFO
+    logging.basicConfig(level=level, format="%(message)s", datefmt="%H:%M:%S")
+    PluginManager.register_cli_commands(subparsers, parents, run_parser)
 
     # --- Parse command line ---------------------------------------------------
 

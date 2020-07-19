@@ -4,7 +4,7 @@ Writing Plugins
 
 .. warning::
 
-    The plugin API is still preliminary: expect changeges!
+    The plugin API is still preliminary: expect changes!
 
 Additional task types can be added to *Yabs* by the way of *plugins*.
 
@@ -35,8 +35,22 @@ and produces this output:
                 ||     ||
 
 
+This can be implemented by a separate installable Python module, that
+exposes a special entry point:
+
+.. code-block:: ini
+
+    [options.entry_points]
+    # Plugins are found by the 'yabs.tasks' namespace.
+    # The 'register()' function is then called by the plugin loader.
+    # The 'cowsay' name is used as yabs task type name-
+    yabs.tasks =
+        cowsay = yabs_cowsay:register
+
 See the `sample implementation <https://github.com/mar10/yabs-cowsay>`_
-for details.
+for implemntation details and the
+`sample project <https://github.com/mar10/test-release-tool/blob/master/yabs.yaml>`_
+for a usage example.
 
 .. note::
 
@@ -46,4 +60,4 @@ for details.
     ``yabs-USER-TASKNAME`` or similar.
 
     Also add 'yabs-plugin' to the keywords and ``Framework :: Yabs`` to the
-    classifiers.
+    classifiers, to make it more discoverable.
