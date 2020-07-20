@@ -43,7 +43,7 @@ exposes a special entry point:
     [options.entry_points]
     # Plugins are found by the 'yabs.tasks' namespace.
     # The 'register()' function is then called by the plugin loader.
-    # The 'cowsay' name is used as yabs task type name-
+    # The 'cowsay' name is used as yabs task type name.
     yabs.tasks =
         cowsay = yabs_cowsay:register
 

@@ -87,7 +87,7 @@ class GithubReleaseTask(WorkflowTask):
     def run(self, context):
         opts = self.opts
 
-        if context._args.no_release:
+        if context.args.no_release:
             log_warning("`--no-release` was passed: skipping 'gh_release' task.")
             return True
 
@@ -148,9 +148,9 @@ class GithubReleaseTask(WorkflowTask):
 
         target_commitish = opts["target_commitish"] or GithubObject.NotSet
 
-        draft = bool(context._args.gh_draft or opts["draft"])
+        draft = bool(context.args.gh_draft or opts["draft"])
 
-        if context._args.gh_pre:
+        if context.args.gh_pre:
             prerelease = True
         else:
             prerelease = opts["prerelease"]

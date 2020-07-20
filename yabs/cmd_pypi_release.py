@@ -174,7 +174,7 @@ class PypiReleaseTask(WorkflowTask):
         ok = ok and (ret_code == 0)
 
         if opts["upload"]:
-            if context._args.no_release:
+            if context.args.no_release:
                 log_warning(
                     "`--no-release` was passed: skipping `twine upload` of 'pypi_release' task."
                 )

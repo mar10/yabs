@@ -94,7 +94,7 @@ class BumpTask(WorkflowTask):
     def run(self, context):
         opts = self.opts
         dry_run = context.dry_run
-        if context._args.no_bump:
+        if context.args.no_bump:
             log_warning("`--no-bump` was passed: forcing dry-run mode for 'bump' task.")
             dry_run = True
 

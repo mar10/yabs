@@ -25,7 +25,7 @@ class TaskContext:
         self.errors = []
         self.completed = []
         #: CLI arguments namespace object
-        self._args = args
+        self.args = args
         #: (str) value of ``--inc`` argument
         #: ('major', 'minor', 'patch', 'postrelease')
         self.inc = args.inc

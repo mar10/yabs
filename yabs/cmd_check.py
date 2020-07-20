@@ -258,7 +258,7 @@ class CheckTask(WorkflowTask):
 
         if err_list:
             write("Checks failed:\n  - {}".format("\n  - ".join(err_list)), "error")
-            if context._args.no_check:
+            if context.args.no_check:
                 log_warning("`--no-check` was passed: ignoring the errors above.")
             else:
                 log_info("Use the `--no-check` argument to ignore the errors above.")
