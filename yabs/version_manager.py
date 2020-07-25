@@ -340,12 +340,12 @@ class VersionFileManager:
         return
 
     @classmethod
-    def _inc_prerelease(cls, v, prefix=""):
+    def _inc_prerelease(cls, v, prefix="", start_idx=0):
         """Increment a version's prerelase component."""
 
         pre_tuple = v.prerelease
         if len(pre_tuple) == 0:  # "1.2.3" -> "1.2.3-0"
-            return copy_version(v, [prefix + "0"])
+            return copy_version(v, [prefix + str(int(start_idx))])
         if len(pre_tuple) > 1:
             log_warning(
                 "Discarding multiple prerelase identifiers in {}.".format(pre_tuple)
@@ -385,7 +385,14 @@ class VersionFileManager:
             self.set_version(self.org_version, write)
         return
 
-    def bump(self, inc, write=False, prerelease_prefix="a", calc_only=False):
+    def bump(
+        self,
+        inc,
+        write=False,
+        prerelease_prefix="a",
+        prerelease_start_idx=1,
+        calc_only=False,
+    ):
         check_arg(inc, str, condition=inc in INCREMENTS)
         v = self.master_version
         if inc == "major":
@@ -405,16 +412,20 @@ class VersionFileManager:
                 raise RuntimeError(
                     "'prerelease' would go backwards; consider 'postrelease'"
                 )
-            v_next = self._inc_prerelease(v, prerelease_prefix)
+            v_next = self._inc_prerelease(v, prerelease_prefix, prerelease_start_idx)
         elif inc == "postrelease":
             if v.prerelease:
                 # 1.2.3-0 -> 1.2.3-1
-                v_next = self._inc_prerelease(v, prerelease_prefix)
+                v_next = self._inc_prerelease(
+                    v, prerelease_prefix, prerelease_start_idx
+                )
             else:
                 # 1.2.3   -> 1.2.4-0
                 v_next = v.next_patch()
                 # print(v_next)
-                v_next = self._inc_prerelease(v_next, prerelease_prefix)
+                v_next = self._inc_prerelease(
+                    v_next, prerelease_prefix, prerelease_start_idx
+                )
                 # print(v_next)
         else:
             raise NotImplementedError

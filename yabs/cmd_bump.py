@@ -3,6 +3,10 @@
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """
+import os
+
+from git import Repo
+
 from .cmd_common import WorkflowTask
 from .util import check_arg, ConfigError, log_error, log_warning
 from .version_manager import INCREMENTS, ORDERED_INCREMENTS
@@ -13,6 +17,7 @@ class BumpTask(WorkflowTask):
         "inc": None,
         "check": True,
         "prerelease_prefix": "a",
+        "prerelease_start_idx": 1,
     }
 
     def __init__(self, opts):
@@ -106,12 +111,33 @@ class BumpTask(WorkflowTask):
                 raise ConfigError(
                     "Missing bump increment: either define `inc` option or pass `inc` argument."
                 )
+
         if inc not in INCREMENTS:
             raise ConfigError(
                 "Invalid `inc` option '{}' (expected {}).".format(
                     inc, ", ".join(INCREMENTS)
                 )
             )
+
+        org_version = context.org_version
+        is_prerelease = org_version.prerelease if org_version else False
+        if context.args.inc == "postrelease" and not opts.get("inc") and is_prerelease:
+            # If `--inc postrelease` was passed and the bump-task does not
+            # explicitly define `inc: postrelease`, untagged post-releases are
+            # not bumped again.
+            repo_path = os.path.abspath(".")
+            repo = Repo(repo_path)
+            try:
+                repo.tag(str(org_version))
+            except ValueError:
+                log_warning(
+                    "Bump '--inc postrelease' is ignored, because current version {} "
+                    "is already a prerelease and not yet tagged.".format(org_version)
+                )
+                log_warning(
+                    "Following task will tag and release {}.".format(org_version)
+                )
+                return True
 
         vm = context.version_manager
         vm.bump(inc, prerelease_prefix=opts["prerelease_prefix"], write=not dry_run)

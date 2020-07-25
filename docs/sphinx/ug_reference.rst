@@ -60,6 +60,7 @@ dry_run (bool, optional)
      inc: null
      check: false
      prerelease_prefix: "a"
+     prerelease_start_idx: 1
 
 inc (str|null), optional, default: *null*
     If *null*, the value that was passed as ``--inc`` argument on the command

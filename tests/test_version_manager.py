@@ -43,9 +43,14 @@ class TestVersionManager:
             v = version_manager.bump("prerelease", calc_only=True)
 
         v = version_manager.bump("postrelease", calc_only=True)
-        assert v == Version("1.2.4-a0")
+        assert v == Version("1.2.4-a1")
 
-        v = version_manager.bump("postrelease", prerelease_prefix="rc", calc_only=True)
+        v = version_manager.bump(
+            "postrelease",
+            prerelease_prefix="rc",
+            prerelease_start_idx=0,
+            calc_only=True,
+        )
         assert v == Version("1.2.4-rc0")
 
         v = version_manager.bump("minor", calc_only=True)
