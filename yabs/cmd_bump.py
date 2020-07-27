@@ -52,22 +52,6 @@ class BumpTask(WorkflowTask):
             help="run all 'bump' tasks in dry-run mode",
         )
 
-        # sp = subparsers.add_parser(
-        #     "bump", parents=parents, help="increment current project version",
-        # )
-        # sp.add_argument(
-        #     "inc",
-        #     choices=["major", "minor", "patch", "postrelease"],
-        #     # default="patch",
-        #     help="bump semantic version by this increment",
-        # )
-        # sp.add_argument(
-        #     "--check",
-        #     action="store_true",
-        #     help="test afterwards if `setup.py --version` matches",
-        # )
-        # sp.set_defaults(command=cls.handle_cli_command)
-
     @classmethod
     def check_task_def(cls, task_def, parser, args, yaml):
         # We cannot check if we don't have CLI args (like in test fixtures)
@@ -75,7 +59,7 @@ class BumpTask(WorkflowTask):
             return True
         if args.no_bump:
             return True
-        inc = task_def.get("inc", args.inc)
+        inc = task_def.get("inc") or args.inc
         if not inc:
             return "'bump' tasks require `--inc` argument or `inc` option"
         config = yaml["config"]
@@ -109,7 +93,7 @@ class BumpTask(WorkflowTask):
                 inc = context.inc
             else:
                 raise ConfigError(
-                    "Missing bump increment: either define `inc` option or pass `inc` argument."
+                    "Missing bump increment: either define `inc` option or pass `--inc` argument."
                 )
 
         if inc not in INCREMENTS:
