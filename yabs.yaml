@@ -57,16 +57,18 @@ tasks:
     message: |
       Version {version}
 
+  # 'build': `setup.py bdist_wheel`
+  - task: build
+    targets:
+      - sdist
+      - bdist_wheel
+
   # 'push': Push changes and tags
   - task: push
     tags: true              # Use `--follow-tags`
 
   # 'pypi_release': Create a release on PyPI
   - task: pypi_release
-    build:
-      - sdist
-      - bdist_wheel
-    upload: true
 
   # 'github_release': Create a release on GitHub
   - task: github_release
@@ -76,9 +78,9 @@ tasks:
       [Commit details](https://github.com/{repo}/compare/{org_tag_name}...{tag_name}).
     # draft: true
     prerelease: null  # null: guess from version number format
-    upload:
-      - sdist
-      - bdist_wheel
+    # upload:
+    #   - sdist
+    #   - bdist_wheel
 
   - task: bump
     inc: postrelease
