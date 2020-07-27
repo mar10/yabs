@@ -37,19 +37,19 @@ class GithubReleaseTask(WorkflowTask):
         super().__init__(opts)
 
         opts = self.opts
-        check_arg(opts["gh_auth"], (dict, str), or_none=True)
-        check_arg(opts["repo"], str, or_none=True)
-        check_arg(opts["name"], str)
-        check_arg(opts["message"], str)
         check_arg(opts["draft"], bool)
+        check_arg(opts["gh_auth"], (dict, str), or_none=True)
+        check_arg(opts["message"], str)
+        check_arg(opts["name"], str)
         check_arg(opts["prerelease"], bool, or_none=True)
-        check_arg(opts["upload"], list, or_none=True)
-        check_arg(opts["target_commitish"], str, or_none=True)
+        check_arg(opts["repo"], str, or_none=True)
         check_arg(opts["tag"], str, or_none=True)
+        check_arg(opts["target_commitish"], str, or_none=True)
+        check_arg(opts["upload"], list, or_none=True)
 
         upload = opts["upload"]
         if upload:
-            unknown = set(upload).difference(set(("sdist", "bdist_wheel", "bdist_msi")))
+            unknown = set(upload).difference(self.KNOWN_TARGETS)
             if unknown:
                 raise RuntimeError(
                     "Unknown upload target(s): {}".format(", ".join(unknown))
@@ -74,11 +74,6 @@ class GithubReleaseTask(WorkflowTask):
             action="store_true",
             help="tell the gh_release task to create a pre-release",
         )
-        # New sub-command
-        # sp = subparsers.add_parser(
-        #     "gh-release", parents=parents, help="create a release on GitHub",
-        # )
-        # sp.set_defaults(command=cls.handle_cli_command)
 
     @classmethod
     def check_task_def(cls, task_def, parser, args, yaml):
@@ -90,6 +85,14 @@ class GithubReleaseTask(WorkflowTask):
         if context.args.no_release:
             log_warning("`--no-release` was passed: skipping 'gh_release' task.")
             return True
+
+        # TODO: assert that all targets a are in context.artefacts
+        upload = opts["upload"]
+        if upload is None:
+            # None means 'all built targets'
+            upload = set(context.artefacts)
+        else:
+            upload = set(context.artefacts)
 
         ok = True
         # GitHub access token
@@ -110,18 +113,6 @@ class GithubReleaseTask(WorkflowTask):
         repo = gh.get_repo(repo_name, lazy=False)
         if not repo:
             raise ConfigError("Could not open repo '{}'.".format(repo_name))
-
-        # collaborators = repo.get_collaborators("all")
-        # for collab in collaborators:
-        #     print(collab)
-
-        # releases = repo.get_releases()
-        # for release in releases:
-        #     print(release)
-
-        # branches = repo.get_branches()
-        # for branch in branches:
-        #     print(branch)
 
         tag_name = context.tag_name
         if not tag_name:
@@ -173,17 +164,16 @@ class GithubReleaseTask(WorkflowTask):
             target_commitish=target_commitish,
         )
 
-        if opts["upload"]:
-            for target in opts["upload"]:
-                path = context.artefacts.get(target)
-                if not path or not os.path.isfile(path):
-                    raise RuntimeError("Artefact not found: {}".format(path))
-                gh_asset = gh_release.upload_asset(
-                    str(path),
-                    label="",
-                    # content_type=NotSet,
-                    # name=NotSet,
-                )
-                log_ok("Upload asset {}".format(gh_asset))
+        for target, path in context.artefacts.items():
+            if upload and target not in upload:
+                continue
+
+            gh_asset = gh_release.upload_asset(
+                str(path),
+                label="",
+                # content_type=NotSet,
+                # name=NotSet,
+            )
+            log_ok("Upload asset {}".format(gh_asset))
 
         return ok

@@ -111,6 +111,8 @@ class WorkflowTask(ABC):
     Common base class for all yabs tasks.
     """
 
+    KNOWN_TARGETS = frozenset(("sdist", "bdist_wheel", "bdist_msi"))
+
     _COMMON_OPTS = frozenset(("dry_run", "verbose"))
     #: (dict) define all supported arguments and their default values.
     #: This attribute must be defined by derived classes.

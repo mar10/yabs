@@ -7,6 +7,7 @@ from inspect import isclass
 
 from pkg_resources import iter_entry_points
 
+from .cmd_build import BuildTask
 from .cmd_bump import BumpTask
 from .cmd_check import CheckTask
 from .cmd_commit import CommitTask
@@ -39,6 +40,7 @@ class PluginManager:
     #: (dict) Cached map TASK_NAME => WorkflowTask of known tasks
     #: Pre-filled with core task classes, and extended by plugins.
     task_class_map = {
+        "build": BuildTask,
         "bump": BumpTask,
         "check": CheckTask,
         "commit": CommitTask,
