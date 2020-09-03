@@ -36,6 +36,8 @@ For now, look at :doc:`ug_sample_yabs_yaml` for a complete configuration file
 with all available tasks.
 
 
+.. _template-macros-label:
+
 Template Macros
 ===============
 
@@ -53,12 +55,33 @@ Macro names must be embedded in curly braces, for example:
         Released {version}
         [Commit details](https://github.com/{repo}/compare/{org_tag_name}...{tag_name}).
 
-All attributes of the task context are available as macros. |br|
+All attributes of the task context are available as macros:
+
+{inc}
+    Value of the ``--inc`` argument.
+{org_tag_name}
+    The repo's latest tag name (before 'bump').
+{org_version}
+    Latest version (before 'bump').
+{repo}
+    GitHub repo name, e.g. 'USER/PROJECT'.
+{tag_name}
+    The current tag name (after 'bump').
+{version}
+    Current version (after 'bump').
+
 See :class:`~yabs.cmd_common.TaskContext` for a complete list.
 
 
+ .. _version-locations-label:
+
 Version Locations
 =================
+
+.. note::
+  Currently only a small subset is implemented. |br|
+  Please `open an issue <https://github.com/mar10/yabs/issues>`_ if you need
+  another one and are ready to help with testing.
 
 (**TODO:** verify this section.)
 

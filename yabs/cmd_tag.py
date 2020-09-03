@@ -34,18 +34,6 @@ class TagTask(WorkflowTask):
     @classmethod
     def register_cli_command(cls, subparsers, parents, run_parser):
         """"""
-        # sp = subparsers.add_parser(
-        #     "tag",
-        #     parents=parents,
-        #     help="increment current 'patch' version (add `--minor` or `--major`)",
-        # )
-        # sp.add_argument(
-        #     "name", help="tag name",
-        # )
-        # sp.add_argument(
-        #     "message", help="tag message",
-        # )
-        # sp.set_defaults(command=cls.handle_cli_command)
 
     @classmethod
     def check_task_def(cls, task_def, parser, args, yaml):

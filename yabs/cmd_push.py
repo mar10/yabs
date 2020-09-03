@@ -16,7 +16,6 @@ class PushTask(WorkflowTask):
     DEFAULT_OPTS = {
         "target": "",  # E.g. 'upstream'
         "tags": False,  # Also push tags
-        # "useFollowTags": False,  # Use `--folow-tags` instead of `&& push --tags`
     }
 
     def __init__(self, opts):
@@ -25,7 +24,6 @@ class PushTask(WorkflowTask):
         opts = self.opts
         check_arg(opts["target"], str)
         check_arg(opts["tags"], bool)
-        # check_arg(opts["useFollowTags"], bool)
 
     # def to_str(self, context):
     #     add = self.opts["add"] or self.opts["add_known"]
@@ -36,15 +34,6 @@ class PushTask(WorkflowTask):
     @classmethod
     def register_cli_command(cls, subparsers, parents, run_parser):
         """"""
-        # sp = subparsers.add_parser(
-        #     "push",
-        #     parents=parents,
-        #     help="increment current 'patch' version (add `--minor` or `--major`)",
-        # )
-        # sp.add_argument(
-        #     "--tags", action="store_true", help="push missing but relevant tags",
-        # )
-        # sp.set_defaults(command=cls.handle_cli_command)
 
     @classmethod
     def check_task_def(cls, task_def, parser, args, yaml):

@@ -86,13 +86,13 @@ class GithubReleaseTask(WorkflowTask):
             log_warning("`--no-release` was passed: skipping 'gh_release' task.")
             return True
 
-        # TODO: assert that all targets a are in context.artefacts
+        # TODO: assert that all targets a are in context.artifacts
         upload = opts["upload"]
         if upload is None:
             # None means 'all built targets'
-            upload = set(context.artefacts)
+            upload = set(context.artifacts)
         else:
-            upload = set(context.artefacts)
+            upload = set(context.artifacts)
 
         ok = True
         # GitHub access token
@@ -164,7 +164,7 @@ class GithubReleaseTask(WorkflowTask):
             target_commitish=target_commitish,
         )
 
-        for target, path in context.artefacts.items():
+        for target, path in context.artifacts.items():
             if upload and target not in upload:
                 continue
 

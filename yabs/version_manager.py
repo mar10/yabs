@@ -125,10 +125,7 @@ class VersionFileParser(ABC):
 
 
 class TextFileParser(VersionFileParser):
-    """Read/write version numbers from plain text files.
-
-
-    """
+    """Read/write version numbers from plain text files."""
 
     # These `version.type`s are handled by default.
     # It is also possible to set `version.match`, `version.template`:

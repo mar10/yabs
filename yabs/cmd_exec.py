@@ -43,13 +43,6 @@ class ExecTask(WorkflowTask):
     @classmethod
     def register_cli_command(cls, subparsers, parents, run_parser):
         """"""
-        # sp = subparsers.add_parser(
-        #     "exec", parents=parents, help="execute shell command",
-        # )
-        # sp.add_argument(
-        #     "args", nargs="+", help="shell command and arguments",
-        # )
-        # sp.set_defaults(command=cls.handle_cli_command)
 
     @classmethod
     def check_task_def(cls, task_def, parser, args, yaml):

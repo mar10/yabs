@@ -20,7 +20,7 @@ from yabs import __version__
 
 from .plugin_manager import PluginManager
 from .task_runner import handle_run_command
-from .util import check_verbose_qnd, init_logging
+from .util import check_cli_verbose, init_logging
 
 # --- verbose_parser ----------------------------------------------------------
 
@@ -83,10 +83,15 @@ def run():
     # --- Create the parser for the "run" command -----------------------------
 
     sp = subparsers.add_parser(
-        "run", parents=parents, help="run a workflow definition",
+        "run",
+        parents=parents,
+        help="run a workflow definition",
     )
     sp.add_argument(
-        "workflow", nargs="?", default="./yabs.yaml", help="run a workflow definition",
+        "workflow",
+        nargs="?",
+        default="./yabs.yaml",
+        help="run a workflow definition",
     )
     sp.add_argument(
         "--force",
@@ -103,7 +108,7 @@ def run():
 
     # --- Let all sublasses of `WorkflowTask` add their arguments --------------
     # We want to see some logging, even if init_logging() wasn't called yet:
-    level = logging.DEBUG if check_verbose_qnd() else logging.INFO
+    level = logging.DEBUG if check_cli_verbose() >= 4 else logging.INFO
     logging.basicConfig(level=level, format="%(message)s", datefmt="%H:%M:%S")
     PluginManager.register_cli_commands(subparsers, parents, run_parser)
 

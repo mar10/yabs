@@ -44,3 +44,7 @@ for details.
 
 (See [grunt-yabs](https://github.com/mar10/grunt-yabs) for a node.js variant
 if you have a JavaScript based development stack.)
+
+[![asciicast](https://asciinema.org/a/6jPN5JTNBt2LT52C6R8HZEK1g.svg)](https://asciinema.org/a/6jPN5JTNBt2LT52C6R8HZEK1g)
+
+![logo](https://raw.githubusercontent.com/mar10/yabs/master/docs/sphinx/teaser.gif)

@@ -67,44 +67,6 @@ class CheckTask(WorkflowTask):
             help="don't let the 'check' task stop the workflow (log warnings instead)",
         )
 
-        # sp = subparsers.add_parser(
-        #     "check", parents=parents, help="check preconditions",
-        # )
-
-        # sp.add_argument(
-        #     "--branch",
-        #     nargs="*",
-        #     metavar="BRANCH",
-        #     dest="branches",
-        #     help="check if current branch is allowed",
-        # )
-        # sp.add_argument(
-        #     "--can-push", action="store_true", help="assert `git push` would work",
-        # )
-        # sp.add_argument(
-        #     "--venv",
-        #     action="store_true",
-        #     help="assert running inside a virtual environment",
-        # )
-        # sp.add_argument(
-        #     "--github", action="store_true", help="assert gitub repo is available",
-        # )
-        # sp.add_argument(
-        #     "--twine", action="store_true", help="assert twine is available",
-        # )
-        # sp.add_argument(
-        #     "--clean",
-        #     action="store_true",
-        #     help="assert that all changes are committed",
-        # )
-        # sp.add_argument(
-        #     "--os",
-        #     choices=["Linux", "Darwin", "Windows"],
-        #     nargs="*",
-        #     help="check current operating system",
-        # )
-        # sp.set_defaults(command=cls.handle_cli_command)
-
     @classmethod
     def check_task_def(cls, task_def, parser, args, yaml):
         return True
@@ -126,15 +88,9 @@ class CheckTask(WorkflowTask):
         def _warn(msg, output=None):
             write(msg, "warning", "check", output)
 
-        # project_info = get_project_info()
-        # print(project_info)
-
         repo = context.repo_obj
         remote = repo.remote()
 
-        # dist = pkg_resources.get_distribution("yabs")
-        # assert dist.version == __version__
-        # print(opts)
         if opts["branches"]:
             cur_branch = repo.active_branch.name
             if cur_branch in opts["branches"]:
@@ -162,12 +118,6 @@ class CheckTask(WorkflowTask):
             else:
                 _ok("`git push` would succeed.")
 
-        # if opts["cmp_version"]:
-        #     raise NotImplementedError
-
-        # if opts["connected"]:
-        #     raise NotImplementedError
-
         if opts["clean"]:
             if repo.is_dirty():
                 msg = "Repository has pending commits"
@@ -193,8 +143,6 @@ class CheckTask(WorkflowTask):
                 _error("Could not access GitHub repo {}: {}".format(repo_name, e))
 
         if opts["os"]:
-            info = remote.push(dry_run=True)[0]
-            # print("push", info.flags, info.summary)
             ps = platform.system()
             if ps in opts["os"]:
                 _ok(

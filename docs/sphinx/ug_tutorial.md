@@ -2,7 +2,7 @@
 
 ## Overview
 
-*Yabs* is a commandline tool, that runs a sequence of tasks in order to test,
+*Yabs* is a command line tool, that runs a sequence of tasks in order to test,
 build, and deliver a Python software project.
 
 The workflow is defined in a configuration file, using a simple YAML format and

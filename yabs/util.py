@@ -94,22 +94,16 @@ def init_logging(verbose=3, path=None):
     return logger
 
 
-def check_verbose_qnd():
-    """Guess verbosity before argparse was initialized."""
+def check_cli_verbose(default=3):
+    """Check for presence of `--verbose`/`--quiet` or `-v`/`-q` without using argparse."""
     args = sys.argv[1:]
-    return "-v" in args or "--verbose" in args
+    verbose = default + args.count("--verbose") - args.count("--quiet")
 
-
-# def log_qnd(level, msg, exc_info=False):
-#     # Some methods of the plugin manager are called before the logging
-#     # system is inititalized, because logging is configured by the command
-#     # line and plugins are allowed to modify argparse.parser
-#     if len(logging.root.handlers) > 0:
-#         # Logging is already initialized:
-#         return logging.log(level, msg, exc_info=exc_info)
-#     prefix = logging.getLevelName(level)
-#     if level > logging.DEBUG or check_verbose_qnd():
-#         print("{}: {}".format(prefix, msg))
+    for arg in args:
+        if arg.startswith("-") and not arg.startswith("--"):
+            verbose += arg[1:].count("v")
+            verbose -= arg[1:].count("q")
+    return verbose
 
 
 _prefix_map = None
@@ -117,8 +111,7 @@ _prefix_map_valid = False
 
 
 def write(msg, level="info", prefix=False, output=None, output_level=None):
-    """
-    """
+    """"""
     # We want to cache the color formatted strings, however the
     # `snazzy` formatter may not be initialized yet.
     # So we may have to defer this caching here:

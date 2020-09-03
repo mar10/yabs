@@ -25,7 +25,7 @@ Yabs
    development
    changes
 
-*Yabs* is a commandline tool, that runs a sequence of tasks in order to test,
+*Yabs* is a command line tool, that runs a sequence of tasks in order to test,
 build, and deliver a Python software project.
 
 .. image:: ../teaser.png
@@ -36,9 +36,16 @@ build, and deliver a Python software project.
 Features
 ========
 
-  * This is a command line tool...
+  * Define a custom workflow definition using YAML syntax.
+  * Check preconditions to prevent unwanted or failing releases.
+  * Run external tools like linters and check their return values.
+  * Bump version number in Python or text files.
+  * Create source and built distributions by running setup.py.
+  * Tag, commit, and push to git repository.
+  * Publish releases on PyPI or GitHub.
+  * Comes with prebuilt activities, but can be extended by custom task-plugins.
+  * This is a command line tool that runs on Linux, macOS, and Windows...
   * ... and a library for use in custom Python projects.
-  * The command line tool runs on Linux, macOS, and Windows.
 
 
 Quickstart

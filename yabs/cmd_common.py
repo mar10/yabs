@@ -37,7 +37,7 @@ class TaskContext:
         self.tag_name = None
         #: (dict) all files that 'pypi_release' created, e.g.
         #: ``{"sdist": <path>, "bdist_msi": <path>}``
-        self.artefacts = {}
+        self.artifacts = {}
         #: (:class:`~yabs.task_runner.TaskRunner`)
         self.task_runner = task_runner
         #: (str) GitHub repo name, e.g. 'USER/PROJECT'
@@ -155,7 +155,11 @@ class WorkflowTask(ABC):
             tuple (ret_code, output)
         """
         opts = self.opts
-        res = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,)
+        res = subprocess.run(
+            args,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
         ret_code = res.returncode
         output = res.stdout.decode().strip()
         msg = "`{}` returned code {}".format(" ".join(args), ret_code)

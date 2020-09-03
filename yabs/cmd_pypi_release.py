@@ -67,9 +67,9 @@ class PypiReleaseTask(WorkflowTask):
             )
             return True
 
-        # TODO: assert that all upload a are in context.artefacts
+        # TODO: assert that all upload a are in context.artifacts
         upload = opts["upload"]
-        for target, path in context.artefacts.items():
+        for target, path in context.artifacts.items():
             if upload and target not in upload:
                 continue
 

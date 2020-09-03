@@ -15,7 +15,7 @@ class CommitTask(WorkflowTask):
     DEFAULT_OPTS = {
         "add": [],  # Also `git add` these files ('.' for all)
         "add_known": True,  # Commit with -a flag
-        "message": "Bumping version to {version}",
+        "message": "Bump version to {version}",
     }
 
     def __init__(self, opts):
@@ -35,15 +35,6 @@ class CommitTask(WorkflowTask):
     @classmethod
     def register_cli_command(cls, subparsers, parents, run_parser):
         """"""
-        # sp = subparsers.add_parser(
-        #     "commit",
-        #     parents=parents,
-        #     help="increment current 'patch' version (add `--minor` or `--major`)",
-        # )
-        # sp.add_argument(
-        #     "--add-known", action="store_true", help="",
-        # )
-        # sp.set_defaults(command=cls.handle_cli_command)
 
     @classmethod
     def check_task_def(cls, task_def, parser, args, yaml):
@@ -74,5 +65,7 @@ class CommitTask(WorkflowTask):
             log_dry("commit")
         else:
             # if opts["add_known"]:
-            index.commit(message,)
+            index.commit(
+                message,
+            )
         return True
