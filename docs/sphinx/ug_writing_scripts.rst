@@ -29,11 +29,10 @@ options and defaults.
 Task Types
 ==========
 
-.. todo::
-  Documentation missing.
-
-For now, look at :doc:`ug_sample_yabs_yaml` for a complete configuration file
-with all available tasks.
+.. seealso::
+   See :doc:`ug_reference` for a list of all tasks and options |br|
+   and :doc:`ug_sample_yabs_yaml` for a complete configuration file
+   with all available tasks.
 
 
 .. _template-macros-label:
