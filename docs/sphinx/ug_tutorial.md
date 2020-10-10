@@ -117,7 +117,7 @@ PyYAML = "~=5.2"
 See also [PEP 440](https://www.python.org/dev/peps/pep-0440/).<br>
 Yabs assumes that a version number consists of three parts and optional
 extension, as described in [Semantic Versioning](https://semver.org),
-e.g. `"1.2.3"`, `"1.2.3-a1"`.
+e.g. `"1.2.3"`, `"1.2.4-a1"`.
 
 
 ### After-Release Versions
@@ -149,7 +149,7 @@ and developmental releases.
 Yabs suggests this pattern:
 > After a release, bump & commit a patch-incremented version with pre-release
 > appendix, for example:<br>
-> `v1.2.3` &#x21d2; `v1.2.4a0`<br>
+> `v1.2.3` &#x21d2; `v1.2.4a1`<br>
 > The next release will be a patch, minor, or major increment, which brings us
 > to <br>
 > &#x21d2; `v1.2.4`, `v1.3.0`, or `v2.0.0`.

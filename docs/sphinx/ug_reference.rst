@@ -89,8 +89,9 @@ clean (bool), default: *true*
     Run ``python setup.py clean --all`` after the builds were created on order
     to cleanup the build/ folder.
 revert_bump_on_error (bool), default: *true*
-    Un-patch the version number if an error occurred while running this task.
-    This may make it a bit easier to recover and cleanup manually in this case.
+    Un-patch a previously bumped version number if an error occurred while
+    running this build task.
+    This may make it a bit easier to recover and cleanup manually.
 targets (list), default: *['sdist', 'bdist_wheel']*
     Valid targets are "sdist", "bdist_wheel", and "bdist_msi".
 

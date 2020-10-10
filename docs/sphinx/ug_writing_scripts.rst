@@ -72,7 +72,7 @@ All attributes of the task context are available as macros:
 See :class:`~yabs.cmd_common.TaskContext` for a complete list.
 
 
- .. _version-locations-label:
+.. _version-locations-label:
 
 Version Locations
 =================
@@ -108,7 +108,7 @@ Following some typical patterns how Python projects store version numbers.
   Currently we would recommend this variant (unless Poetry is used): |br|
   Store the version in ``__init__.py`` of the project's root folder::
 
-      <__version__ = "1.2.3"
+      __version__ = "1.2.3"
 
   Then reference this in ``setup.cfg``::
 
