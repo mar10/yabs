@@ -160,10 +160,10 @@ class CheckTask(WorkflowTask):
         if opts["python"]:
             py_ver = Version(".".join(map(str, sys.version_info[:3])))
             if opts["python"].match(py_ver):
-                _ok("Python version {} matches {}.".format(py_ver, opts["python"]))
+                _ok("Python version {} matches '{}'.".format(py_ver, opts["python"]))
             else:
                 _error(
-                    "Python version {} does not match {}.".format(
+                    "Python version {} does not match '{}'.".format(
                         py_ver, opts["python"]
                     )
                 )
@@ -197,12 +197,12 @@ class CheckTask(WorkflowTask):
             vm = context.version_manager
             if real_version != str(vm.master_version):
                 _error(
-                    "`setup.py --version` returned {} (expected {}).".format(
+                    "`setup.py --version` returned '{}' (expected {}).".format(
                         real_version, vm.master_version
                     )
                 )
             else:
-                _ok("`setup.py --version` returned {}.".format(real_version))
+                _ok("`setup.py --version` returned '{}'.".format(real_version))
 
         if err_list:
             write("Checks failed:\n  - {}".format("\n  - ".join(err_list)), "error")
