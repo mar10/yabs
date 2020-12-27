@@ -6,7 +6,7 @@
 import subprocess
 
 from .cmd_common import WorkflowTask
-from .util import check_arg, log_dry, log_response
+from .util import check_arg, log_dry, log_info, log_response
 
 
 class ExecTask(WorkflowTask):
@@ -15,6 +15,7 @@ class ExecTask(WorkflowTask):
         "dry_run_args": None,
         "always": False,
         "silent": False,
+        "log_start": True,
         "ignore_errors": False,
         "timeout": None,
     }
@@ -58,6 +59,9 @@ class ExecTask(WorkflowTask):
                 return True
             if opts["dry_run_args"] is not None:
                 args = opts["dry_run_args"]
+        if opts["log_start"]:
+            msg = "Running {}...".format(self.to_str(context))
+            log_info(msg)
 
         res = subprocess.run(
             args,

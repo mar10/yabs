@@ -291,6 +291,9 @@ dry_run_args (list), default: *null*
 ignore_errors (bool), default: *false*
     If true, error code != 0 will be ignored (yabs would stop otherwise).
 
+log_start (bool), default: *true*
+    If true, 'Running xxx...' is printed before calling the script.
+
 timeout (float), default: *null*
     Kill the subprocess after *timeout* seconds.
 
