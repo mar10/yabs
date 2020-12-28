@@ -17,10 +17,8 @@ jobs:
     - python: "3.10-dev"
       env: TOXENV=py310
   allow_failures:
-    - python: "3.9"
-      env: TOXENV=py39
     - python: "3.10-dev"
-      env: TOXENV=py39
+      env: TOXENV=py310
 install:
   - pip install tox-travis flake8 coveralls coverage isort
 script:
