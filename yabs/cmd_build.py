@@ -99,7 +99,12 @@ class BuildTask(WorkflowTask):
 
         org_dist_dir = Path("dist").absolute().resolve()
         if not org_dist_dir.is_dir():
-            raise RuntimeError("Folder not found: {}".format(org_dist_dir))
+            if self.dry_run:
+                log_dry("Creating final dist folder: {}".format(org_dist_dir))
+            else:
+                log_info("Creating final dist folder: {}".format(org_dist_dir))
+                org_dist_dir.mkdir()
+            # raise RuntimeError("Folder not found: {}".format(org_dist_dir))
 
         temp_dist_dir = Path("dist.yabs").absolute().resolve()
         if temp_dist_dir.exists():
