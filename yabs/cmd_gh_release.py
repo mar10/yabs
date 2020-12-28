@@ -7,7 +7,7 @@ import os
 
 from github import Github, GithubObject
 
-from .cmd_common import WorkflowTask, GH_USER_AGENT
+from .cmd_common import GH_USER_AGENT, WorkflowTask
 from .util import (
     ConfigError,
     check_arg,

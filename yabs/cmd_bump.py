@@ -8,7 +8,7 @@ import os
 from git import Repo
 
 from .cmd_common import WorkflowTask
-from .util import check_arg, ConfigError, log_error, log_warning
+from .util import ConfigError, check_arg, log_error, log_warning
 from .version_manager import INCREMENTS, ORDERED_INCREMENTS
 
 

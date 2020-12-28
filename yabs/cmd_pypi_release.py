@@ -6,12 +6,7 @@
 from pathlib import Path
 
 from .cmd_common import WorkflowTask
-from .util import (
-    ConfigError,
-    check_arg,
-    log_dry,
-    log_warning,
-)
+from .util import ConfigError, check_arg, log_dry, log_warning
 
 
 def get_folder_file_names(folder):

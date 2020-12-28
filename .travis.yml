@@ -22,7 +22,7 @@ jobs:
     - python: "3.10-dev"
       env: TOXENV=py39
 install:
-  - pip install tox-travis flake8 coveralls coverage
+  - pip install tox-travis flake8 coveralls coverage isort
 script:
   - tox
 after_success:

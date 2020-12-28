@@ -806,15 +806,6 @@ def run_process_streamed(
     try:
         while process.poll() is None:
             # readline() blocks, so we process it in a separate thread.
-            # TODO: Problem still:
-            # The FIRST readline returns after process is done!
-            # See https://www.python.org/dev/peps/pep-3145/
-            #
-            # Ansätze:
-            #  - https://gist.github.com/mattbornski/3299031
-            #  - TODO:
-            #    http://stackoverflow.com/questions/4417962/stop-reading-process-output-in-python-without-hang/4418891#4418891
-
             # Read line-by-line
             line = process.stdout.readline()
             line = line.decode()

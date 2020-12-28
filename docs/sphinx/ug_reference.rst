@@ -301,9 +301,10 @@ silent (bool), default: *false*
     *false*: Always print output after the command finished. |br|
     *true*: Print output only when errors occured (return code != 0). |br|
     NOTE: A summary line is always printed. |br|
+    NOTE: For long-running tasks, *streamed: true* may be a better option.
 
 streamed (bool), default: *null*
-    Poll and log output every *while* the process is running. |br|
+    Poll and log output *while* the process is running. |br|
     *true* enable polling (mutually exclusive with *silent: false*). |br|
     *false* disable polling. |br|
     *null* assume *true* if verbose mode is on.

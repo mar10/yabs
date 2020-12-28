@@ -10,15 +10,8 @@ import sys
 from github import Github
 from semantic_version import SimpleSpec, Version
 
-from .cmd_common import WorkflowTask, GH_USER_AGENT
-
-from .util import (
-    check_arg,
-    log_info,
-    log_warning,
-    to_list,
-    write,
-)
+from .cmd_common import GH_USER_AGENT, WorkflowTask
+from .util import check_arg, log_info, log_warning, to_list, write
 
 
 class CheckTask(WorkflowTask):
