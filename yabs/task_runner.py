@@ -106,7 +106,7 @@ class TaskRunner:
         context = TaskContext(self.args, self)
         task_map = PluginManager.task_class_map
         ok = True
-        start = time.monotonic()
+        start_workflow = time.monotonic()
         for task_def in self.tasks:
             task_def = task_def.copy()
             # log_info(task_def)
@@ -124,18 +124,20 @@ class TaskRunner:
             task = task_cls(task_def)
             task_str = task.to_str(context)
             log_debug("Running {}: {}...".format(task_str, task.opts))
+            start_task = time.monotonic()
             res = task.run(context)
             task_str = task.to_str(context)  # __str__ may have changed
+            elap_str = format_elap(time.monotonic() - start_task)
             if res:
-                log_ok("{}".format(task_str))
+                log_ok("{} took {}".format(task_str, elap_str))
             else:
-                log_error("{}".format(task_str))
+                log_error("{} failed after {}".format(task_str, elap_str))
                 context.errors.append(task_str)
                 ok = False
                 # if not args.force_continue:
                 break
 
-        elap = time.monotonic() - start
+        elap = time.monotonic() - start_workflow
         if ok:
             log_ok(
                 "Workflow finished successfully in {}{}".format(
