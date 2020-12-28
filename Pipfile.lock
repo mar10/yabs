@@ -223,11 +223,11 @@
         },
         "snazzy": {
             "hashes": [
-                "sha256:11133a1be1e7971b0e4394a6a16020dee52f2f366629b459c1834b6f38b04c81",
-                "sha256:cfee8babaa05c155c3a7028b7dc71fc36196a051bab85ce24d43fd0993c9f68c"
+                "sha256:c9525f217293169cccbba330f19b6665ad3bd579cffd5d1f85f7430c77e26d04",
+                "sha256:e52ecd18adc56cd550ec8697e2021d8b4e319bcb55d0f5393eb20331815ea3ae"
             ],
             "index": "pypi",
-            "version": "==0.1.2"
+            "version": "==0.2.2"
         },
         "toml": {
             "hashes": [
@@ -391,7 +391,7 @@
                 "sha256:fda29412a66099af6d6de0baa6bd7c52674de177ec2ad2630ca264142d69c6c7",
                 "sha256:ff1330e8bc996570221b450e2d539134baa9465f5cb98aff0e0f73f34172e0ae"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4' and python_version < '4'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4' and python_version < '4.0'",
             "version": "==5.3.1"
         },
         "distlib": {
