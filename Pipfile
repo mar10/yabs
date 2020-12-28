@@ -27,7 +27,7 @@ twine = "~=3.2"
 wheel = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"
 
 [pipenv]
 # TODO: remove this when black releases a real version
