@@ -5,6 +5,7 @@
 """
 import logging
 import os
+import re
 import sys
 import time
 import types
@@ -109,6 +110,24 @@ def check_cli_verbose(default=3):
     return verbose
 
 
+# TODO: Can be removed with latest version of Snazzy:
+ANSI_ESCAPE_8BIT_STR = re.compile(
+    r"(?:\x1B[@-Z\\-_]|[\x80-\x9A\x9C-\x9F]|(?:\x1B\[|\x9B)[0-?]*[ -/]*[@-~])"
+)
+ANSI_ESCAPE_8BIT_BYTES = re.compile(
+    br"(?:\x1B[@-Z\\-_]|[\x80-\x9A\x9C-\x9F]|(?:\x1B\[|\x9B)[0-?]*[ -/]*[@-~])"
+)
+
+
+def cleanup_ansi_codes(s):
+    # 7-bit and 8-bit C1 ANSI sequences
+    if isinstance(s, str):
+        res = ANSI_ESCAPE_8BIT_STR.sub("", s)
+    else:
+        res = ANSI_ESCAPE_8BIT_BYTES.sub(b"", s)
+    return res
+
+
 _prefix_map = None
 _prefix_map_valid = False
 
@@ -150,7 +169,8 @@ def write(msg, level="info", prefix=False, output=None, output_level=None):
     logger.log(level, prefix + msg)
 
     if output:
-        prefix = (" " * len(prefix)) + " > "
+        prefix_len = len(cleanup_ansi_codes(prefix))
+        prefix = (" " * prefix_len) + " > "
         lines = output.split("\n")
         # strip trailing empty lines
         while len(lines) > 1 and not lines[-1]:
@@ -739,7 +759,8 @@ def run_process_streamed(
         prefix_chunks (bool):
             Prefix output chunks with <name> (default: False)
     Returns:
-        2-tuple (output string, return_code)
+        tuple (ret_code, output)
+
     """
     LINE_PREFIX = " .. "
     out = StringIO()
@@ -830,4 +851,4 @@ def run_process_streamed(
 
     if local_vars["is_timed_out"]:
         log_error("{} killed (timeout: {:0.1f} seconds)".format(name, timeout))
-    return out.getvalue(), process.returncode
+    return process.returncode, out.getvalue()

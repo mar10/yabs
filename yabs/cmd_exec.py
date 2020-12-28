@@ -92,7 +92,7 @@ class ExecTask(WorkflowTask):
         if stream:
             with subprocess.Popen(args, **popen_opts) as proc:
                 # interval = 1.0 if stream is True else float(stream)
-                output, ret_code = run_process_streamed(proc, name, timeout=timeout)
+                ret_code, output = run_process_streamed(proc, name, timeout=timeout)
                 output = ""  # already printed
         else:
             proc = subprocess.run(args, timeout=timeout, **popen_opts)
