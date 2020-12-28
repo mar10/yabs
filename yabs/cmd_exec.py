@@ -4,9 +4,18 @@
 """
 """
 import subprocess
+import time
 
 from .cmd_common import WorkflowTask
-from .util import check_arg, log_dry, log_info, log_response
+from .util import (
+    check_arg,
+    format_elap,
+    log_debug,
+    log_dry,
+    log_info,
+    log_response,
+    run_process_streamed,
+)
 
 
 class ExecTask(WorkflowTask):
@@ -16,6 +25,7 @@ class ExecTask(WorkflowTask):
         "always": False,
         "silent": False,
         "log_start": True,
+        "stream": None,
         "ignore_errors": False,
         "timeout": None,
     }
@@ -29,9 +39,16 @@ class ExecTask(WorkflowTask):
         check_arg(opts["silent"], bool)
         check_arg(opts["always"], bool)
         check_arg(opts["ignore_errors"], bool)
-        check_arg(opts["timeout"], int, or_none=True)
+        check_arg(opts["log_start"], bool)
+        check_arg(opts["stream"], bool, or_none=True)
+        check_arg(opts["timeout"], (int, float), or_none=True)
         if opts["dry_run_args"] and opts["always"]:
             raise RuntimeError("`dry_run_args` and `always` are mutually exclusive")
+        if opts["silent"] and opts["stream"]:
+            raise RuntimeError("`silent` and `stream` are mutually exclusive")
+        if opts["stream"] is None and opts["verbose"] > 3:
+            log_debug("Enabling streaming output in verbose mode.")
+            opts["stream"] = True
 
     def to_str(self, context):
         opts = self.opts
@@ -51,6 +68,7 @@ class ExecTask(WorkflowTask):
 
     def run(self, context):
         opts = self.opts
+        name = self.to_str(context)
 
         args = opts["args"]
         if self.dry_run:
@@ -60,19 +78,29 @@ class ExecTask(WorkflowTask):
             if opts["dry_run_args"] is not None:
                 args = opts["dry_run_args"]
         if opts["log_start"]:
-            msg = "Running {}...".format(self.to_str(context))
+            msg = "Running {}...".format(name)
             log_info(msg)
 
-        res = subprocess.run(
-            args,
-            timeout=opts["timeout"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            shell=False,
-        )
-        ret_code = res.returncode
-        output = res.stdout.decode()
-        msg = "{} returned code {}".format(self.to_str(context), ret_code)
+        timeout = opts["timeout"]
+        popen_opts = {
+            "stdout": subprocess.PIPE,
+            "stderr": subprocess.STDOUT,
+            "shell": False,
+        }
+        stream = opts["stream"]
+        start = time.time()
+        if stream:
+            with subprocess.Popen(args, **popen_opts) as proc:
+                # interval = 1.0 if stream is True else float(stream)
+                output, ret_code = run_process_streamed(proc, name, timeout=timeout)
+                output = ""  # already printed
+        else:
+            proc = subprocess.run(args, timeout=timeout, **popen_opts)
+            ret_code = proc.returncode
+            output = proc.stdout.decode()
+
+        elap = time.time() - start
+        msg = "{} returned code {} ({})".format(name, ret_code, format_elap(elap))
 
         if ret_code != 0:
             if opts["ignore_errors"]:

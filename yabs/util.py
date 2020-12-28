@@ -6,11 +6,14 @@
 import logging
 import os
 import sys
+import time
 import types
 import warnings
 from datetime import datetime
+from io import StringIO
 from pathlib import Path
 from shutil import rmtree
+from threading import Event, RLock, Thread
 
 from snazzy import Snazzy, emoji, gray, green, red, yellow
 
@@ -702,3 +705,138 @@ def lstrip_string(s, prefix, ignore_case=False):
 #         if s.endswith(suffix):
 #             return s[:-len(suffix)]
 #     return s
+
+
+def run_process_streamed(
+    process,
+    name=None,
+    on_output=None,
+    log_alive=5.0,
+    timeout=None,
+    poll_interval=0.1,
+    flush_min_interval=0.2,
+    prefix_chunks=False,
+):
+    """Read and print output of a running process.
+
+
+    Args:
+        process (subprocess.Popen):
+            A running process instance
+        name (str):
+            Descriptive name of the process
+        on_output (stream):
+            Call this method for output (default: `logger.info`)
+        log_alive (float):
+            Print a simple message if not new output was received for X seconds
+            (default: 5.0)
+        timeout (float):
+            Kill process after X seconds (default: None)
+        poll_interval (float):
+            Poll output buffer every X seconds (default: 0.1)
+        flush_min_interval (float):
+            Minimal log interval: Wait X seconds for more lines (default: 0.2)
+        prefix_chunks (bool):
+            Prefix output chunks with <name> (default: False)
+    Returns:
+        2-tuple (output string, return_code)
+    """
+    LINE_PREFIX = " .. "
+    out = StringIO()
+    pid = process.pid
+    if name:
+        name = "<{}> {}".format(pid, name)
+    else:
+        name = "<{}>".format(pid)
+
+    if on_output is None:
+        on_output = logger.info
+
+    start = time.time()
+    kill_time = start + timeout if timeout else None
+
+    buf_stop_request = Event()
+    buf_lock = RLock()
+    local_vars = {
+        "line_buf": [],
+        "last_flush": 0,
+        "is_timed_out": False,
+    }
+
+    def flush_lines():
+        with buf_lock:
+            now = time.time()
+            elap = now - local_vars["last_flush"]
+            line_buf = local_vars["line_buf"]
+            local_vars["line_buf"] = []
+            # Ignore empty lines
+            line_buf = [ln for ln in line_buf if ln.strip()]
+            if line_buf:
+                # we have something to write, but wait a small duration for more
+                if elap < flush_min_interval:
+                    return
+                line_str = LINE_PREFIX + ("\n" + LINE_PREFIX).join(line_buf)
+            elif log_alive:
+                # we have nothing to write: print a ping every n seconds
+                if local_vars["last_flush"] == 0 or elap < log_alive:
+                    return
+                line_str = LINE_PREFIX + "<Yabs task running since {}...>".format(
+                    format_elap(now - start)
+                )
+            else:
+                return
+        local_vars["last_flush"] = now
+        if prefix_chunks:
+            on_output("process({}) stdout: {}".format(name, line_str))
+        else:
+            on_output(line_str)
+        return
+
+    def flush_handler():
+        # logger.debug("flush_handler started...")
+        while not buf_stop_request.wait(poll_interval):
+            flush_lines()
+        # logger.debug("flush_handler stopped.")
+        return
+
+    # TODO: only when logger.LEVEL == DEBUG
+    flusher = Thread(target=flush_handler, name="Flush process output {}".format(name))
+    flusher.start()
+
+    try:
+        while process.poll() is None:
+            # readline() blocks, so we process it in a separate thread.
+            # TODO: Problem still:
+            # The FIRST readline returns after process is done!
+            # See https://www.python.org/dev/peps/pep-3145/
+            #
+            # Ansätze:
+            #  - https://gist.github.com/mattbornski/3299031
+            #  - TODO:
+            #    http://stackoverflow.com/questions/4417962/stop-reading-process-output-in-python-without-hang/4418891#4418891
+
+            # Read line-by-line
+            line = process.stdout.readline()
+            line = line.decode()
+            out.write(line)
+            line = line.replace("\r\n", "\n").rstrip("\n")
+            lines = line.split("\n")
+            with buf_lock:
+                local_vars["line_buf"].extend(lines)
+
+            if kill_time and time.time() > kill_time:
+                local_vars["is_timed_out"] = True
+                log_warning(
+                    "Killing {}... (timeout: {:0.1f} seconds)".format(name, timeout)
+                )
+                process.kill()
+                break
+            # logger.debug("run_process_streamed({}) Done.".format(process.pid))
+    finally:
+        buf_stop_request.set()
+        flusher.join()
+    flush_lines()
+
+    if local_vars["is_timed_out"]:
+        log_error("{} killed (timeout: {:0.1f} seconds)".format(name, timeout))
+    return out.getvalue(), process.returncode

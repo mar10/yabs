@@ -274,8 +274,9 @@ for example ``tox -e lint``:
     - task: exec
       args: ["tox", "-e", "lint"]
       always: true            # `true`: run even in dry-run mode
-      silent: true            # `true`: suppress output
+      silent: true            # `true`: suppress final printing of process output
       ignore_errors: false    # `true`: show warning, but proceed on errors (exit code != 0)
+      timeout: 60.0           # Kill process after <n> seconds
 
 args (list), mandatory
     List of command line parts.
@@ -292,13 +293,23 @@ ignore_errors (bool), default: *false*
     If true, error code != 0 will be ignored (yabs would stop otherwise).
 
 log_start (bool), default: *true*
-    If true, 'Running xxx...' is printed before calling the script.
+    If true, 'Running xxx...' is printed before calling the actual script.
+
+silent (bool), default: *false*
+    Controls whether the process output will be printed to the console *after*
+    the command finished. |br|
+    *false*: Always print output after the command finished. |br|
+    *true*: Print output only when errors occured (return code != 0). |br|
+    NOTE: A summary line is always printed. |br|
+
+streamed (bool), default: *null*
+    Poll and log output every *while* the process is running. |br|
+    *true* enable polling (mutually exclusive with *silent: false*). |br|
+    *false* disable polling. |br|
+    *null* assume *true* if verbose mode is on.
 
 timeout (float), default: *null*
     Kill the subprocess after *timeout* seconds.
-
-silent (bool), default: *false*
-    If true, the process output will not be printed to the console.
 
 Command Line Arguments:
 
