@@ -4,6 +4,7 @@
 """
 """
 import subprocess
+import sys
 import time
 
 from .cmd_common import WorkflowTask
@@ -71,6 +72,11 @@ class ExecTask(WorkflowTask):
         name = self.to_str(context)
 
         args = opts["args"]
+
+        # Fix python calls to use the executable from the virtual environment
+        if args[0].lower() == "python":
+            args[0] = sys.executable
+
         if self.dry_run:
             if not opts["always"] and opts["dry_run_args"] is None:
                 log_dry("Execute {}".format(" ".join(opts["args"])))

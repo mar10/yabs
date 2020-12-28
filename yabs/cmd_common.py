@@ -5,6 +5,7 @@
 """
 import os
 import subprocess
+import sys
 from abc import ABC, abstractclassmethod, abstractmethod
 
 from git import Repo
@@ -155,6 +156,11 @@ class WorkflowTask(ABC):
             tuple (ret_code, output)
         """
         opts = self.opts
+
+        # Fix python calls to use the executable from the virtual environment
+        if args[0].lower() == "python":
+            args[0] = sys.executable
+
         res = subprocess.run(
             args,
             stdout=subprocess.PIPE,
