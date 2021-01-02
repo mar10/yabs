@@ -115,10 +115,12 @@ class BuildTask(WorkflowTask):
         for target in self.opts["targets"]:
             log_info("Building {} for {} {}...".format(target, real_name, real_version))
             prev_artifacts = get_folder_file_names(temp_dist_dir)
+            # Call setup.py to build a target
             ret_code, _out = self._exec(
                 ["python", "setup.py", target, "--dist-dir", str(temp_dist_dir)]
                 + extra_args
             )
+            # Now we expect exactly one new file in our temp folder
             new_artifacts = list(
                 get_folder_file_names(temp_dist_dir).difference(prev_artifacts)
             )
