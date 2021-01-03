@@ -130,5 +130,4 @@ dmypy.json
 .pyre/
 
 .vscode/
-_build/
 docs/sphinx-build/
