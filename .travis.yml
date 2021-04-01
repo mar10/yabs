@@ -21,6 +21,8 @@ jobs:
       env: TOXENV=py310
 install:
   - pip install tox-travis flake8 coveralls coverage isort
+  # Fix for build error on travis/py36
+  - pip install -U virtualenv
 script:
   - tox
 after_success:
