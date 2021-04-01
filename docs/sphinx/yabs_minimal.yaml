@@ -20,7 +20,7 @@ tasks:
     branch: master          # Current branch must be in this list
     can_push: true          # Test if 'git push' would/would not succeed
     clean: true             # Repo must/must not contain modifications
-    python: ">=3.5"         # SemVer specifier
+    python: ">=3.6"         # SemVer specifier
     twine: true             # `twine` is available
     up_to_date: true        # everything pulled from remote
     venv: true              # running inside a virtual environment

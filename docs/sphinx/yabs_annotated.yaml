@@ -36,7 +36,7 @@ tasks:
     #                         # version is higher than the latest tag (gt,
     #                         # gte, lt, lte, eq, neq)
     os: null                # (str, list)
-    python: ">=3.5"         # SemVer specifier
+    python: ">=3.6"         # SemVer specifier
     twine: true             # `twine` is available
     up_to_date: true        # everything pulled from remote
     venv: true              # running inside a virtual environment

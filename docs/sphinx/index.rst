@@ -53,7 +53,7 @@ Quickstart
 
 Releases are hosted on `PyPI <https://pypi.python.org/pypi/yabs>`_ and can
 be installed using `pipenv <https://pipenv.pypa.io/>`_
-(`Python 3.5+ <https://www.python.org/downloads/>`_ is required) ::
+(`Python 3.6+ <https://www.python.org/downloads/>`_ is required) ::
 
   $ pipenv shell
   (yabs) $ pipenv install yabs --upgrade

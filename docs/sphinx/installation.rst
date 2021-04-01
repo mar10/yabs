@@ -1,7 +1,7 @@
 Installation
 ============
 
-Requirements: `Python <https://www.python.org/downloads/>`_ 3.5+ is required.
+Requirements: `Python <https://www.python.org/downloads/>`_ 3.6+ is required.
 Releases are hosted on `PyPI <https://pypi.python.org/pypi/yabs>`_ and can
 be installed using
 `pip <https://pip.pypa.io/en/stable>`_
