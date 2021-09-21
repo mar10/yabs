@@ -4,10 +4,10 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
-black = "==20.8b1"
-flake8 = "*"  #"~=3.5"
-flake8-bugbear = "*"  # "~=18.2"
-flake8-quotes = "*"  # "~=1.0"
+black = "==21.9b0"
+flake8 = "*"
+flake8-bugbear = "*"
+flake8-quotes = "*"
 isort = "*"
 pylint = "*"
 pytest = "*"
@@ -18,17 +18,16 @@ tox = "*"
 [packages]
 GitPython = "*"
 PyGithub = "*"
-PyYAML = "*"  # "~=5.2"
+PyYAML = "*"
 semantic_version = "*"
 setuptools = ">=42.0"
 snazzy = "*"
 toml = "*"
-twine = "*"  # "~=3.2"
+twine = "*"
 wheel = "*"
 
 [requires]
 python_version = "3.9"
 
 [pipenv]
-# TODO: remove this when black releases a real version
-allow_prereleases = true
+# allow_prereleases = true
