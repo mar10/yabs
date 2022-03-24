@@ -107,7 +107,7 @@ schemes, when defining requirements:
 
 ```ini
 [dev-packages]
-black = "==19.10b0"
+black = "~=22.1"
 tox = "~=3.2"
 [packages]
 PyYAML = "~=5.2"
