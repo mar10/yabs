@@ -21,8 +21,8 @@ jobs:
       before_install:
       # Fix for cryptography on Py36
       - pip install --upgrade virtualenv
-  # - python: "3.5"  # EOL 2020-09-13
-    #   env: TOXENV=py35
+    # - python: "3.5"  # EOL 2020-09-13
+    #     env: TOXENV=py35
     - python: "3.11-dev"
       env: TOXENV=py311
       dist: bionic
@@ -30,10 +30,6 @@ jobs:
     - python: "3.11-dev"
       env: TOXENV=py311
       dist: bionic
-
-# before_install:
-#   # Fix for cryptography on Py36
-#   - pip install --upgrade virtualenv
 
 install:
   - pip install tox-travis flake8 coveralls coverage isort

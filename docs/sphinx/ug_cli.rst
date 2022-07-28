@@ -11,36 +11,21 @@ Basic Command
 Use the ``--help`` or ``-h`` argument to get help::
 
     $ yabs --help
-    usage: yabs [-h] [-v | -q] [-n] [--no-color] [-V]
-                {run,bump,check,commit,exec,gh-release,push,pypi-release,tag} ...
+    usage: yabs [-h] [-v | -q] [-n] [--no-color] [-V] {run} ...
 
     Release workflow automation tools.
 
     positional arguments:
-    {run,bump,check,commit,exec,gh-release,push,pypi-release,tag}
-                            sub-command help
-        run                 run a workflow definition
-        bump                increment current project version
-        check               check preconditions
-        commit              increment current 'patch' version (add `--minor` or
-                            `--major`)
-        exec                execute shell command
-        gh-release          create a release on GitHub
-        push                increment current 'patch' version (add `--minor` or
-                            `--major`)
-        pypi-release        Make sdist, wheel, and upload on PyPI
-        tag                 increment current 'patch' version (add `--minor` or
-                            `--major`)
+    {run}          sub-command help
+        run          run a workflow definition
 
     optional arguments:
-    -h, --help            show this help message and exit
-    -v, --verbose         increment verbosity by one (default: 3, range: 0..5)
-    -q, --quiet           decrement verbosity by one
-    -n, --dry-run         just simulate and log results, but don't change
-                            anything
-    --no-color            prevent use of ansi terminal color codes
-    -V, --version         display version info and exit (combine with -v for
-                            more information)
+    -h, --help     show this help message and exit
+    -v, --verbose  increment verbosity by one (default: 3, range: 0..5)
+    -q, --quiet    decrement verbosity by one
+    -n, --dry-run  just simulate and log results, but don't change anything
+    --no-color     prevent use of ansi terminal color codes
+    -V, --version  display version info and exit (combine with -v for more information)
 
     See also https://github.com/mar10/yabs
     $
@@ -49,18 +34,17 @@ Use the ``--help`` or ``-h`` argument to get help::
 `run` command
 =============
 
-The main purpose of the yabs command line tool is to execute a test
-scenario::
+For example, publish a ne patch release::
 
     $ yabs run --inc patch
 
 See also the help::
 
     $ yabs run --help
-    usage: yabs run [-h] [-v | -q] [-n] [--no-color]
-                [--inc {major,minor,patch,postrelease}] [--no-bump]
-                [--no-check] [--no-release]
-                [workflow]
+    usage: yabs run [-h] [-v | -q] [-n] [--no-color] [--force] [--no-release] [--no-progress]
+                    [--inc {major,minor,patch,postrelease}] [--no-bump] [--force-pre-bump] [--no-check] [--gh-draft] [--gh-pre]    
+                    [--no-winget-release]
+                    [workflow]
 
     positional arguments:
     workflow              run a workflow definition
@@ -69,16 +53,19 @@ See also the help::
     -h, --help            show this help message and exit
     -v, --verbose         increment verbosity by one (default: 3, range: 0..5)
     -q, --quiet           decrement verbosity by one
-    -n, --dry-run         just simulate and log results, but don't change
-                            anything
+    -n, --dry-run         just simulate and log results, but don't change anything
     --no-color            prevent use of ansi terminal color codes
+    --force               allow to ignore some errors (like bumping above `max_increment`)
+    --no-release          don't upload tags and assets to GitHub, PyPI, or winget-pkgs (but still build assets)
+    --no-progress         do not display current progress table between tasks, even if verbose >= 3
     --inc {major,minor,patch,postrelease}
-                            bump semantic version (used as default for `bump`
-                            tasks)
-    --no-bump             skip all 'bump' tasks
-    --no-check            don't let the 'check' task stop the workflow (log
-                            warnings instead)
-    --no-release          skip all 'gh-release' and 'pypi-release' tasks
+                            bump semantic version (used as default for `bump` task's `inc` option)
+    --no-bump             run all 'bump' tasks in dry-run mode
+    --force-pre-bump      bump `--inc postrelease` even if the current version is untagged
+    --no-check            don't let the 'check' task stop the workflow (log warnings instead)
+    --gh-draft            tell the github_release task to create a draft-release
+    --gh-pre              tell the github_release task to create a pre-release
+    --no-winget-release   run all 'winget_release' tasks in dry-run mode
     $
 
 

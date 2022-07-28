@@ -24,11 +24,13 @@ A typical release workflow may look like this:
 3. Bump the project's version number (major, minor, or patch, according to
    [Semantic Versioning](https://semver.org)). <br>
    Then patch the version string into the respective Python module or text file.
-4. Build *sdist* and *wheel* assets.
+4. Build *sdist*, *wheel* and *msi installer* assets.
 5. Tag the version, commit, and push.
 6. Upload distribution to [PyPI](https://pypi.org).
 7. Create a new release on [GitHub](https://github.com) and upload assets.
-8. Bump, tag, commit, and push for post-release.
+8. Create a new release on the 
+   [Windows Packager Manager Repository](https://github.com/microsoft/winget-pkgs).
+9. Bump, tag, commit, and push for post-release.
 
 Custom tasks may be added using the plugin framework.
 

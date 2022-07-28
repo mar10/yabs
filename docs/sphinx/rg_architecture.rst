@@ -10,7 +10,7 @@ Architecture
 .. Overview
 .. ========
 
-.. |yabs| is a tool, that runs a sequence of tasks om order to test, build, and
+.. Yabs is a tool, that runs a sequence of tasks om order to test, build, and
 .. deliver a Python software project. |br|
 .. The workflow is defined in a configuration file, using a simple YAML format.
 
@@ -31,15 +31,15 @@ Class Overview
 General Classes
 ---------------
 
-.. inheritance-diagram:: yabs.task_runner yabs.version_manager yabs.log yabs.util
+.. inheritance-diagram:: yabs.task_runner yabs.version_manager yabs.util
    :parts: 2
    :caption: Standard Yabs Classes
 
 Workflow Tasks
 --------------
 
-.. inheritance-diagram:: yabs.cmd_common yabs.cmd_bump yabs.cmd_check yabs.cmd_commit yabs.cmd_exec yabs.cmd_gh_release yabs.cmd_push yabs.cmd_pypi_release yabs.cmd_tag
-   :parts: 2
+.. inheritance-diagram:: yabs.task.common yabs.task.bump yabs.task.check yabs.task.commit yabs.task.exec yabs.task.github_release yabs.task.push yabs.task.pypi_release yabs.task.tag yabs.task.winget_release
+   :parts: 3
    :caption: Workflow Tasks
 
 

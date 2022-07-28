@@ -4,7 +4,9 @@
 """
 """
 import logging
+import math
 import os
+import re
 import sys
 import time
 import types
@@ -14,10 +16,13 @@ from io import StringIO
 from pathlib import Path
 from shutil import rmtree
 from threading import Event, RLock, Thread
+from typing import List, Tuple, Union
 
 from snazzy import Snazzy, emoji, gray, green, red, yellow
 
 logger = logging.getLogger("yabs")
+
+CONFIG_NAME = "yabs.yaml"
 
 
 class YabsError(RuntimeError):
@@ -36,11 +41,79 @@ class CheckError(ExitingYabsError):
 
 
 class ConfigError(ExitingYabsError):
-    """Invalid yabs.yaml or command line (terninates without stacktrace)."""
+    """Invalid yabs.yaml or command line (terminates without stacktrace)."""
 
 
 class NO_DEFAULT:
     """Used as default parameter to distinguish from `None`."""
+
+
+def get_folder_file_names(folder):
+    """Return folder files names as set."""
+    p = Path(folder)
+    name_set = set([e.name for e in p.iterdir()])
+    return name_set
+
+
+class FolderContentMonitor:
+    def __init__(
+        self, artifacts_def: Union[dict, None], *, create_folder: bool = False
+    ) -> None:
+        self.artifacts_def = artifacts_def
+        self.path = None
+        self.create_folder = create_folder
+        self.prev_files = None
+        self.cur_files = None
+        self.added_files = None
+        self.changed_or_added_files = None
+        self.changed_or_added_by_tag = None
+        if artifacts_def:
+            self.path = Path(artifacts_def["folder"]).absolute()
+
+    def __enter__(self):
+        path = self.path
+        if not path:
+            return self
+
+        if not path.is_dir():
+            if not self.create_folder:
+                raise ValueError(f"Folder not found: {path}")
+            # elif self.dry_run:
+            #     log_dry(f"Creating dist folder: {path}")
+            else:
+                log_info(f"Creating dist folder: {path}")
+                path.mkdir()
+
+        self.prev_stats = {}
+        for e in path.iterdir():
+            self.prev_stats[e.name] = e.stat()
+        self.prev_files = set(self.prev_stats.keys())
+
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if not self.path:
+            return
+
+        self.added_files = set()
+        self.changed_or_added_files = set()
+        self.changed_or_added_by_tag = {}
+        for e in self.path.iterdir():
+            cur_stat = e.stat()
+            prev_stat = self.prev_stats.get(e.name)
+            if prev_stat is None:
+                self.added_files.add(e.name)
+                self.changed_or_added_files.add(e.name)
+            elif cur_stat.st_mtime != prev_stat.st_mtime:
+                self.changed_or_added_files.add(e.name)
+
+        for fspec in self.changed_or_added_files:
+            for tag, pattern in self.artifacts_def["matches"].items():
+                # print("MATCH", tag, pattern, fspec)
+                if re.match(pattern, fspec):
+                    full_path = (self.path / fspec).absolute()
+                    self.changed_or_added_by_tag[tag] = full_path
+        return
 
 
 def init_logging(verbose=3, path=None):
@@ -89,7 +162,7 @@ def init_logging(verbose=3, path=None):
         logger.addHandler(hdlr)
 
     # Silence requests `InsecureRequestWarning` messages
-    if verbose < 3:
+    if verbose <= 3:
         warnings.filterwarnings("ignore", message="Unverified HTTPS request")
     else:
         warnings.filterwarnings("once", message="Unverified HTTPS request")
@@ -113,7 +186,7 @@ _prefix_map = None
 _prefix_map_valid = False
 
 
-def write(msg, level="info", prefix=False, output=None, output_level=None):
+def write(msg: str, *, level="info", prefix=False, output=None, output_level=None):
     """"""
     # We want to cache the color formatted strings, however the
     # `snazzy` formatter may not be initialized yet.
@@ -166,31 +239,31 @@ def write(msg, level="info", prefix=False, output=None, output_level=None):
 
 
 def log_debug(msg):
-    return write(msg, "debug", False)
+    return write(msg, level="debug", prefix=False)
 
 
 def log_info(msg):
-    return write(msg, "info", False)
+    return write(msg, level="info", prefix=False)
 
 
 def log_dry(msg):
-    return write("DRY-RUN " + msg, "info", False)
+    return write("DRY-RUN " + msg, level="info", prefix=False)
 
 
 def log_response(info, output, level, dry_run):
-    return write(info, level, True, output=output)
+    return write(info, level=level, prefix=True, output=output)
 
 
 def log_ok(msg):
-    return write(msg, "info", True)
+    return write(msg, level="info", prefix=True)
 
 
 def log_warning(msg):
-    return write(msg, "warning", True)
+    return write(msg, level="warning", prefix=True)
 
 
 def log_error(msg):
-    return write(msg, "error", True)
+    return write(msg, level="error", prefix=True)
 
 
 def set_console_ctrl_handler(
@@ -293,7 +366,7 @@ def _check_arg(argument, types, condition, accept_none):
         )
 
 
-def check_arg(argument, allowed_types, condition=NO_DEFAULT, or_none=False):
+def check_arg(argument, allowed_types, condition=NO_DEFAULT, *, or_none=False):
     """Check if `argument` has the expected type and value.
 
     **Note:** the exception's traceback is manipulated, so that the back frame
@@ -338,13 +411,24 @@ def check_arg(argument, allowed_types, condition=NO_DEFAULT, or_none=False):
         raise e.with_traceback(back_tb)
 
 
-def to_list(obj):
+def to_list(obj, or_none=False):
     """Convert a single object to a list."""
     if obj is None:
-        return []
+        return None if or_none else []
     elif isinstance(obj, (list, tuple)):
         return obj
-    return [obj]
+    elif isinstance(obj, set):
+        return list(obj)
+    return [obj]  # may ba a str
+
+
+def to_set(obj, or_none=False):
+    """Convert a single object to a set."""
+    if obj is None and or_none:
+        return None
+    if isinstance(obj, set):
+        return obj
+    return set(to_list(obj))
 
 
 def get_dict_attr(d, key_path, default=NO_DEFAULT):
@@ -394,7 +478,31 @@ def get_dict_attr(d, key_path, default=NO_DEFAULT):
     return value
 
 
-def timetag(seconds=True, ms=False):
+def check_dict_keys(
+    d: dict, *, known: set, mandatory: set, prefix: str, key_prefix: str = ""
+) -> List[str]:
+    """Validate a dict fo missing or unknown keys."""
+    used = set(d.keys())
+    known = known.union(mandatory)
+    missing = mandatory.difference(used)
+
+    errors = []
+
+    if missing:
+        s1 = ", ".join(sorted(f"`{key_prefix}{s}`" for s in missing))
+        errors.append(f"{prefix}Missing mandatory option(s): {s1}")
+
+    invalid = used.difference(known)
+    if invalid:
+        unused = known.difference(used)
+        s1 = ", ".join(sorted(f"`{key_prefix}{s}`" for s in invalid))
+        s2 = "'" + "', '".join(sorted(unused)) + "'"
+        errors.append(f"{prefix}Unsupported option(s): {s1} (did you mean {s2} ?)")
+
+    return errors
+
+
+def timetag(seconds=True, *, ms=False):
     """Return a time stamp string that can be used as (part of a) filename (also sorts well)."""
     now = datetime.now()
     if ms or seconds:
@@ -418,6 +526,32 @@ def resolve_path(root, path, must_exist=True, check_root=False):
     if must_exist and not os.path.isfile(path):
         raise ValueError("File not found: {}".format(path))
     return path
+
+
+def search_file_upward(
+    root: Union[str, Path], filename: str, *, max_level=0, or_none=False
+) -> Path:
+    """."""
+    root = Path(root).expanduser().absolute()
+    if root.is_file():
+        return root
+    assert root.is_dir(), root
+
+    target = f"{root}/{filename}"
+    cur_level = 0
+    parents = [root] + list(root.parents)
+    for parent in parents:
+        fspec = parent / filename
+        # print(f"Searching for {fspec}...")
+        if fspec.is_file():
+            return fspec
+        cur_level += 1
+        if max_level and cur_level >= max_level:
+            break
+
+    if not or_none:
+        raise FileNotFoundError(f"{target}")
+    return None
 
 
 def remove_directory(path, content_only=False, log=None):
@@ -485,6 +619,25 @@ def shorten_string(long_string, max_chars, min_tail_chars=0, place_holder="[...]
     return long_string
 
 
+def plural_s(value) -> str:
+    """Return 's' if `value` is not singular.
+
+    Example:
+        from util import plural_s as ps
+
+        v = [1, 2]
+        print(f"Found value{ps(v)}: {v}")
+    """
+    if type(value) in (float, int):
+        n = value
+    elif isinstance(value, (dict, list, set, tuple)):
+        n = len(value)
+    else:  # type(value) is str:
+        # May be None, str (assume 'one word', not: 'many characters') or other
+        n = 1
+    return "" if n == 1 else "s"
+
+
 def datetime_to_iso(dt=None, microseconds=False):
     """Return current UTC datetime as ISO formatted string."""
     if dt is None:
@@ -506,38 +659,46 @@ def datetime_to_iso(dt=None, microseconds=False):
 #     return iso_to_datetime(iso).timestamp()
 
 
-def format_elap(seconds, count=None, unit="items", high_prec=False):
+def format_elap(
+    seconds, *, count=None, unit="items", high_prec=False, short_suffix=False
+):
     """Return elapsed time as H:M:S.h string with reasonable precision."""
     days, seconds = divmod(seconds, 86400) if seconds else (0, 0)
 
     if seconds >= 3600:
         m, s = divmod(seconds, 60)
         h, m = divmod(m, 60)
+        suff = "h" if short_suffix else " hrs"
         if high_prec:
-            res = "{:d}:{:02d}:{:04.1f} hrs".format(int(h), int(m), s)
+            res = f"{int(h):d}:{int(m):02d}:{s:04.1f}{suff}"
         else:
-            res = "{:d}:{:02d}:{:02d} hrs".format(int(h), int(m), int(s))
+            res = f"{int(h):d}:{int(m):02d}:{int(s):02d}{suff}"
     elif seconds >= 60:
         m, s = divmod(seconds, 60)
+        suff = "m" if short_suffix else " min"
         if high_prec:
-            res = "{:d}:{:05.2f} min".format(int(m), s)
+            res = f"{int(m):d}:{s:05.2f}{suff}"
         else:
-            res = "{:d}:{:02d} min".format(int(m), int(s))
+            res = f"{int(m):d}:{int(s):02d}{suff}"
     else:
+        suff = "s" if short_suffix else " sec"
         if high_prec:
-            res = "{:.3f} sec".format(seconds)
+            res = f"{seconds:.3f}{suff}"
         elif seconds > 5:
-            res = "{:.1f} sec".format(seconds)
+            res = f"{seconds:.1f}{suff}"
         else:
-            res = "{:.2f} sec".format(seconds)
+            res = f"{seconds:.2f}{suff}"
 
     if days == 1:
-        res = "{} day {}".format(int(days), res)
+        suff = "d" if short_suffix else " day"
+        res = f"{int(days)}{suff} {res}"
     elif days:
-        res = "{} days {}".format(int(days), res)
+        suff = "d" if short_suffix else " days"
+        res = f"{int(days)}{suff} {res}"
 
     if count and (seconds > 0):
-        res += ", {:,.1f} {}/sec".format(float(count) / seconds, unit)
+        suff = "s" if short_suffix else "sec"
+        res += ", {:,.1f} {}/{}".format(float(count) / seconds, unit, suff)
     return res
 
 
@@ -706,6 +867,78 @@ def lstrip_string(s, prefix, ignore_case=False):
 #         if s.endswith(suffix):
 #             return s[:-len(suffix)]
 #     return s
+
+
+def progress_bar_str(
+    progress: float,
+    *,
+    width: int = 10,
+    level: str = "info",
+    border: Union[str, Tuple[str]] = "|",  # ("[", "]"),
+    add_percentage: bool = True,
+    fill_char: str = " ",
+) -> str:
+    color_map = {
+        "ok": green,
+        "warning": yellow,
+        "error": red,
+    }
+    progress = min(1.0, max(0.0, progress))
+    real_progress = progress
+
+    if type(border) is str:
+        border = (border, border)
+    if border:
+        width = width - (len(border[0]) - len(border[1]))
+    width = max(1, int(width))
+
+    whole_width = math.floor(progress * width)
+    remainder_width = (progress * width) % 1
+    part_width = math.floor(remainder_width * 8)
+
+    part_char = [" ", "▏", "▎", "▍", "▌", "▋", "▊", "▉"][part_width]
+    if (width - whole_width - 1) < 0:
+        part_char = ""
+
+    # Very small values should always display a very small bar
+    if whole_width < 1 and part_char == " " and progress > 0:
+        part_char = "▏"
+
+    line = "█" * whole_width + part_char + fill_char * (width - whole_width - 1)
+
+    if level in color_map:
+        line = color_map[level](line)
+    if border:
+        line = f"{border[0]}{line}{border[1]}"
+    if add_percentage:
+        p100 = f"{100.0*real_progress:.1f}"
+        line += " {: >5}%".format(p100)
+    return line
+
+
+# print(progress_bar_str(0.123))
+
+# print(progress_bar_str(0.123, width=3, border=False))
+# print(progress_bar_str(0.023, width=3, border=False))
+
+# print(progress_bar_str(0, width=1, border=False))
+# print(progress_bar_str(0.023, width=1, border=False))
+# print(progress_bar_str(0.123, width=1, border=False))
+# print(progress_bar_str(0.13, width=1, border=False))
+# print(progress_bar_str(1.123, width=1, border=False))
+
+# print(progress_bar_str(0, width=3))
+# print(progress_bar_str(0.023, width=3))
+# print(progress_bar_str(0.123, width=3))
+# print(progress_bar_str(0.13, width=3))
+# print(progress_bar_str(1.123, width=3))
+
+# print(progress_bar_str(0))
+# print(progress_bar_str(0.023))
+# print(progress_bar_str(0.123))
+# print(progress_bar_str(0.13))
+# print(progress_bar_str(1.123))
+# raise
 
 
 def run_process_streamed(

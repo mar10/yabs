@@ -1,5 +1,4 @@
-Quickstart
-----------
+# Quickstart
 
 1. Install *yabs* ([details](installation))
 

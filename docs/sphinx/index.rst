@@ -42,10 +42,17 @@ Features
   * Bump version number in Python or text files.
   * Create source and built distributions by running setup.py.
   * Tag, commit, and push to git repository.
-  * Publish releases on PyPI or GitHub.
+  * Publish releases on PyPI, GitHub, or Windows Package Manager.
   * Comes with prebuilt activities, but can be extended by custom task-plugins.
   * This is a command line tool that runs on Linux, macOS, and Windows...
   * ... and a library for use in custom Python projects.
+
+..
+   .. mermaid::
+
+      graph TB
+         a --> b
+
 
 
 Quickstart

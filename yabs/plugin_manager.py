@@ -7,17 +7,18 @@ from inspect import isclass
 
 from pkg_resources import iter_entry_points
 
-from .cmd_build import BuildTask
-from .cmd_bump import BumpTask
-from .cmd_check import CheckTask
-from .cmd_commit import CommitTask
-from .cmd_common import WorkflowTask
-from .cmd_exec import ExecTask
-from .cmd_gh_release import GithubReleaseTask
-from .cmd_push import PushTask
-from .cmd_pypi_release import PypiReleaseTask
-from .cmd_tag import TagTask
-from .util import log_debug, log_info, log_warning, logger
+from .task.build import BuildTask
+from .task.bump import BumpTask
+from .task.check import CheckTask
+from .task.commit import CommitTask
+from .task.common import WorkflowTask
+from .task.exec import ExecTask
+from .task.github_release import GithubReleaseTask
+from .task.push import PushTask
+from .task.pypi_release import PypiReleaseTask
+from .task.tag import TagTask
+from .task.winget_release import WingetReleaseTask
+from .util import log_debug, log_warning, logger
 
 # from semantic_version import Version
 
@@ -49,6 +50,7 @@ class PluginManager:
         "push": PushTask,
         "pypi_release": PypiReleaseTask,
         "tag": TagTask,
+        "winget_release": WingetReleaseTask,
     }
 
     def __init__(self):
@@ -94,29 +96,27 @@ class PluginManager:
 
         ep_map = cls._entry_point_map
         for name, ep in cls._entry_point_map.items():
-            log_info("Load plugin {}...".format(ep.dist))
+            log_debug(f"Load plugin {ep.dist}...")
             try:
                 register_fn = ep.load()
                 if not callable(register_fn):
-                    raise RuntimeError("Entry point {} is not a function".format(ep))
+                    raise RuntimeError(f"Entry point {ep} is not a function.")
                 ep_map[ep.name] = register_fn
             except Exception:
-                logger.exception("Failed to load {}".format(ep))
+                logger.exception(f"Failed to load {ep}.")
 
-            log_debug("Register plugin {}...".format(ep.dist))
+            log_debug(f"Register plugin {ep.dist}...")
             try:
                 plugin = register_fn(task_base=WorkflowTask)
             except Exception:
-                logger.exception("Could not register {}".format(name))
+                logger.exception(f"Could not register {name}")
                 continue
             # Some checks
             if issubclass(plugin, WorkflowTask):
                 # Rely on ABC interface
                 pass
             elif not isclass(plugin):
-                logger.error(
-                    "Plugin.register {} did not return a class: {}".format(name, plugin)
-                )
+                logger.error(f"Plugin.register {name} did not return a class: {plugin}")
             else:
                 # Do some interface checks
                 if getattr(plugin, "name", None) != name:
@@ -131,5 +131,5 @@ class PluginManager:
         # We assume that plugins have declared classes that derrived from
         # WorkflowTask
         for task_cls in WorkflowTask.__subclasses__():
-            logger.debug("Register {}".format(task_cls))
+            logger.debug(f"Register {task_cls}")
             task_cls.register_cli_command(subparsers, parents, run_parser)

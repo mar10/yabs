@@ -52,6 +52,8 @@ Macro names must be embedded in curly braces, for example:
       name: 'v{version}'
       message: |
         Released {version}
+
+        [Changelog](https://github.com/{repo}/blob/master/CHANGELOG.md),
         [Commit details](https://github.com/{repo}/compare/{org_tag_name}...{tag_name}).
 
 All attributes of the task context are available as macros:
@@ -69,7 +71,7 @@ All attributes of the task context are available as macros:
 {version}
     Current version (after 'bump').
 
-See :class:`~yabs.cmd_common.TaskContext` for a complete list.
+See :class:`~yabs.task.common.TaskContext` for a complete list.
 
 
 .. _version-locations-label:

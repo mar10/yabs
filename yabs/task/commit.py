@@ -4,11 +4,15 @@
 """
 """
 import os
+from typing import TYPE_CHECKING
 
 from git import Repo
 
-from .cmd_common import WorkflowTask
-from .util import check_arg, log_dry, log_response
+from ..util import check_arg, log_dry, log_response
+from .common import TaskContext, WorkflowTask
+
+if TYPE_CHECKING:  # Imported by type checkers, but prevent circular includes
+    from yabs.task_runner import TaskInstance
 
 
 class CommitTask(WorkflowTask):
@@ -17,16 +21,17 @@ class CommitTask(WorkflowTask):
         "add_known": True,  # Commit with -a flag
         "message": "Bump version to {version}",
     }
+    MANDATORY_OPTS = None
 
-    def __init__(self, opts):
-        super().__init__(opts)
+    def __init__(self, task_inst: "TaskInstance"):
+        super().__init__(task_inst)
 
         opts = self.opts
         check_arg(opts["add"], (list, tuple))
         check_arg(opts["add_known"], bool)
         check_arg(opts["message"], str)
 
-    def to_str(self, context):
+    def to_str(self, context: TaskContext):
         opts = self.opts
         add = opts["add"] or opts["add_known"]
         message = opts["message"].format(**vars(context))
@@ -37,10 +42,10 @@ class CommitTask(WorkflowTask):
         """"""
 
     @classmethod
-    def check_task_def(cls, task_def, parser, args, yaml):
+    def check_task_def(cls, task_inst: "TaskInstance"):
         return True
 
-    def run(self, context):
+    def run(self, context: TaskContext):
         opts = self.opts
         message = opts["message"].format(**vars(context))
 

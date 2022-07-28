@@ -46,7 +46,8 @@ print("Add package root to sys.path: %r" % package_root)
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'recommonmark',
+    'myst_parser',
+    # 'recommonmark',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
@@ -56,8 +57,24 @@ extensions = [
     'sphinx.ext.graphviz',
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.napoleon',
+    'sphinxcontrib.mermaid',
+    # 'sphinx_markdown_tables',  # TODO
 #    'sphinxcontrib.fulltoc',
 ]
+
+# def setup(app: Sphinx):
+#     """Add functions to the Sphinx setup."""
+#     from myst_parser._docs import (
+#         DirectiveDoc,
+#         DocutilsCliHelpDirective,
+#         MystConfigDirective,
+#     )
+
+#     app.add_css_file("custom.css")
+#     app.add_directive("myst-config", MystConfigDirective)
+#     app.add_directive("docutils-cli-help", DocutilsCliHelpDirective)
+#     app.add_directive("doc-directive", DirectiveDoc)
+
 
 # A string of reStructuredText that will be included at the end of every source file that is read.
 # This is the right place to add substitutions that should be available in every file. An example:
@@ -96,6 +113,27 @@ source_suffix = {
 # You can specify multiple suffix as a list of string:
 # source_suffix = ['.rst', '.md']
 # source_suffix = '.rst'
+
+# MyST Markdown Support
+myst_enable_extensions = [
+    "dollarmath",
+    "amsmath",
+    "deflist",
+    "fieldlist",
+    "html_admonition",
+    "html_image",
+    "colon_fence",
+    "smartquotes",
+    "replacements",
+    "linkify",
+    "strikethrough",
+    "substitution",
+    "tasklist",
+]
+myst_number_code_blocks = ["typescript"]
+myst_heading_anchors = 2
+myst_footnote_transition = True
+myst_dmath_double_inline = True
 
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
@@ -144,7 +182,8 @@ version = '.'.join(release.split('.')[:2])
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
+# language = None
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:

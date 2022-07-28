@@ -15,14 +15,14 @@ class TestVersionManager:
     def test_basics(self):
         folder = os.path.abspath(os.path.dirname(__file__))
 
-        cm = TaskRunner(os.path.join(folder, "fixtures/yabs_1.yaml"))
+        tr = TaskRunner(os.path.join(folder, "fixtures/yabs_1.yaml"))
 
-        assert cm.all.get("file_version") == "yabs#1"
+        assert tr.yaml.get("file_version") == "yabs#1"
         with pytest.raises(KeyError):
-            cm.get("foobar")
-        assert cm.get("foobar", None) is None
+            tr.get_config("foobar")
+        assert tr.get_config("foobar", None) is None
 
-        version_manager = cm.version_manager
+        version_manager = tr.version_manager
         assert version_manager
         assert len(version_manager.parsers) == 1
         vp = version_manager.parsers[0]
@@ -32,8 +32,8 @@ class TestVersionManager:
 
     def test_bump(self):
         folder = os.path.abspath(os.path.dirname(__file__))
-        cm = TaskRunner(os.path.join(folder, "fixtures/yabs_1.yaml"))
-        version_manager = cm.version_manager
+        tr = TaskRunner(os.path.join(folder, "fixtures/yabs_1.yaml"))
+        version_manager = tr.version_manager
 
         # Bump "1.2.3":
         v = version_manager.bump("patch", calc_only=True)

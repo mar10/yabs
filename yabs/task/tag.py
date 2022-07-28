@@ -4,12 +4,16 @@
 """
 """
 import os
+from typing import TYPE_CHECKING
 
 from git import Repo
 from git.exc import GitCommandError
 
-from .cmd_common import WorkflowTask
-from .util import check_arg, log_dry, log_response
+from ..util import check_arg, log_dry, log_response
+from .common import TaskContext, WorkflowTask
+
+if TYPE_CHECKING:  # Imported by type checkers, but prevent circular includes
+    from yabs.task_runner import TaskInstance
 
 
 class TagTask(WorkflowTask):
@@ -17,15 +21,16 @@ class TagTask(WorkflowTask):
         "name": "v{version}",
         "message": "Version {version}",
     }
+    MANDATORY_OPTS = None
 
-    def __init__(self, opts):
-        super().__init__(opts)
+    def __init__(self, task_inst: "TaskInstance"):
+        super().__init__(task_inst)
 
         opts = self.opts
         check_arg(opts["name"], str)
         check_arg(opts["message"], str)
 
-    # def to_str(self, context):
+    # def to_str(self, context :TaskContext):
     #     add = self.opts["add"] or self.opts["add_known"]
     #     return "{}(add: {}, '{}')".format(
     #         self.__class__.__name__, add, self.opts["message"]
@@ -36,10 +41,10 @@ class TagTask(WorkflowTask):
         """"""
 
     @classmethod
-    def check_task_def(cls, task_def, parser, args, yaml):
+    def check_task_def(cls, task_inst: "TaskInstance"):
         return True
 
-    def run(self, context):
+    def run(self, context: TaskContext):
         opts = self.opts
         name = opts["name"].format(**vars(context))
         message = opts["message"].format(**vars(context))

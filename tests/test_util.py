@@ -11,6 +11,7 @@ from yabs.util import (
     format_elap,
     format_rate,
     get_dict_attr,
+    progress_bar_str,
     shorten_string,
 )
 
@@ -115,6 +116,9 @@ class TestBasics:
         assert format_rate(12345, 10000.0) == "1.234"
         assert format_rate(12345, 100000.0) == "0.123"
         assert format_rate(12345, 1000000.0) == "0.012"
+
+    def test_progress_bar_str(self):
+        assert progress_bar_str(0.123) == "|█▏        |  12.3%"
 
     def test_log(self):
         from snazzy import colors_enabled, enable_colors, green, red

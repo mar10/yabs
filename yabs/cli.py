@@ -7,20 +7,21 @@ Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.
 
 Usage examples:
     $ yabs --help
-    $ yabs check --clean --branch master
+    $ yabs run --dry-run
 """
 import argparse
 import logging
+import os
 import platform
 import sys
 
-from snazzy import enable_colors
+from snazzy import Snazzy, enable_colors
 
 from yabs import __version__
+from yabs.commands import handle_info_command, handle_run_command
 
 from .plugin_manager import PluginManager
-from .task_runner import handle_run_command
-from .util import check_cli_verbose, init_logging
+from .util import CONFIG_NAME, check_cli_verbose, init_logging
 
 # --- verbose_parser ----------------------------------------------------------
 
@@ -70,7 +71,7 @@ def run():
         description="Release workflow automation tools.",
         epilog="See also https://github.com/mar10/yabs",
         parents=parents,
-        # allow_abbrev=False,
+        allow_abbrev=False,
     )
     parser.add_argument(
         "-V",
@@ -80,18 +81,35 @@ def run():
     )
     subparsers = parser.add_subparsers(help="sub-command help")
 
+    # # --- Create the parser for the "info" command -----------------------------
+
+    sp = subparsers.add_parser(
+        "info",
+        parents=parents,
+        allow_abbrev=False,
+        help="show project information and run `check` task",
+    )
+    sp.add_argument(
+        "-c",
+        "--check",
+        action="store_true",
+        help="run the first 'check' task",
+    )
+    sp.set_defaults(command=handle_info_command)
+
     # --- Create the parser for the "run" command -----------------------------
 
     sp = subparsers.add_parser(
         "run",
         parents=parents,
+        allow_abbrev=False,
         help="run a workflow definition",
     )
     sp.add_argument(
         "workflow",
         nargs="?",
-        default="./yabs.yaml",
-        help="run a workflow definition",
+        default=f"./{CONFIG_NAME}",
+        help="path to workflow definition (default: %(default)s)",
     )
     sp.add_argument(
         "--force",
@@ -101,15 +119,23 @@ def run():
     sp.add_argument(
         "--no-release",
         action="store_true",
-        help="don't upload tags and assets to GitHub or PyPI (but still build assets)",
+        help="don't upload tags and assets to GitHub, PyPI, or winget-pkgs "
+        "(but still build assets)",
+    )
+    sp.add_argument(
+        "--progress",
+        action="store_true",
+        help="display current progress table between tasks",
     )
     sp.set_defaults(command=handle_run_command)
     run_parser = sp
 
     # --- Let all sublasses of `WorkflowTask` add their arguments --------------
+
     # We want to see some logging, even if init_logging() wasn't called yet:
     level = logging.DEBUG if check_cli_verbose() >= 4 else logging.INFO
     logging.basicConfig(level=level, format="%(message)s", datefmt="%H:%M:%S")
+
     PluginManager.register_cli_commands(subparsers, parents, run_parser)
 
     # --- Parse command line ---------------------------------------------------
@@ -125,6 +151,8 @@ def run():
     if not args.no_color:
         # Enable terminal colors (if sys.stdout.isatty())
         enable_colors(True, force=False)
+        if os.environ.get("TERM_PROGRAM") == "vscode":
+            Snazzy._support_emoji = True  # VSCode can do
 
     if getattr(args, "version", None):
         if args.verbose >= 4:
@@ -137,7 +165,7 @@ def run():
                 "64" if sys.maxsize > 2**32 else "32",
                 platform.platform(),
             )
-            version_info += "\nPython from: {}".format(sys.executable)
+            version_info += f"\nPython from: {sys.executable}"
         else:
             version_info = __version__
         print(version_info)

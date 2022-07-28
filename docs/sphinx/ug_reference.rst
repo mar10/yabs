@@ -57,7 +57,7 @@ Tasks
 Common Task Options
 -------------------
 All tasks share these common arguments
-(see also :class:`~yabs.cmd_common.WorkflowTask`):
+(see also :class:`~yabs.task.common.WorkflowTask`):
 
 dry_run (bool), default: *false*
     Run this task without really writing changes.
@@ -156,12 +156,14 @@ Command Line Arguments:
         option.
     ``--force``
         Bump version even if the max_increment rule would be violated.
+    ``--force-pre-bump``
+        Bump `--inc postrelease` even if the current version is untagged.
     ``--no-bump``
         Skip all *bump* tasks by forcing them to dry-run mode.
 
 
 'check' Task
------------
+------------
 
 This task will test a bunch of preconditons and stop the workflow if one or more
 checks fail.
@@ -174,24 +176,26 @@ checks fail.
       clean: true             # Repo must/must not contain modifications
       github: true            # GitHub repo name valid and online accessible
       os: null                # (str, list)
-      python: ">=3.7"         # SemVer specifier
-      twine: true             # `twine` is available
+      pypi: true              # `twine` is available, PyPI package accessible
+      python: ">=3.9"         # SemVer specifier
       up_to_date: true        # everything pulled from remote
       venv: true              # running inside a virtual environment
       version: true           # `setup.py --version` returns the configured version
+      winget: true            # `wingetcreate` is available
+      yabs: ">=0.5"           # SemVer specifier
 
 branches (str | list), default: *null*
     Git branch name (or list of such) that are allowed. |br|
     This check is typically used to prevent creating accidental releases from
     feature or maintenance branches.
 
-can_push (bool), default: *null*
+can_push (bool), default: *true*
     Test if ``git push --dry-run`` would succeed.
 
-clean (bool), default: *null*
+clean (bool), default: *true*
     Test if the index or the working copy is clean, i.e. has no changes.
 
-github (bool), default: *null*
+github (bool), default: *true*
     Test if the GitHub repository is accessible. This implies that
 
        - An internet connection is up
@@ -203,27 +207,40 @@ os (str | list), default: *null*
     Test if the return value of ``platform.system()`` is in the provided list. |br|
     Typical values are 'Linux', 'Darwin', 'Java', 'Windows'.
 
+pypi (bool), default: *true*
+    Test if `twine <https://twine.readthedocs.io>`_ is available, 
+    `~/.pypirc <https://packaging.python.org/en/latest/specifications/pypirc/>`
+    exists, and the package is registered at `PyPI <https://pypi.org/>`. |br|
+    This is required by the *pypi_release* task.
+
 python (str), default: *null*
-    Test if the the current Python version matches the provided specification. |br|
-    Example ``python: '>=3.7'``
+    Test if the current Python version matches the provided specification. |br|
+    Example ``python: '>=3.9'``
 
 repo (str), default: *(value from config.repo)*
     Allows to override the global setting.
 
-twine (bool), default: *null*
-    Test if `twine <https://twine.readthedocs.io>`_ is available, which is
-    required by the *pypi_release* task.
-
-up_to_date (bool), default: *null*
+up_to_date (bool), default: *true*
     Test if the remote branch contains unpulled changes, by calling
     ``git status -uno``.
 
-venv (bool), default: *null*
+venv (bool), default: *true*
     Test if yabs is running inside a virtual environment.
 
-version (bool), default: *null*
+version (bool), default: *true*
     Test if the result of ``python setup.py --version`` matches the version
     that yabs read from the configured version location.
+
+winget (bool), default: *null* (depends)
+    Test if ``wingetcreate.exe`` is installed (required by ``winget_release`` task). |br|
+    Also pre-releases will be flagged.
+
+    If `null` or undefined, this test is activated if a `winget_release` task
+    is present and `--no-winget` is ot passed.
+
+yabs (str), default: *null*
+    Test if the installed Yabs version matches the provided specification. |br|
+    Example ``yabs: '>=0.5'``
 
 Command Line Arguments:
 
@@ -278,6 +295,19 @@ for example ``tox -e lint``:
       ignore_errors: false    # `true`: show warning, but proceed on errors (exit code != 0)
       timeout: 60.0           # Kill process after <n> seconds
 
+add_artifacts (dict), default: *null*
+
+    Check folder for files that were created by the shell command and add them 
+    as artifact for downstream tasks.
+    
+    .. code-block:: yaml
+    
+    - add_artifacts:  # Add new files if any
+      folder: "dist"  
+      matches:
+      bdist_msi: '.*\.msi'
+   
+
 args (list), mandatory
     List of command line parts.
 
@@ -331,6 +361,8 @@ from the tag and artifacts that yabs created in previous tasks:
       name: 'v{version}'
       message: |
         Released {version}
+
+        [Changelog](https://github.com/{repo}/blob/master/CHANGELOG.md),
         [Commit details](https://github.com/{repo}/compare/{org_tag_name}...{tag_name}).
       prerelease: null  # null: guess from version number format
       upload:
@@ -427,6 +459,9 @@ artifacts that yabs created in previous tasks:
 
     - task: pypi_release
 
+comment (str), default: *null*
+    Optional string passed as `twine --comment COMMENT ...`.
+
 upload (list), default: *null*
     List of artifact names ('sdist', 'bdist_wheel', and 'bdist_msi'). |br|
     Default *null*: upload all artifacts that were created in the previous
@@ -464,6 +499,28 @@ message (str), default: *'Version {version}'*
 name (str), default: *'v{version}'*
     The name of the new tag.
     See also :ref:`template-macros-label`.
+
+Command Line Arguments:
+
+    ``--dry-run``
+        description.
+
+
+'winget_release' Task
+---------------------
+
+Call ``wingetcreate update`` to updte an existing 
+`release on winget-pkgs <https://github.com/microsoft/winget-pkgs>`_:
+
+.. code-block:: yaml
+
+    - task: winget_release
+      upload: 'bdist_msi'
+      package_id: foobar
+
+upload (str), default: *'bdist_msi'*
+    The artifact-id that was created using an upstream exec task.
+
 
 Command Line Arguments:
 

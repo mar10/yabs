@@ -8,11 +8,15 @@ import re
 import tempfile
 from abc import ABC, abstractmethod
 from configparser import ConfigParser
+from typing import TYPE_CHECKING
 
 import toml
 from semantic_version import Version
 
 from .util import check_arg, log_debug, log_info, log_warning, resolve_path
+
+if TYPE_CHECKING:  # Imported by type checkers, but prevent circular includes
+    from yabs.task_runner import TaskRunner
 
 ORDERED_INCREMENTS = ("postrelease", "prerelease", "patch", "minor", "major")
 INCREMENTS = frozenset(ORDERED_INCREMENTS)
@@ -279,16 +283,19 @@ class VersionFileManager:
         "setup_cfg": SetupCfgFileParser,
     }
 
-    def __init__(self, task_runner):
-        self.task_runner = task_runner
+    def __init__(self, task_runner: "TaskRunner"):
+        self.task_runner: TaskRunner = task_runner
         self.parsers = []
-        self.org_version = None
-        self.master_version = None
+        #: Project version before first bump
+        self.org_version: Version = None
+        #: Currrent project version after bumps if any
+        self.master_version: Version = None
+
         self._scan_versions()
 
     def _scan_versions(self):
         root_path = self.task_runner.fspec
-        version_opts = self.task_runner.get("version")
+        version_opts = self.task_runner.get_config("version")
         if isinstance(version_opts, dict):
             version_opts = [version_opts]
 
@@ -328,7 +335,7 @@ class VersionFileManager:
             if self.master_version is None:
                 if not version:
                     raise RuntimeError("Invalid version or no version found.")
-                log_info("Parsed project version: {}".format(version))
+                log_debug("Parsed project version: {}".format(version))
                 self.master_version = version
                 self.org_version = version
             else:

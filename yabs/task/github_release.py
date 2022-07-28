@@ -4,11 +4,11 @@
 """
 """
 import os
+from typing import TYPE_CHECKING
 
 from github import Github, GithubObject
 
-from .cmd_common import GH_USER_AGENT, WorkflowTask
-from .util import (
+from ..util import (
     ConfigError,
     check_arg,
     log_dry,
@@ -17,6 +17,11 @@ from .util import (
     log_ok,
     log_warning,
 )
+from ..util import plural_s as ps
+from .common import DEFAULT_USER_AGENT, TaskContext, WorkflowTask
+
+if TYPE_CHECKING:  # Imported by type checkers, but prevent circular includes
+    from yabs.task_runner import TaskInstance
 
 
 class GithubReleaseTask(WorkflowTask):
@@ -24,6 +29,8 @@ class GithubReleaseTask(WorkflowTask):
         "gh_auth": None,  # use `config.gh_auth`
         "draft": False,  # Use `--gh-draft` to override
         "message": "Released {version}\n"
+        + "\n"
+        + "[Changelog](https://github.com/{repo}/blob/master/CHANGELOG.md),\n"
         + "[Commit details](https://github.com/{repo}/compare/{org_tag_name}...{tag_name}).",
         "name": "v{version}",
         "prerelease": None,  # None: guess from version number; Use `--gh-pre` to override
@@ -32,9 +39,10 @@ class GithubReleaseTask(WorkflowTask):
         "target_commitish": None,
         "upload": None,
     }
+    MANDATORY_OPTS = None
 
-    def __init__(self, opts):
-        super().__init__(opts)
+    def __init__(self, task_inst: "TaskInstance"):
+        super().__init__(task_inst)
 
         opts = self.opts
         check_arg(opts["draft"], bool)
@@ -55,7 +63,7 @@ class GithubReleaseTask(WorkflowTask):
                     "Unknown upload target(s): {}".format(", ".join(unknown))
                 )
 
-    # def to_str(self, context):
+    # def to_str(self, context :TaskContext):
     #     add = self.opts["add"] or self.opts["add_known"]
     #     return "{}(add: {}, '{}')".format(
     #         self.__class__.__name__, add, self.opts["message"]
@@ -67,23 +75,24 @@ class GithubReleaseTask(WorkflowTask):
         run_parser.add_argument(
             "--gh-draft",
             action="store_true",
-            help="tell the gh_release task to create a draft-release",
+            help="tell the github_release task to create a draft-release",
         )
         run_parser.add_argument(
             "--gh-pre",
             action="store_true",
-            help="tell the gh_release task to create a pre-release",
+            help="tell the github_release task to create a pre-release",
         )
 
     @classmethod
-    def check_task_def(cls, task_def, parser, args, yaml):
+    def check_task_def(cls, task_inst: "TaskInstance"):
         return True
 
-    def run(self, context):
+    def run(self, context: TaskContext):
         opts = self.opts
+        cli_arg = self.cli_arg
 
-        if context.args.no_release:
-            log_warning("`--no-release` was passed: skipping 'gh_release' task.")
+        if cli_arg("no_release"):
+            log_warning("`--no-release` was passed: skipping 'github_release' task.")
             return True
 
         # TODO: assert that all targets a are in context.artifacts
@@ -104,7 +113,7 @@ class GithubReleaseTask(WorkflowTask):
                 token = auth
         else:
             token = context.gh_auth_token
-        gh = Github(token, user_agent=GH_USER_AGENT)
+        gh = Github(token, user_agent=DEFAULT_USER_AGENT)
 
         repo_name = opts.get("repo") or context.repo
         if not repo_name or "/" not in repo_name:
@@ -112,7 +121,7 @@ class GithubReleaseTask(WorkflowTask):
 
         repo = gh.get_repo(repo_name, lazy=False)
         if not repo:
-            raise ConfigError("Could not open repo '{}'.".format(repo_name))
+            raise ConfigError(f"Could not open repo '{repo_name}'.")
 
         tag_name = context.tag_name
         if not tag_name:
@@ -126,22 +135,20 @@ class GithubReleaseTask(WorkflowTask):
                 gh_tag = t
 
         if self.dry_run:
-            log_dry("create_git_release({})".format(gh_tag))
+            log_dry(f"create_git_release({gh_tag})")
             return True
 
         if not gh_tag:
             log_error(
-                "Could not find tag '{}' on Github (did you run 'bump' and 'tag' tasks first?)".format(
-                    tag_name
-                )
+                f"Could not find tag '{tag_name}' on Github (did you run 'bump' and 'tag' tasks first?)"
             )
             return False
 
         target_commitish = opts["target_commitish"] or GithubObject.NotSet
 
-        draft = bool(context.args.gh_draft or opts["draft"])
+        draft = bool(cli_arg("gh_draft") or opts["draft"])
 
-        if context.args.gh_pre:
+        if cli_arg("gh_pre"):
             prerelease = True
         else:
             prerelease = opts["prerelease"]
@@ -164,7 +171,8 @@ class GithubReleaseTask(WorkflowTask):
             target_commitish=target_commitish,
         )
 
-        for target, path in context.artifacts.items():
+        artifacts = context.artifacts
+        for target, path in artifacts.items():
             if upload and target not in upload:
                 continue
 
@@ -174,6 +182,13 @@ class GithubReleaseTask(WorkflowTask):
                 # content_type=NotSet,
                 # name=NotSet,
             )
-            log_ok("Upload asset {}".format(gh_asset))
+            log_ok(f"Upload asset {gh_asset}")
 
+        if ok:
+            url = f"https://github.com/{context.repo}/releases/tag/{context.tag_name}"
+
+            self.task_inst.task_runner.add_summary(
+                f"Created GitHub release with {len(artifacts)} artifact{ps(context.artifacts)} "
+                f"at {url}"
+            )
         return ok

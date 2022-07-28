@@ -19,6 +19,7 @@ tox = "*"
 GitPython = "*"
 PyGithub = "*"
 PyYAML = "*"
+requests = "*"
 semantic_version = "*"
 setuptools = ">=42.0"
 snazzy = "*"
@@ -27,7 +28,7 @@ twine = "*"
 wheel = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.10"
 
 [pipenv]
 # allow_prereleases = true

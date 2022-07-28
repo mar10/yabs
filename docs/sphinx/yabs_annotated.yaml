@@ -3,7 +3,6 @@
 file_version: yabs#1
 config:
   # Options used as default for all tools in this workflow
-  project: ''                # Mandatory:
   repo: 'mar10/test-release-tool'
   # GitHub access token
   gh_auth:
@@ -29,18 +28,16 @@ tasks:
   - task: check
     branches: master        # Current branch must be in this list
     can_push: true          # Test if 'git push' would/would not succeed
-    # connected: null         # TODO: internet available
     github: true            # GitHub repo name valid and online accessible
     clean: true             # Repo must/must not contain modifications
-    # cmp_version: null       # E.g. set to 'gt' to assert that the current
-    #                         # version is higher than the latest tag (gt,
-    #                         # gte, lt, lte, eq, neq)
     os: null                # (str, list)
-    python: ">=3.6"         # SemVer specifier
+    python: ">=3.9"         # SemVer specifier
     twine: true             # `twine` is available
     up_to_date: true        # everything pulled from remote
     venv: true              # running inside a virtual environment
     version: true           # `setup.py --version` returns the configured version
+    # winget: true            # `wingetcreate` is available
+    yabs: ">=0.5"           # SemVer specifier
 
   # 'run': Run arbitrary shell command
   - task: exec
@@ -57,10 +54,9 @@ tasks:
     silent: true            # `true`: suppress output
     ignore_errors: false    # `true`: show warning, but proceed on errors (exit code != 0)
 
-  # 'bump': increment manifest.version and synchronize other JSON files
+  # 'bump': Increment project version (requires argument: `yabs run --inc INC`)
   - task: bump
-    # bump also requires a mode argument (yabs:target:MODE)
-    inc: null               # Use value passed as 'yabs run INC'
+    inc: null               # Use value passed as 'yabs run --inc INC'
 
   # # 'replace': In-place string replacements
   # # (Uses https://github.com/outaTiME/applause)
@@ -104,8 +100,10 @@ tasks:
     name: 'v{version}'
     message: |
       Released {version}
+
+      [Changelog](https://github.com/{repo}/blob/master/CHANGELOG.md),
       [Commit details](https://github.com/{repo}/compare/{org_tag_name}...{tag_name}).
-    draft: true
+    # draft: true
     prerelease: null  # null: guess from version number format
     upload:
       - sdist
@@ -113,7 +111,6 @@ tasks:
 
   - task: bump
     inc: "postrelease"
-    prerelease_prefix: "a"
 
   - task: commit
     add_known: true

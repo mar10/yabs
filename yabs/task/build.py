@@ -4,11 +4,12 @@
 """
 """
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from .cmd_common import WorkflowTask
-from .util import (
+from ..util import (
     ConfigError,
     check_arg,
+    get_folder_file_names,
     log_dry,
     log_error,
     log_info,
@@ -16,13 +17,10 @@ from .util import (
     logger,
     remove_directory,
 )
+from .common import TaskContext, WorkflowTask
 
-
-def get_folder_file_names(folder):
-    """Return folder files names as set."""
-    p = Path(folder)
-    name_set = set([e.name for e in p.iterdir()])
-    return name_set
+if TYPE_CHECKING:  # Imported by type checkers, but prevent circular includes
+    from yabs.task_runner import TaskInstance
 
 
 class BuildTask(WorkflowTask):
@@ -31,9 +29,10 @@ class BuildTask(WorkflowTask):
         "revert_bump_on_error": True,
         "targets": ["sdist", "bdist_wheel"],
     }
+    MANDATORY_OPTS = None
 
-    def __init__(self, opts):
-        super().__init__(opts)
+    def __init__(self, task_inst: "TaskInstance"):
+        super().__init__(task_inst)
 
         opts = self.opts
         check_arg(opts["clean"], bool)
@@ -46,7 +45,7 @@ class BuildTask(WorkflowTask):
                 "Unkown `pypi_release.targets` value: {}".format(", ".join(unknown))
             )
 
-    def to_str(self, context):
+    def to_str(self, context: TaskContext):
         opts = self.opts
         args = "{}".format(", ".join(opts["targets"]))
         return "{}(targets {})".format(self.__class__.__name__, args)
@@ -55,7 +54,7 @@ class BuildTask(WorkflowTask):
     def register_cli_command(cls, subparsers, parents, run_parser):
         """"""
 
-    def _run(self, context):
+    def _run(self, context: TaskContext):
         opts = self.opts
         ok = True
 
@@ -97,16 +96,16 @@ class BuildTask(WorkflowTask):
         #   refer to `context.artifacts`.
         #   If the build fails, we rollback a previous bump, before we stop.
 
-        org_dist_dir = Path("dist").absolute().resolve()
+        org_dist_dir = Path("dist").absolute()
         if not org_dist_dir.is_dir():
             if self.dry_run:
-                log_dry("Creating dist folder: {}".format(org_dist_dir))
+                log_dry(f"Creating dist folder: {org_dist_dir}")
             else:
-                log_info("Creating dist folder: {}".format(org_dist_dir))
+                log_info(f"Creating dist folder: {org_dist_dir}")
                 org_dist_dir.mkdir()
             # raise RuntimeError("Folder not found: {}".format(org_dist_dir))
 
-        temp_dist_dir = Path("dist.yabs").absolute().resolve()
+        temp_dist_dir = Path("dist.yabs").absolute()
         if temp_dist_dir.exists():
             remove_directory(temp_dist_dir, content_only=True, log=logger.info)
         else:
@@ -182,10 +181,10 @@ class BuildTask(WorkflowTask):
         return ok
 
     @classmethod
-    def check_task_def(cls, task_def, parser, args, yaml):
+    def check_task_def(cls, task_inst: "TaskInstance"):
         return True
 
-    def run(self, context):
+    def run(self, context: TaskContext):
         try:
             res = self._run(context)
             if res:

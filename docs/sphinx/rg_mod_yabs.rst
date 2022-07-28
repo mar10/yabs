@@ -17,21 +17,21 @@ yabs.util module
     :show-inheritance:
     :inherited-members:
 
-yabs.log module
----------------
+.. yabs.log module
+.. ---------------
 
-.. automodule:: yabs.log
-    :members:
-    :show-inheritance:
-    :inherited-members:
+.. .. automodule:: yabs.log
+..     :members:
+..     :show-inheritance:
+..     :inherited-members:
 
-yabs.cmd package
-================
+yabs.task package
+=================
 
-yabs.cmd_common module
-----------------------------
+yabs.task.common module
+-----------------------
 
-.. automodule:: yabs.cmd_common
+.. automodule:: yabs.task.common
     :members:
     :show-inheritance:
     :inherited-members:

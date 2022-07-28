@@ -5,7 +5,7 @@ file_version: yabs#1
 
 config:
   #  Options used as default for all tools in this workflow
-  project: ''                # Mandatory:
+  repo: ''                # Mandatory:
   version:
     - type: setup_cfg
       file: setup_1.cfg        # First entry is master for synchronizing
@@ -20,27 +20,16 @@ tasks:
   #  The following tools are available. They are executed in the order
   #  as they are added to the workflow object.
 
-  #  'bump': increment manifest.version and synchronize other JSON files
+  # 'bump': Increment project version (requires argument: `yabs run --inc INC`)
   - task: bump
-    #  bump also requires a mode argument (yabs:target:MODE)
-    inc: null               #  Override 'yabs:target:MODE'
-    space: 2                #  Indentation used when writing JSON files
-    syncVersion: true       #  Only increment master manifest, then copy
-                            #  version to secondaries
-    syncFields: []          #  Synchronize entries from master to
-                            #  secondaries (if field exists)
-    updateConfig: pkg       #  Make sure pkg.version contains the new value
+    inc: null               #  Override 'yabs run --inc INC'
 
   #  'check': Assert preconditons and fail otherwise
   - task: check
-    allowed_modes: null     #  Optionally restrict yabs:target:MODE to this
-                            #  value(s). Useful for maintenance branches.
-    branches: master          #  Current branch must be in this list
+    branches: master        #  Current branch must be in this list
     can_push: null          #  Test if 'git push' would/would not succeed
     clean: null             #  Repo must/must not contain modifications?
-    cmp_version: null       #  E.g. set to 'gt' to assert that the current
-                            #  version is higher than the latest tag (gt,
-                            #  gte, lt, lte, eq, neq)
+    winget: null            #  `null`: smart mode (false if `--no-winget`)
 
   #  'commit': Commit modified files
   - task: commit
@@ -53,23 +42,18 @@ tasks:
   - task: github_release
     repo: null              #  'owner/repo'
     name: 'v{%= version %}'
-    body: |
+    message: |
       Released {%= version %}
+
+      [Changelog](https://github.com/{%= repo %}/blob/master/CHANGELOG.md),
       [Commit details](https://github.com/{%= repo %}/compare/{%= currentTagName %}...{%= lastTagName %}).
     draft: true
     prerelease: false
-
-  #  'npmPublish': Submit to npm repository
-  # - task: npmPublish
-  #   message: |
-  #     Released {%= version %}
 
   #  'push': Push changes and tags
   - task: push
     target: ''              #  E.g. 'upstream'
     tags: false             #  Also push tags
-    useFollowTags: false    #  Use `--folow-tags` instead of `&& push --tags`
-                            #  (requires git 1.8.3+)
 
   #  'replace': In-place string replacements
   # - task: replace

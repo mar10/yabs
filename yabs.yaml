@@ -22,12 +22,13 @@ tasks:
     github: true            # GitHub repo name valid and online accessible
     clean: true             # Repo must/must not contain modifications
     os: null                # (str, list)
-    python: ">=3.8"         # SemVer specifier
-    twine: true             # `twine` is available
+    pypi: true              # `twine` is available, PyPI package accessible
+    python: ">=3.9"         # SemVer specifier
     up_to_date: true        # everything pulled from remote
     venv: true              # running inside a virtual environment
     version: true           # `setup.py --version` returns the configured version
-
+    # winget: true
+    
   # run `tox -e lint`
   - task: exec
     args: ["tox", "-e", "lint"]
@@ -42,7 +43,7 @@ tasks:
     silent: true            # `true`: suppress output
     ignore_errors: false    # `true`: show warning, but proceed on errors (exit code != 0)
 
-  # 'bump': version by `--inc` argument
+  # 'bump': Increment project version (requires argument: `yabs run --inc INC`)
   - task: bump
 
   # 'commit': Commit modified files
@@ -76,14 +77,13 @@ tasks:
     message: |
       Released {version}
     
-      [Change log](https://github.com/{repo}/blob/master/CHANGES.md),
+      [Changelog](https://github.com/{repo}/blob/master/CHANGELOG.md),
       [Commit details](https://github.com/{repo}/compare/{org_tag_name}...{tag_name}).
     # draft: true
     prerelease: null  # null: guess from version number format
 
   - task: bump
     inc: postrelease
-    prerelease_prefix: 'a'
 
   - task: commit
     add_known: true
