@@ -31,7 +31,7 @@ tasks:
     
   # run `tox -e lint`
   - task: exec
-    args: ["tox", "-e", "lint"]
+    args: ["tox", "-e", "check"]
     always: true            # `true`: run even in dry-run mode
     silent: true            # `true`: suppress output
     ignore_errors: false    # `true`: show warning, but proceed on errors (exit code != 0)

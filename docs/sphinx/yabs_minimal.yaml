@@ -64,7 +64,7 @@ tasks:
   - task: github_release
     draft: false
 
-  # Bump 'v1.2.3' => 'v1.2.4-a0'
+  # Bump 'v1.2.3' => 'v1.2.4-a1'
   - task: bump
     inc: "postrelease"
 

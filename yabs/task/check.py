@@ -321,9 +321,11 @@ class CheckTask(WorkflowTask):
                 _ok("version", f"`setup.py --version` returned '{real_version}'.")
 
         if opts["winget"]:
+            winget_ok = True
             if platform.system() == "Windows":
-                _ok("winget", "Runinng on MS Windows.")
+                _ok("winget", "Running on MS Windows.")
             else:
+                winget_ok = False
                 _error(
                     "winget",
                     f"Runinng on {platform.system()} (winget needs MS Windows).",
@@ -338,46 +340,48 @@ class CheckTask(WorkflowTask):
             if shutil.which("winget") and shutil.which("wingetcreate"):
                 _ok("winget", "`winget` and `wingetcreate` are available.")
             else:
+                winget_ok = False
                 _error("winget", "`winget` and/or `wingetcreate` not available.")
 
-            # Is project is registered at winget-pkgs?
-            package_name = context.repo_short  # TODO: allow to override
-            ret_code, real_version = self._exec(
-                ["winget", "show", package_name], quiet=True
-            )
-            if ret_code:
-                if cli_arg("no_winget_release"):
-                    _warn(
-                        "winget",
-                        f"Package `{package_name}` not found on winget-pkgs "
-                        "(ignored, because --no-winget-release was passed).",
-                    )
-                elif ret_code == 0x8A150014:
-                    _error(
-                        "winget",
-                        f"Package `{package_name}` not yet registered on winget-pkgs: "
-                        "Yabs supports updating existing packages only.",
-                    )
-                    log_warning(
-                        f"winget returned code 0x{ret_code:08x}, "
-                        "see https://github.com/microsoft/winget-cli/blob/master/src/AppInstallerCommonCore/Public/AppInstallerErrors.h"
-                    )
-                    log_warning(
-                        "Note that Yabs only supports updating existing winget packages."
-                    )
-                    log_warning("Run `wingetcreate new` manually.")
-                else:
-                    _error(
-                        "winget",
-                        f"Could not find package `{package_name}` on winget-pkgs "
-                        f"(return code: 0x{ret_code:08x}): "
-                        "Yabs supports updating existing packages only.",
-                    )
-            else:
-                _ok(
-                    "winget",
-                    f"Package `{package_name}` is registered on winget-pkgs.",
+            if winget_ok:
+                # Is project is registered at winget-pkgs?
+                package_name = context.repo_short  # TODO: allow to override
+                ret_code, real_version = self._exec(
+                    ["winget", "show", package_name], quiet=True
                 )
+                if ret_code:
+                    if cli_arg("no_winget_release"):
+                        _warn(
+                            "winget",
+                            f"Package `{package_name}` not found on winget-pkgs "
+                            "(ignored, because --no-winget-release was passed).",
+                        )
+                    elif ret_code == 0x8A150014:
+                        _error(
+                            "winget",
+                            f"Package `{package_name}` not yet registered on winget-pkgs: "
+                            "Yabs supports updating existing packages only.",
+                        )
+                        log_warning(
+                            f"winget returned code 0x{ret_code:08x}, "
+                            "see https://github.com/microsoft/winget-cli/blob/master/src/AppInstallerCommonCore/Public/AppInstallerErrors.h"
+                        )
+                        log_warning(
+                            "Note that Yabs only supports updating existing winget packages."
+                        )
+                        log_warning("Run `wingetcreate new` manually.")
+                    else:
+                        _error(
+                            "winget",
+                            f"Could not find package `{package_name}` on winget-pkgs "
+                            f"(return code: 0x{ret_code:08x}): "
+                            "Yabs supports updating existing packages only.",
+                        )
+                else:
+                    _ok(
+                        "winget",
+                        f"Package `{package_name}` is registered on winget-pkgs.",
+                    )
 
         if opts["yabs"]:
             req_ver = opts["yabs"]

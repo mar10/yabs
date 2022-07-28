@@ -87,7 +87,7 @@ def run():
         "info",
         parents=parents,
         allow_abbrev=False,
-        help="show project information and run `check` task",
+        help="show project information and optionally run `check` task",
     )
     sp.add_argument(
         "-c",
@@ -95,7 +95,7 @@ def run():
         action="store_true",
         help="run the first 'check' task",
     )
-    sp.set_defaults(command=handle_info_command)
+    sp.set_defaults(cmd_handler=handle_info_command, cmd_name="info")
 
     # --- Create the parser for the "run" command -----------------------------
 
@@ -127,7 +127,7 @@ def run():
         action="store_true",
         help="display current progress table between tasks",
     )
-    sp.set_defaults(command=handle_run_command)
+    sp.set_defaults(cmd_handler=handle_run_command, cmd_name="run")
     run_parser = sp
 
     # --- Let all sublasses of `WorkflowTask` add their arguments --------------
@@ -171,11 +171,11 @@ def run():
         print(version_info)
         sys.exit(0)
 
-    if not callable(getattr(args, "command", None)):
+    if not callable(getattr(args, "cmd_handler", None)):
         parser.error("missing command")
 
     try:
-        return args.command(parser, args)
+        return args.cmd_handler(parser, args)
     except KeyboardInterrupt:
         print("\nAborted by user.", file=sys.stderr)
         sys.exit(3)

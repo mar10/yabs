@@ -53,4 +53,6 @@ def handle_info_command(parser: ArgumentParser, args: Namespace):
     except Exception as e:
         log_warning(f"PyPI URL:   {e}")
 
+    log_info("")
+
     return 0

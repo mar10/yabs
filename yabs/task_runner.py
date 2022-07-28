@@ -3,17 +3,16 @@
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
 """
-import sys
 import time
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 from typing import List, Union
 
 import yaml
-from build.lib.yabs.util import assert_always
 from snazzy import emoji, gray, green, red, wrap, yellow
 
 from yabs import __version__ as yabs_version
+from yabs.util import assert_always
 
 from .plugin_manager import PluginManager
 from .task.common import ErrorTaskResult, OkTaskResult, TaskContext, _TaskResult
@@ -115,7 +114,7 @@ class TaskRunner:
         #: (set, optional) If defined, only these task-types are run
         self.pick_tasks = to_set(pick_tasks, or_none=True)
         #: Value of `yabs COMMAND ...` (None if not running as CLI)
-        self.command: str = self.cli_arg("command")
+        self.command: str = self.cli_arg("cmd_name")
         #: The complete YAML file as dict
         self.yaml: dict = None
         #: The 'config' section of the YAML file
@@ -275,7 +274,7 @@ class TaskRunner:
             if res in (None, True):
                 continue
             elif res is False:
-                res = f"{task_cls}({task_def}): check failed."
+                res = f"{task_cls}({task_def}): precheck failed."
 
             if isinstance(res, str):
                 res = [res]
@@ -287,7 +286,7 @@ class TaskRunner:
 
     def _log_task_instances(self) -> None:
         def ftm_run(s):
-            wrap(s, "cyan", bold=True)
+            return wrap(s, "cyan", bold=True)
 
         _prefix_map = {
             "pending": ("{}".format(emoji("⌛", gray("P"))), gray),
@@ -329,17 +328,21 @@ class TaskRunner:
         # if context is None:
         #     context = TaskContext(self)
 
-        hl = green
+        wv = green
+
+        def wt(s):
+            return wrap(s, bg="green")
 
         log_info("")
-        cmd_line = " ".join(sys.argv)
-        log_info(f"Running Yabs v{yabs_version}:\n    {cmd_line}")
-        log_info(f"Configuration: {self.fspec}")
+        log_info(f"Yabs v{yabs_version}, configuration: {self.fspec}")
+        # cmd_line = " ".join(sys.argv)
+        # log_info(f"Running Yabs v{yabs_version}:\n    {cmd_line}")
+        # log_info(f"Configuration: {self.fspec}")
         log_info("")
         log_info(
-            f"Project '{hl(context.repo_short)}', "
-            f"current version {hl('v'+str(context.version))}, "
-            f"latest tag: '{hl(context.org_tag_name)}'"
+            f"Project '{wv(context.repo_short)}', "
+            f"current version {wv('v'+str(context.version))}, "
+            f"latest tag: {wt(context.org_tag_name)}"
         )
         log_info("")
         # Latest tag: TAG
@@ -388,7 +391,11 @@ class TaskRunner:
             if verbose >= 3 and self.cli_arg("progress"):
                 self._log_task_instances()
 
-            res = task.run(context)
+            try:
+                res = task.run(context)
+            except Exception as e:
+                log_error(f"{task_instance} failed: {e}")
+                raise
 
             task_str = task.to_str(context)  # __str__ may have changed
             task_instance.set_result(task_str, res)
