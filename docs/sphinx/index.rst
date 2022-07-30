@@ -28,7 +28,7 @@ Yabs
 *Yabs* is a command line tool, that runs a sequence of tasks in order to test,
 build, and deliver a Python software project.
 
-.. image:: ../teaser.png
+.. image:: ../screenshot_ps_dryrun.png
   :target: https://github.com/mar10/yabs
   :name: Live demo
 

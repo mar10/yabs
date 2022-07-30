@@ -20,4 +20,4 @@
     $ yabs run --inc minor --workflow /path/to/yabs.yaml --dry-run
     ```
 
-<img src="_images/teaser.png">
+<img src="_images/screenshot_ps_dryrun.png">

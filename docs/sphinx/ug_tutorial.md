@@ -49,7 +49,7 @@ Some **preconditions** are assumed:
   [one of the supported locations](#versions).
 
 **Note:**<br>
-Yabs can be extended using the [plugin API](ug_writing_plugins.html).
+Yabs can be extended using the [plugin API](ug_writing_plugins.rst).
 
 
 ## Workflow Definition
@@ -97,7 +97,7 @@ tasks:
   - ...
 ```
 
-See [Writing Scripts](ug_writing_scripts.html) for details.
+See [Writing Scripts](ug_writing_scripts.rst) for details.
 
 
 ## Versions
@@ -253,7 +253,7 @@ config:
        file: src/test_release_tool/__init__.py
  ...
 ```
-See [Writing Scripts](ug_writing_scripts.html) for details.
+See [Writing Scripts](ug_writing_scripts.rst) for details.
 
 
 ## Windows Package Manager
@@ -279,7 +279,7 @@ See [Writing Scripts](ug_writing_scripts.html) for details.
      - Pass `--no-winget-release` to prevent uploading (which would fail)
 
      Example:
-     ```ps
+     ```ps1
      > yabs run --inc patch --no-winget-release
      ```
 
@@ -291,19 +291,19 @@ See [Writing Scripts](ug_writing_scripts.html) for details.
   
   4. Create the initial manifest
      Example:
-     ```ps
+     ```ps1
      > wingetcreate new https://github.com/mar10/yabs-test/releases/download/v0.2.8/yabs_test-0.2.8.0-win64.msi
      ```
 
      Since the token is probably already set as environment variable 
      for *Yabs* workflows, we can reference it here
 
-     ```ps
+     ```ps1
      > wingetcreate new --token $env:GITHUB_OAUTH_TOKEN https://github.com/mar10/yabs-test/releases/download/v0.2.8/yabs_test-0.2.8.0-win64.msi
      ```
      
      The manifest can now be edited and sumbitted again like so:
-     ```ps
+     ```ps1
      > wingetcreate submit --token $env:GITHUB_OAUTH_TOKEN .\manifests\m\mar10\yabs_test\0.2.8.0\
      ```
 
@@ -318,7 +318,7 @@ See [Writing Scripts](ug_writing_scripts.html) for details.
 Once a release exists on Windows Package Manager, Yabs can update releases
 as part of the workflow:
 
-```ps
+```ps1
 > yabs run --inc patch
 ```
 

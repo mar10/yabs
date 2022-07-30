@@ -57,9 +57,8 @@ extensions = [
     'sphinx.ext.graphviz',
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.napoleon',
-    'sphinxcontrib.mermaid',
-    # 'sphinx_markdown_tables',  # TODO
 #    'sphinxcontrib.fulltoc',
+    'sphinxcontrib.mermaid',
 ]
 
 # def setup(app: Sphinx):
@@ -114,6 +113,9 @@ source_suffix = {
 # source_suffix = ['.rst', '.md']
 # source_suffix = '.rst'
 
+# The encoding of source files.
+#source_encoding = 'utf-8-sig'
+
 # MyST Markdown Support
 myst_enable_extensions = [
     "dollarmath",
@@ -134,9 +136,6 @@ myst_number_code_blocks = ["typescript"]
 myst_heading_anchors = 2
 myst_footnote_transition = True
 myst_dmath_double_inline = True
-
-# The encoding of source files.
-#source_encoding = 'utf-8-sig'
 
 # The master toctree document.
 master_doc = 'index'
