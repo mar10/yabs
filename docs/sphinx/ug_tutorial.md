@@ -32,12 +32,6 @@ A typical release workflow may look like this:
    [Windows Packager Manager Repository](https://github.com/microsoft/winget-pkgs).
 9. Bump, tag, commit, and push for post-release.
 
-```{mermaid}
-
-graph TB
-  a --> b
-```
-
 
 Some **preconditions** are assumed:
 
@@ -265,7 +259,7 @@ See [Writing Scripts](ug_writing_scripts.rst) for details.
   to the winget-pkgs repository.
 
   See https:/... for details on creating initial winget packages and
-  publish a Windows pm package after a release was created and bumoed.
+  publish a Windows pm package after a release was created and bumped.
 
   1. Run on Windows
   
