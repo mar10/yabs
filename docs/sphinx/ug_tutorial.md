@@ -32,13 +32,11 @@ A typical release workflow may look like this:
    [Windows Packager Manager Repository](https://github.com/microsoft/winget-pkgs).
 9. Bump, tag, commit, and push for post-release.
 
-<!--
 ```{mermaid}
 
 graph TB
-  a --   > b
+  a --> b
 ```
--->
 
 
 Some **preconditions** are assumed:
