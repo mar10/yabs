@@ -102,7 +102,7 @@ templates_path = ['_templates']
 
 source_suffix = {
     '.rst': 'restructuredtext',
-    '.txt': 'markdown',
+    # '.txt': 'markdown',
     '.md': 'markdown',
 }
 # source_parsers = {

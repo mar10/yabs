@@ -16,9 +16,11 @@ version: 2
 
 # Optionally declare the Python requirements required to build your docs
 python:
-   install:
-     - requirements: docs/sphinx/requirements.txt
-
+  install:
+    - method: pip
+      path: .
+    - requirements: docs/sphinx/requirements.txt
+ 
 
 # submodules:
 #   include: all
