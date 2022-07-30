@@ -162,7 +162,7 @@ except pkg_resources.DistributionNotFound:
     print('To build the documentation, The distribution information')
     print('Has to be available.  Either install the package into your')
     print('development environment or run "setup.py develop" to setup the')
-    print('metadata.  A virtualenv is recommended!')
+    print('metadata. A virtualenv is recommended!')
     sys.exit(1)
     # release = "0.0.0"
     # # TODO: 2015-09-05: fails since last month: workaround like this:

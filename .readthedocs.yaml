@@ -22,7 +22,7 @@ python:
     #  - requirements: docs/sphinx/requirements.txt
        extra_requirements:
          - myst_parser[linkify]
-         - sphinxcontrib.mermaid
+         - sphinxcontrib-mermaid
 
 
 # submodules:
