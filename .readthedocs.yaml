@@ -21,8 +21,10 @@ python:
        path: .
     #  - requirements: docs/sphinx/requirements.txt
        extra_requirements:
-         - myst_parser[linkify]
-         - sphinxcontrib-mermaid
+         - myst_parser
+         - linkify
+        #  - myst_parser[linkify]
+        #  - sphinxcontrib-mermaid
 
 
 # submodules:
