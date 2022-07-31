@@ -33,6 +33,11 @@ build, and deliver a Python software project.
   :name: Live demo
 
 
+.. image:: ../termtosvg_yabs_run.svg
+  :target: https://github.com/mar10/yabs
+  :name: Live demo
+
+
 Features
 ========
 
