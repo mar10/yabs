@@ -50,8 +50,10 @@ for details.
 (See [grunt-yabs](https://github.com/mar10/grunt-yabs) for a node.js variant
 if you have a JavaScript based development stack.)
 
-[![asciicast](https://asciinema.org/a/6jPN5JTNBt2LT52C6R8HZEK1g.svg)](https://asciinema.org/a/6jPN5JTNBt2LT52C6R8HZEK1g)
+<!-- [![asciicast](https://asciinema.org/a/6jPN5JTNBt2LT52C6R8HZEK1g.svg)](https://asciinema.org/a/6jPN5JTNBt2LT52C6R8HZEK1g) -->
 
-![logo](https://raw.githubusercontent.com/mar10/yabs/master/docs/sphinx/screenshot_ps_dryrun.png)
+<!-- ![logo](https://raw.githubusercontent.com/mar10/yabs/master/docs/screenshot_ps_dryrun.png) -->
 
-![logo](https://raw.githubusercontent.com/mar10/yabs/master/docs/sphinx/screenshot_ps_info.png)
+![logo](https://raw.githubusercontent.com/mar10/yabs/master/docs/screenshot_ps_info.png)
+
+![logo](https://raw.githubusercontent.com/mar10/yabs/master/docs/termtosvg_yabs_run.svg)
