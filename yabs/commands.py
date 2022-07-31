@@ -10,7 +10,7 @@ import requests
 from yabs.task.common import REQUESTS_HEADERS, TaskContext
 from yabs.task_runner import TaskRunner
 
-from .util import log_error, log_info, log_warning
+from .util import log_error, log_info, log_warning, write
 
 
 def handle_run_command(parser: ArgumentParser, args: Namespace):
@@ -37,6 +37,10 @@ def handle_info_command(parser: ArgumentParser, args: Namespace):
 
     tr.log_header_info(context=context)
 
+    res = context.repo_obj.git.status()
+    write("git status", output=res)
+    log_info("")
+
     url = f"https://github.com/{context.repo}/releases/tag/{context.org_tag_name}"
     try:
         resp = requests.get(url, verify=False, headers=REQUESTS_HEADERS)
@@ -53,6 +57,8 @@ def handle_info_command(parser: ArgumentParser, args: Namespace):
     except Exception as e:
         log_warning(f"PyPI URL:   {e}")
 
+    log_info("")
+    log_info("Pass `--check` option for more details.")
     log_info("")
 
     return 0

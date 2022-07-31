@@ -33,6 +33,11 @@ build, and deliver a Python software project.
   :name: Live demo
 
 
+.. image:: ../termtosvg_yabs_run.svg
+  :target: https://github.com/mar10/yabs
+  :name: Live demo
+
+
 Features
 ========
 
@@ -53,7 +58,7 @@ Quickstart
 
 Releases are hosted on `PyPI <https://pypi.python.org/pypi/yabs>`_ and can
 be installed using `pipenv <https://pipenv.pypa.io/>`_
-(`Python 3.6+ <https://www.python.org/downloads/>`_ is required) ::
+(`Python 3.7+ <https://www.python.org/downloads/>`_ is required) ::
 
   $ pipenv shell
   (yabs) $ pipenv install yabs --upgrade
