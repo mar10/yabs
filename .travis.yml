@@ -16,11 +16,11 @@ jobs:
       before_install:
         # Fix "AttributeError: 'str' object has no attribute 'name'" on Py37
         - pip install -U importlib_metadata
-    - python: "3.6"
-      env: TOXENV=py36
-      before_install:
-        # Fix for cryptography on Py36
-        - pip install --upgrade virtualenv
+    # - python: "3.6"
+    #   env: TOXENV=py36
+    #   before_install:
+    #     # Fix for cryptography on Py36
+    #     - pip install --upgrade virtualenv
     # - python: "3.5"  # EOL 2020-09-13
     #     env: TOXENV=py35
     - python: "3.11-dev"
