@@ -78,7 +78,7 @@ be installed using `pipenv <https://pipenv.pypa.io/>`_
 
 .. |travis_badge| image:: https://travis-ci.org/mar10/yabs.svg?branch=master
    :alt: Build Status
-   :target: https://travis-ci.org/mar10/yabs
+   :target: https://travis-ci.com/github/mar10/yabs
 
 .. |pypi_badge| image:: https://img.shields.io/pypi/v/yabs.svg
    :alt: PyPI Version

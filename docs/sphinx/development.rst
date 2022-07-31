@@ -92,7 +92,7 @@ Format code using the editor's formatting options or like so::
         `PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_.
 
         Failing tests or not follwing PEP 8 will break builds on
-        `travis <https://travis-ci.org/mar10/yabs>`_,
+        `travis <https://travis-ci.com/github/mar10/yabs>`_,
         so run ``$ tox`` and ``$ tox -e format`` frequently and before
         you commit!
 
