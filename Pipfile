@@ -13,7 +13,6 @@ pylint = "*"
 pytest = "*"
 pytest-cov = "*"
 tox = "*"
-# yabs = {path = ".", editable = true}
 yabs = {editable = true, path = "."}
 
 [packages]

@@ -57,9 +57,8 @@ extensions = [
     'sphinx.ext.graphviz',
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.napoleon',
-    'sphinxcontrib.mermaid',
-    # 'sphinx_markdown_tables',  # TODO
 #    'sphinxcontrib.fulltoc',
+    'sphinxcontrib.mermaid',
 ]
 
 # def setup(app: Sphinx):
@@ -103,7 +102,7 @@ templates_path = ['_templates']
 
 source_suffix = {
     '.rst': 'restructuredtext',
-    '.txt': 'markdown',
+    # '.txt': 'markdown',
     '.md': 'markdown',
 }
 # source_parsers = {
@@ -113,6 +112,9 @@ source_suffix = {
 # You can specify multiple suffix as a list of string:
 # source_suffix = ['.rst', '.md']
 # source_suffix = '.rst'
+
+# The encoding of source files.
+#source_encoding = 'utf-8-sig'
 
 # MyST Markdown Support
 myst_enable_extensions = [
@@ -135,15 +137,12 @@ myst_heading_anchors = 2
 myst_footnote_transition = True
 myst_dmath_double_inline = True
 
-# The encoding of source files.
-#source_encoding = 'utf-8-sig'
-
 # The master toctree document.
 master_doc = 'index'
 
 # General information about the project.
 project = u'yabs'
-copyright = u'2020-2021, Martin Wendt'
+copyright = u'2020-2022, Martin Wendt'
 author = u'Martin Wendt'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -163,7 +162,7 @@ except pkg_resources.DistributionNotFound:
     print('To build the documentation, The distribution information')
     print('Has to be available.  Either install the package into your')
     print('development environment or run "setup.py develop" to setup the')
-    print('metadata.  A virtualenv is recommended!')
+    print('metadata. A virtualenv is recommended!')
     sys.exit(1)
     # release = "0.0.0"
     # # TODO: 2015-09-05: fails since last month: workaround like this:

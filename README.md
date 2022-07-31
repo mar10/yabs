@@ -40,8 +40,10 @@ for details.
 
 ## Preconditions
 
-- Use [git](https://git-scm.com), [PyPI](https://pypi.org) and [GitHub](https://github.com).
-- Version numbers follow roughly the [Semantic Versioning](https://semver.org) pattern.
+- Use [git](https://git-scm.com), [PyPI](https://pypi.org),
+  and [GitHub](https://github.com).
+- Version numbers follow roughly the [Semantic Versioning](https://semver.org) 
+  pattern.
 - The project's version number is maintained in
   [one of the supported locations](https://yabs.readthedocs.io/)
 
@@ -50,4 +52,6 @@ if you have a JavaScript based development stack.)
 
 [![asciicast](https://asciinema.org/a/6jPN5JTNBt2LT52C6R8HZEK1g.svg)](https://asciinema.org/a/6jPN5JTNBt2LT52C6R8HZEK1g)
 
-![logo](https://raw.githubusercontent.com/mar10/yabs/master/docs/sphinx/teaser.gif)
+![logo](https://raw.githubusercontent.com/mar10/yabs/master/docs/sphinx/screenshot_ps_dryrun.png)
+
+![logo](https://raw.githubusercontent.com/mar10/yabs/master/docs/sphinx/screenshot_ps_info.png)
