@@ -324,3 +324,7 @@ as part of the workflow:
 
 > **Note**: Pre-releases (`--inc postrelease`) are still not allowed.<br>
 > Make a *real* version: The version increment must tbe at least `--inc patch`.
+
+```ps1
+wingetcreate update --token $env:GITHUB_OAUTH_TOKEN --urls https://github.com/mar10/wsgidav/releases/download/v4.0.2/WsgiDAV-4.0.2.0-win64.msi --version 4.0.2.0 mar10.wsgidav
+```

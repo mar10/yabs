@@ -24,10 +24,10 @@ if TYPE_CHECKING:  # Imported by type checkers, but prevent circular includes
 class WingetReleaseTask(WorkflowTask):
     DEFAULT_OPTS = {
         "gh_auth": None,  # use `config.gh_auth`
+        "out": "dist",
         "package_id": None,
-        # "urls": "",
-        "upload": None,  # "bdist_msi",
-        "out": None,
+        # "token": None,
+        "upload": None,  # Must be "bdist_msi",
     }
     MANDATORY_OPTS = {"package_id", "upload"}
 
@@ -38,6 +38,7 @@ class WingetReleaseTask(WorkflowTask):
         check_arg(opts["gh_auth"], (dict, str), or_none=True)
         check_arg(opts["package_id"], str)
         check_arg(opts["upload"], str, opts["upload"] == "bdist_msi")
+        check_arg(opts["out"], str, or_none=True)
 
     # def to_str(self, context :TaskContext):
     #     add = self.opts["add"] or self.opts["add_known"]
@@ -67,9 +68,11 @@ class WingetReleaseTask(WorkflowTask):
             return SkipTaskResult("`--no-winget-release` was passed: skipping.")
 
         cur_version = context.version
+        assert "v" not in str(cur_version).lower()
+
         is_prerelease = bool(cur_version and cur_version.prerelease)
         tag_names = [tag.name.lstrip("vV") for tag in context.repo_obj.tags]
-        is_version_tagged = str(cur_version).lstrip("vV") in tag_names
+        is_version_tagged = str(cur_version) in tag_names
 
         if is_prerelease:
             return WarningTaskResult(
@@ -80,62 +83,75 @@ class WingetReleaseTask(WorkflowTask):
                 f"Cannot publish untagged releases to winget-pkgs: {cur_version}: skipping."
             )
 
+        wpm_version = f"{cur_version}.0"
+
         ok = True
 
-        # Check GH Token access
-        gh = Github(context.gh_auth_token, user_agent=DEFAULT_USER_AGENT)
-        try:
-            repo = gh.get_repo(context.repo, lazy=False)
-            if not repo:
-                raise ConfigError(
-                    f"Could not open repo '{context.repo}' with GitHub token."
-                )
-        except Exception as e:
-            log_error(f"Could not open repo '{context.repo}' with GitHub token: {e!r}")
-            return False
+        # # Check GH Token access
+        # gh = Github(context.gh_auth_token, user_agent=DEFAULT_USER_AGENT)
+        # try:
+        #     repo = gh.get_repo(context.repo, lazy=False)
+        #     if not repo:
+        #         raise ConfigError(
+        #             f"Could not open repo '{context.repo}' with GitHub token."
+        #         )
+        # except Exception as e:
+        #     log_error(f"Could not open repo '{context.repo}' with GitHub token: {e!r}")
+        #     return False
 
-        # Check if artifact as created
+        # Check if artifact is created
+        # (no need to bail out, since `wingetcreate` will fail anyways)
+
         upload_target = opts["upload"]  # e.g. 'bdist_msi'
         upload_path = context.artifacts.get(upload_target)
         if not upload_path or not os.path.isfile(upload_path):
             log_warning(
-                f"artifact does not exist (not created): {upload_target}: {upload_path}"
+                f"Artifact does not exist (not created): {upload_target}: {upload_path}"
+            )
+        if wpm_version not in str(upload_path):
+            log_warning(
+                f"Artifact file name does not contain the expected version {wpm_version}: {upload_path}"
             )
 
-        # self._exec(["wingetcreate", "submit", "-?"])
-
-        # <a href="/mar10/stressor/releases/download/v0.5.1/stressor-0.5.1.0-amd64.msi" rel="nofollow" data-skip-pjax="">
         file_name = upload_path.name
         urls = (
             f"https://github.com/{context.repo}"
             f"/releases/download/v{context.version}/{file_name}"
         )
+        package_id = opts["package_id"]
+        out_folder = opts["out"] # defaults to 'dist'
+
+# wingetcreate update --token $env:GITHUB_OAUTH_TOKEN --urls https://github.com/mar10/wsgidav/releases/download/v4.0.2/WsgiDAV-4.0.2.0-win64.msi --version 4.0.2.0 mar10.wsgidav
+
         args = [
             "wingetcreate",
             "update",
-            # "--out",
-            # "xxx",
             "--urls",
-            urls,
-            # "--version",
-            # "xxx",
+            urls,  # Location of MSI asset in the GitHub release
             "--token",
             "REDACTED" if self.dry_run else context.gh_auth_token,
-            # "--submit",
-            str(upload_path),
+            "--version",
+            wpm_version,  # e.g. '1.2.3.0'
+            "--out",
+            out_folder,
         ]
 
         if self.dry_run:
-            msg = " ".join(args)
-            log_dry(f"{msg}")
+            log_dry(f"Manifest file will be created in the at `{out_folder}/` (not submitted)!")
         else:
-            args.extend([])
-            ret_code, _out = self._exec(args)
-            ok = ok and (ret_code == 0)
+            args.append("--submit")
+
+        args.append(package_id)
+
+        ret_code, _out = self._exec(args)
+
+        ok = ok and (ret_code == 0)
+
+        # self._exec(["wingetcreate", "submit", "-?"])
 
         char0 = context.repo[0]
-        package_name = context.repo_short  # TODO: allow to override
-        url = f"https://github.com/microsoft/winget-pkgs/tree/master/manifests/{char0}/{package_name}/{context.tag_name}"
+        # package_name = context.repo_short  # TODO: allow to override
+        url = f"https://github.com/microsoft/winget-pkgs/tree/master/manifests/{char0}/{package_id}/{wpm_version}"
         self.task_inst.task_runner.add_summary(
             f"Created Windows Package Manager release at {url}"
         )

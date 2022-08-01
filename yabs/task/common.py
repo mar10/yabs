@@ -63,8 +63,10 @@ class TaskContext:
         #: (str) GitHub authentication token
         self.gh_auth_token: str = None
         #: (:class:`semantic_version.Version`) latest version (before 'bump')
+        #: E.g. `str(context.org_version) == '1.2.3-a1'`
         self.org_version: Version = None
         #: (:class:`semantic_version.Version`) current version (after 'bump')
+        #: E.g. `str(context.version) == '1.2.3'`
         self.version: Version = None
         #: (:class:`~yabs.version_manager.VersionManager`)
         self.version_manager: VersionFileManager = None
