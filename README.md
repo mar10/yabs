@@ -2,7 +2,7 @@
 
 > Test, Build, Deliver!
 
-[![Build Status](https://travis-ci.com/mar10/yabs.svg?branch=master)](https://travis-ci.com/mar10/yabs)
+[![Build Status](https://travis-ci.com/mar10/yabs.svg?branch=master)](https://travis-ci.com/github/mar10/yabs)
 [![Latest Version](https://img.shields.io/pypi/v/yabs.svg)](https://pypi.python.org/pypi/yabs/)
 [![License](https://img.shields.io/pypi/l/yabs.svg)](https://github.com/mar10/yabs/blob/master/LICENSE.txt)
 [![Documentation Status](https://readthedocs.org/projects/yabs/badge/?version=latest)](https://yabs.readthedocs.io/)

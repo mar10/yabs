@@ -270,7 +270,7 @@ message (str), default: *'Bump version to {version}'*
     Commit message. |br|
     Context macros are expanded, e.g. '{version}', ...
     See :ref:`template-macros-label` for details. |br|
-    Tip: when using `Travis <https://travis-ci.org>`_, a '[ci skip]' substring
+    Tip: when using `Travis <https://travis-ci.com>`_, a '[ci skip]' substring
     tells travis to ignore this commit.
 
 Command Line Arguments:
