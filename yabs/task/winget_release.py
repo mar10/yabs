@@ -6,16 +6,8 @@
 import os
 from typing import TYPE_CHECKING
 
-from github import Github
-
-from ..util import ConfigError, check_arg, log_dry, log_error, log_warning
-from .common import (
-    DEFAULT_USER_AGENT,
-    SkipTaskResult,
-    TaskContext,
-    WarningTaskResult,
-    WorkflowTask,
-)
+from ..util import check_arg, log_dry, log_warning
+from .common import SkipTaskResult, TaskContext, WarningTaskResult, WorkflowTask
 
 if TYPE_CHECKING:  # Imported by type checkers, but prevent circular includes
     from yabs.task_runner import TaskInstance
@@ -106,7 +98,8 @@ class WingetReleaseTask(WorkflowTask):
         upload_path = context.artifacts.get(upload_target)
         if not upload_path or not os.path.isfile(upload_path):
             log_warning(
-                f"Artifact does not exist (not created): {upload_target}: {upload_path}"
+                f"Artifact type '{upload_target}' does not exist (not created): {upload_path}\n"
+                "Did you forget to add an `exec` task to build one?"
             )
         if wpm_version not in str(upload_path):
             log_warning(
@@ -119,9 +112,7 @@ class WingetReleaseTask(WorkflowTask):
             f"/releases/download/v{context.version}/{file_name}"
         )
         package_id = opts["package_id"]
-        out_folder = opts["out"] # defaults to 'dist'
-
-# wingetcreate update --token $env:GITHUB_OAUTH_TOKEN --urls https://github.com/mar10/wsgidav/releases/download/v4.0.2/WsgiDAV-4.0.2.0-win64.msi --version 4.0.2.0 mar10.wsgidav
+        out_folder = opts["out"]  # defaults to 'dist'
 
         args = [
             "wingetcreate",
@@ -129,19 +120,21 @@ class WingetReleaseTask(WorkflowTask):
             "--urls",
             urls,  # Location of MSI asset in the GitHub release
             "--token",
-            "REDACTED" if self.dry_run else context.gh_auth_token,
+            context.gh_auth_token,
             "--version",
             wpm_version,  # e.g. '1.2.3.0'
             "--out",
             out_folder,
+            # Positional args:
+            package_id,
         ]
 
         if self.dry_run:
-            log_dry(f"Manifest file will be created in the at `{out_folder}/` (not submitted)!")
+            log_dry(
+                f"Manifest file will be created in `{out_folder}/` (not submitted)!"
+            )
         else:
             args.append("--submit")
-
-        args.append(package_id)
 
         ret_code, _out = self._exec(args)
 
@@ -152,7 +145,8 @@ class WingetReleaseTask(WorkflowTask):
         char0 = context.repo[0]
         # package_name = context.repo_short  # TODO: allow to override
         url = f"https://github.com/microsoft/winget-pkgs/tree/master/manifests/{char0}/{package_id}/{wpm_version}"
-        self.task_inst.task_runner.add_summary(
-            f"Created Windows Package Manager release at {url}"
-        )
+        if ok and not self.dry_run:
+            self.task_inst.task_runner.add_summary(
+                f"Created Windows Package Manager release at {url}"
+            )
         return ok
