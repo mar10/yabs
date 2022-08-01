@@ -258,13 +258,26 @@ See [Writing Scripts](ug_writing_scripts.rst) for details.
   Pass `--no-winget` to skip building and uploading an MSI installer 
   to the winget-pkgs repository.
 
-  See https:/... for details on creating initial winget packages and
-  publish a Windows pm package after a release was created and bumped.
+  1. Run on Windows, make sure all tests pass.
+     Create an MSI installer:
+     ```ps1
+     > tox
+     > python -m setup_bdist_msi.py bdist_msi
+     ```
+     Since we have a pre-release, the installer will not have a real version, so
+     uploading to *WPM* would fail!
 
-  1. Run on Windows
+     **Install and test** the MSI installer anyway:
+     ```ps1
+     > dist/yabs_test-0.0.0.0-win64.msi`
+     ```
+
+     **NOTE:** Publishing a pre-release and test the MSI that was uploaded to 
+     GitHub (still version '0.0.0.0') may be a good idea before taking the 
+     next step.
   
   2. Release a package with MSI installer:
-     - Pre-releases (`--inc postrelease`) are not allowed.<br>
+     - Pre-releases (`--inc postrelease`) are **not allowed** here!<br>
        Make a *real* version: 
        The version increment must tbe at least `--inc patch`.
        
@@ -282,25 +295,20 @@ See [Writing Scripts](ug_writing_scripts.rst) for details.
      version.
   
   4. Create the initial manifest
-     Example:
-     ```ps1
-     > wingetcreate new https://github.com/mar10/yabs-test/releases/download/v0.2.8/yabs_test-0.2.8.0-win64.msi
-     ```
-
      Since the token is probably already set as environment variable 
      for *Yabs* workflows, we can reference it here
 
      ```ps1
-     > wingetcreate new --token $env:GITHUB_OAUTH_TOKEN https://github.com/mar10/yabs-test/releases/download/v0.2.8/yabs_test-0.2.8.0-win64.msi
-     ```
-     
-     The manifest can now be edited and sumbitted again like so:
-     ```ps1
-     > wingetcreate submit --token $env:GITHUB_OAUTH_TOKEN .\manifests\m\mar10\yabs_test\0.2.8.0\
+     > wingetcreate new --token $env:GITHUB_OAUTH_TOKEN https://github.com/USER/PROJECT/releases/download/v1.2.3/yabs_test-1.2.3.0-win64.msi
      ```
 
-  5. **TODO:** There is no need to commit the manifest to Git:
-     Add `manifests/` folder to `.gitignore`.
+     The manifest can now be edited and sumbitted again like so:
+     ```ps1
+     > wingetcreate submit --token $env:GITHUB_OAUTH_TOKEN .\manifests\m\USER\PROJECT\1.2.3.0\
+     ```
+
+  5. There is no need to commit the manifest to Git:
+     Add `manifests/` folder to `.gitignore`
 
   ...
 
