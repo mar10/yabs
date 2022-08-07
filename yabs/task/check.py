@@ -8,6 +8,7 @@ import platform
 import re
 import shutil
 import sys
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import requests
@@ -56,6 +57,7 @@ def _get_package_version(package_name, *, or_none=False):
 class CheckTask(WorkflowTask):
     DEFAULT_OPTS = {
         "branches": None,
+        "build": True,
         "can_push": True,
         "clean": True,
         "github": True,
@@ -76,6 +78,7 @@ class CheckTask(WorkflowTask):
         opts = self.opts
 
         check_arg(opts["branches"], (str, list, tuple), or_none=True)
+        check_arg(opts["build"], bool, or_none=True)
         check_arg(opts["can_push"], bool, or_none=True)
         check_arg(opts["clean"], bool, or_none=True)
         # check_arg(opts["gh_auth"], dict, or_none=True)
@@ -165,6 +168,13 @@ class CheckTask(WorkflowTask):
         repo_name = opts.get("repo") or context.repo
 
         err_list = []
+
+        if opts["build"]:
+            dist_dir = Path("dist").absolute()
+            if dist_dir.is_dir():
+                _ok("build", f"Dist folder exists: {dist_dir}")
+            else:
+                _error("build", f"Dist folder missing: {dist_dir}")
 
         if opts["branches"]:
             cur_branch = repo.active_branch.name
@@ -390,6 +400,8 @@ class CheckTask(WorkflowTask):
                 _ok("yabs", f"Yabs version {cur_ver} matches '{req_ver}'.")
             else:
                 _error("yabs", f"Yabs version {cur_ver} does not match '{req_ver}'.")
+
+        log_info("")
 
         if err_list:
             log_error(

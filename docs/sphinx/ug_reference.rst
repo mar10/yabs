@@ -172,6 +172,7 @@ checks fail.
 
     - task: check
       branches: master        # Current branch must be in this list
+      build: true             # dist/ folder exists
       can_push: true          # Test if 'git push' would succeed
       clean: true             # Repo must/must not contain modifications
       github: true            # GitHub repo name valid and online accessible
@@ -188,6 +189,9 @@ branches (str | list), default: *null*
     Git branch name (or list of such) that are allowed. |br|
     This check is typically used to prevent creating accidental releases from
     feature or maintenance branches.
+
+build (bool), default: *true*
+    Test if ``./dist`` folder exists.
 
 can_push (bool), default: *true*
     Test if ``git push --dry-run`` would succeed.
