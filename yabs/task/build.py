@@ -8,14 +8,12 @@ from typing import TYPE_CHECKING
 
 from ..util import (
     ConfigError,
+    FolderContentMonitor,
     check_arg,
-    get_folder_file_names,
-    log_dry,
+    log_debug,
     log_error,
     log_info,
-    log_ok,
-    logger,
-    remove_directory,
+    log_warning,
 )
 from .common import TaskContext, WorkflowTask
 
@@ -84,93 +82,43 @@ class BuildTask(WorkflowTask):
                     )
                 )
 
-        # It's hard to guess the resulting name of the created artifacts,
-        # so if don't want to erase the target '/dist' folder, we need to
-        #   1. Create / empty a temp folder
-        #   2. Build into that temp folder
-        #   3. Move files from temp to /dist (overwrite if neccessary)
-        #   4. Record the paths of the artifacts in `context.artifacts`
-        #   5. Remove temp folder
-        #
-        #   Following tasks (e.g. PypiReleaseTask, GithubReleaseTask) will
-        #   refer to `context.artifacts`.
-        #   If the build fails, we rollback a previous bump, before we stop.
+        targets = self.opts["targets"]
+        dist_dir = Path("dist").absolute()
 
-        org_dist_dir = Path("dist").absolute()
-        if not org_dist_dir.is_dir():
-            if self.dry_run:
-                log_dry(f"Creating dist folder: {org_dist_dir}")
-            else:
-                log_info(f"Creating dist folder: {org_dist_dir}")
-                org_dist_dir.mkdir()
-            # raise RuntimeError("Folder not found: {}".format(org_dist_dir))
+        matches = {}
+        if "sdist" in targets:
+            matches["sdist"] = r".*\.tar\.gz"
+        if "bdist_wheel" in targets:
+            matches["bdist_wheel"] = r".*\.whl"
+        if "bdist_msi" in targets:
+            raise RuntimeError("Define a separate 'exec' task' to create MSIs")
 
-        temp_dist_dir = Path("dist.yabs").absolute()
-        if temp_dist_dir.exists():
-            remove_directory(temp_dist_dir, content_only=True, log=logger.info)
-        else:
-            temp_dist_dir.mkdir()
+        artifacts_def = {
+            "folder": dist_dir,
+            "matches": matches,
+        }
+        ok = True
+        with FolderContentMonitor(artifacts_def) as fcm:
+            for target in targets:
+                log_info(f"Building {target} for {real_name} {real_version}...")
+                ret_code, _out = self._exec(
+                    ["python", "setup.py", target, "--dist-dir", str(dist_dir)]
+                    + extra_args
+                )
+                if ret_code != 0:
+                    ok = False
 
-        for target in self.opts["targets"]:
-            log_info("Building {} for {} {}...".format(target, real_name, real_version))
-            prev_artifacts = get_folder_file_names(temp_dist_dir)
-            # Call setup.py to build a target
-            ret_code, _out = self._exec(
-                ["python", "setup.py", target, "--dist-dir", str(temp_dist_dir)]
-                + extra_args
+        if fcm.changed_or_added_files:
+            # log_info(f"Created artifacts: {fcm.changed_or_added_files}")
+            log_info(f"Created artifacts: {fcm.changed_or_added_by_tag}")
+            context.artifacts.update(fcm.changed_or_added_by_tag)
+        elif artifacts_def and len(artifacts_def.get("matches", [])) != len(
+            fcm.changed_or_added_files
+        ):
+            log_warning(
+                f"No or not all  artifacts created for `add_artifacts: {artifacts_def}`"
             )
-            # Now we expect exactly one new file in our temp folder
-            new_artifacts = list(
-                get_folder_file_names(temp_dist_dir).difference(prev_artifacts)
-            )
-            ok = ok and (ret_code == 0)
-            if len(new_artifacts) != 1:
-                raise RuntimeError(
-                    "Created {} artifacts (expected 1): {}".format(
-                        len(new_artifacts), new_artifacts
-                    )
-                )
-            artifact = new_artifacts[0]
-
-            context.artifacts[target] = artifact
-
-            if ret_code == 0:
-                log_ok(
-                    "Created '{}': {} {}: {}".format(
-                        target, real_name, real_version, artifact
-                    )
-                )
-            else:
-                log_error(
-                    "Failed to build '{}': {} {} {}".format(
-                        target, real_name, real_version, ", ".join(new_artifacts)
-                    )
-                )
-
-        # Validate result by calling `twine check FOLDER`
-        twine_pattern = "{}/*".format(temp_dist_dir)
-        ret_code, _out = self._exec(["twine", "check", twine_pattern])
-        ok = ok and (ret_code == 0)
-
-        for src in temp_dist_dir.iterdir():
-            if self.dry_run:
-                log_dry("Move {} => {}".format(src, org_dist_dir.joinpath(src.name)))
-            else:
-                log_info("Move {} => {}".format(src, org_dist_dir.joinpath(src.name)))
-                src.replace(org_dist_dir.joinpath(src.name))
-
-        # Remove the temp folder (even in dry-run), since we don't want to
-        # commit it:
-        remove_directory(temp_dist_dir, log=logger.info)
-
-        # Adjust artifact paths (temp -> dist):
-        d = {}
-        for target, path in context.artifacts.items():
-            path_new = org_dist_dir.joinpath(Path(path).name)
-            if not path_new.is_file() and not self.dry_run:
-                raise RuntimeError("Artifact not found {}".format(path_new))
-            d[target] = path_new
-        context.artifacts = d
+        log_debug(f"Available artifacts: {context.artifacts}")
 
         if opts["clean"]:
             ret_code, _out = self._exec(
