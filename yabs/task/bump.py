@@ -5,7 +5,9 @@
 """
 from typing import TYPE_CHECKING
 
-from ..util import ConfigError, check_arg, log_error, log_info, log_warning
+from git import Repo
+
+from ..util import ConfigError, check_arg, log_error, log_info, log_warning, to_list
 from ..version_manager import INCREMENTS, ORDERED_INCREMENTS
 from .common import SkipTaskResult, TaskContext, WorkflowTask
 
@@ -73,14 +75,17 @@ class BumpTask(WorkflowTask):
         cli_arg = task_runner.cli_arg
         config = task_runner.config
         task_def = task_inst.task_def
+        git_repo = Repo(task_runner.fspec, search_parent_directories=True)
 
         if task_runner.command != "run":
             return True  # 'info' or not CLI
         if cli_arg("no_bump"):
             return True
+
         inc = task_def.get("inc") or cli_arg("inc")
         if not inc:
             return "'bump' tasks require `--inc` argument or `inc` option"
+
         max_increment = config.get("max_increment", "minor")
         max_idx = ORDERED_INCREMENTS.index(max_increment)
         inc_idx = ORDERED_INCREMENTS.index(inc)
@@ -93,9 +98,19 @@ class BumpTask(WorkflowTask):
                 )
             else:
                 return (
-                    "`--inc {}` was passed, but the `max_increment` option is set to '{}'"
-                    " (pass `--force` to ignore).".format(cli_arg("inc"), max_increment)
+                    "`--inc {}` was passed, but the `max_increment` option is set to '{}' "
+                    "(pass `--force` to ignore).".format(cli_arg("inc"), max_increment)
                 )
+
+        branches = config.get("branches")
+        if branches:
+            branches = to_list(branches)
+            cur_branch = git_repo.active_branch.name
+            if cur_branch not in branches:
+                return "Active branch {!r} not in allowed list ({}).".format(
+                    cur_branch, ", ".join(branches)
+                )
+
         return True
 
     def run(self, context: TaskContext):

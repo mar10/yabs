@@ -20,11 +20,13 @@ for all following tasks in this workflow:
         - type: __version__
           file: src/test_release_tool/__init__.py
       max_increment: minor
-      branches:  # not yet implemented
+      branches:  # Current branch must be in this list
         - master
 
-branches (list)
-    *Not yet implemented.* See the *branches* option of the check-task instead.
+branches (str | list), default: *null*
+    Git branch name (or list of such) that are allowed. |br|
+    This check is typically used to prevent creating accidental releases from
+    feature or maintenance branches.
 
 gh_auth (dict | str), *mandatory*
     Name of the environment variable that contains your
@@ -171,7 +173,6 @@ checks fail.
 .. code-block:: yaml
 
     - task: check
-      branches: master        # Current branch must be in this list
       build: true             # dist/ folder exists
       can_push: true          # Test if 'git push' would succeed
       clean: true             # Repo must/must not contain modifications
@@ -184,11 +185,6 @@ checks fail.
       version: true           # `setup.py --version` returns the configured version
       winget: true            # `wingetcreate` is available
       yabs: ">=0.5"           # SemVer specifier
-
-branches (str | list), default: *null*
-    Git branch name (or list of such) that are allowed. |br|
-    This check is typically used to prevent creating accidental releases from
-    feature or maintenance branches.
 
 build (bool), default: *true*
     Test if ``./dist`` folder exists.

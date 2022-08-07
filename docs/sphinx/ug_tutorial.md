@@ -69,10 +69,11 @@ config:
     # Location of the project's version:
     - type: __version__
       file: src/test_release_tool/__init__.py
+  branches:  # Allowed git branches
+    - master
 
 tasks:
   - task: check
-    branches: master
     github: true
     clean: true
 

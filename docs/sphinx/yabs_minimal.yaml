@@ -17,7 +17,6 @@ tasks:
 
   # 'check': Assert preconditons and fail otherwise
   - task: check
-    branch: master          # Current branch must be in this list
     build: true             # dist/ folder exists
     can_push: true          # Test if 'git push' would/would not succeed
     clean: true             # Repo must/must not contain modifications

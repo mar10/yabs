@@ -344,6 +344,7 @@ class TaskRunner:
             f"current version {wv('v'+str(context.version))}, "
             f"latest tag: {wt(context.org_tag_name)}"
         )
+        log_info(f"On branch '{wv(context.repo_obj.active_branch.name)}'.")
         log_info("")
         # Latest tag: TAG
         # Parsed version from PATH (VERSION)

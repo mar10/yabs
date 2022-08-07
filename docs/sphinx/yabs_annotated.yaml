@@ -26,7 +26,6 @@ tasks:
 
   # 'check': Assert preconditons and fail otherwise
   - task: check
-    branches: master        # Current branch must be in this list
     build: true             # dist/ folder exists
     can_push: true          # Test if 'git push' would/would not succeed
     github: true            # GitHub repo name valid and online accessible
