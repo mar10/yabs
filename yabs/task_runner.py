@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import List, Union
 
 import yaml
+from git import Repo
 from snazzy import emoji, gray, green, red, wrap, yellow
 
 from yabs import __version__ as yabs_version
@@ -30,6 +31,7 @@ from .util import (
     log_warning,
     progress_bar_str,
     search_file_upward,
+    to_list,
     to_set,
 )
 from .version_manager import VersionFileManager
@@ -218,7 +220,10 @@ class TaskRunner:
         for index, task_def in enumerate(self.tasks, 1):
             self.task_instances.append(TaskInstance(self, index, task_def))
 
+        validation_errors.extend(self._pre_check_config())
+
         validation_errors.extend(self._pre_check_all_task_configs())
+
         if validation_errors:
             findings = "\n  - ".join(validation_errors)
             raise ConfigError(
@@ -243,6 +248,22 @@ class TaskRunner:
             prefix="",
             key_prefix="config.",
         )
+        return errors
+
+    def _pre_check_config(self) -> List[str]:
+        git_repo = Repo(self.fspec, search_parent_directories=True)
+        errors = []
+
+        branches = self.config.get("branches")
+        if branches:
+            branches = to_list(branches)
+            cur_branch = git_repo.active_branch.name
+            if cur_branch not in branches:
+                errors.append(
+                    "Active branch {!r} not in allowed list ({}).".format(
+                        cur_branch, ", ".join(branches)
+                    )
+                )
         return errors
 
     def _pre_check_all_task_configs(self) -> List[str]:

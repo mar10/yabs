@@ -5,9 +5,7 @@
 """
 from typing import TYPE_CHECKING
 
-from git import Repo
-
-from ..util import ConfigError, check_arg, log_error, log_info, log_warning, to_list
+from ..util import ConfigError, check_arg, log_error, log_info, log_warning
 from ..version_manager import INCREMENTS, ORDERED_INCREMENTS
 from .common import SkipTaskResult, TaskContext, WorkflowTask
 
@@ -75,7 +73,6 @@ class BumpTask(WorkflowTask):
         cli_arg = task_runner.cli_arg
         config = task_runner.config
         task_def = task_inst.task_def
-        git_repo = Repo(task_runner.fspec, search_parent_directories=True)
 
         if task_runner.command != "run":
             return True  # 'info' or not CLI
@@ -100,15 +97,6 @@ class BumpTask(WorkflowTask):
                 return (
                     "`--inc {}` was passed, but the `max_increment` option is set to '{}' "
                     "(pass `--force` to ignore).".format(cli_arg("inc"), max_increment)
-                )
-
-        branches = config.get("branches")
-        if branches:
-            branches = to_list(branches)
-            cur_branch = git_repo.active_branch.name
-            if cur_branch not in branches:
-                return "Active branch {!r} not in allowed list ({}).".format(
-                    cur_branch, ", ".join(branches)
                 )
 
         return True

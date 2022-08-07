@@ -11,8 +11,7 @@ config:
   gh_auth:
     oauth_token_var: GITHUB_OAUTH_TOKEN
   max_increment: minor
-  branches:
-    - master
+  branches: master
 
 tasks:
   # 'check': Assert preconditons and fail otherwise

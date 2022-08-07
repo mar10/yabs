@@ -12,8 +12,8 @@ config:
       entry: metadata.version
       template:
   max_increment: major
-  branches:                  # Allowed git branches
-    - master
+  # branches:                  # Allowed git branches
+  #   - master
 
 
 tasks:
@@ -26,7 +26,6 @@ tasks:
 
   #  'check': Assert preconditons and fail otherwise
   - task: check
-    # branches: master        #  Current branch must be in this list
     can_push: null          #  Test if 'git push' would/would not succeed
     clean: null             #  Repo must/must not contain modifications?
     winget: null            #  `null`: smart mode (false if `--no-winget`)
