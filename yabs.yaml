@@ -26,7 +26,7 @@ tasks:
     up_to_date: true        # everything pulled from remote
     venv: true              # running inside a virtual environment
     version: true           # `setup.py --version` returns the configured version
-    # winget: true
+    # winget: null
     
   # run `tox -e lint`
   - task: exec

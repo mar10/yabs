@@ -250,20 +250,28 @@ class TaskRunner:
         )
         return errors
 
-    def _pre_check_config(self) -> List[str]:
+    def _check_branch(self, allowed_branches):
+        if not allowed_branches:
+            return
         git_repo = Repo(self.fspec, search_parent_directories=True)
+        branches = to_list(allowed_branches)
+        cur_branch = git_repo.active_branch.name
+        if cur_branch not in branches:
+            return (
+                f"On branch {red(cur_branch)} "
+                f"(not in allowed list: '{', '.join(branches)}')."
+            )
+        return
+
+    def _pre_check_config(self) -> List[str]:
         errors = []
 
         branches = self.config.get("branches")
-        if branches:
-            branches = to_list(branches)
-            cur_branch = git_repo.active_branch.name
-            if cur_branch not in branches:
-                errors.append(
-                    "Active branch {!r} not in allowed list ({}).".format(
-                        cur_branch, ", ".join(branches)
-                    )
-                )
+        check_arg(branches, (str, list, tuple), or_none=True)
+        if self.command != "info":
+            err = self._check_branch(branches)
+            if err:
+                errors.append(err)
         return errors
 
     def _pre_check_all_task_configs(self) -> List[str]:
@@ -365,7 +373,14 @@ class TaskRunner:
             f"current version {wv('v'+str(context.version))}, "
             f"latest tag: {wt(context.org_tag_name)}"
         )
-        log_info(f"On branch '{wv(context.repo_obj.active_branch.name)}'.")
+
+        branches = self.config.get("branches")
+        err = self._check_branch(branches)
+        if err:
+            log_info(err)
+        else:
+            log_info(f"On branch {wv(context.repo_obj.active_branch.name)}.")
+
         log_info("")
         # Latest tag: TAG
         # Parsed version from PATH (VERSION)

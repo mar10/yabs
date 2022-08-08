@@ -56,7 +56,6 @@ def _get_package_version(package_name, *, or_none=False):
 
 class CheckTask(WorkflowTask):
     DEFAULT_OPTS = {
-        # "branches": None,
         "build": True,
         "can_push": True,
         "clean": True,
@@ -77,7 +76,6 @@ class CheckTask(WorkflowTask):
 
         opts = self.opts
 
-        # check_arg(opts["branches"], (str, list, tuple), or_none=True)
         check_arg(opts["build"], bool, or_none=True)
         check_arg(opts["can_push"], bool, or_none=True)
         check_arg(opts["clean"], bool, or_none=True)
@@ -90,7 +88,6 @@ class CheckTask(WorkflowTask):
         check_arg(opts["winget"], bool, or_none=True)
         check_arg(opts["yabs"], (str, SimpleSpec), or_none=True)
 
-        # opts["branches"] = to_list(opts["branches"])
         opts["os"] = to_list(opts["os"])
         if isinstance(opts["python"], str):
             opts["python"] = SimpleSpec(opts["python"])
