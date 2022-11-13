@@ -63,23 +63,19 @@ class PluginManager:
             return
         cls.entry_points_searched = True
         ep_map = cls._entry_point_map
-        log_debug("Search entry points for group '{}'...".format(cls.namespace))
+        log_debug(f"Search entry points for group '{cls.namespace}'...")
 
         for ep in iter_entry_points(group=cls.namespace, name=None):
-            plugin_name = "{}".format(ep.dist)
-            log_debug("Found plugin {} from entry point `{}`".format(plugin_name, ep))
+            plugin_name = f"{ep.dist}"
+            log_debug(f"Found plugin {plugin_name} from entry point `{ep}`")
 
             if ep.name in ep_map:
-                log_warning(
-                    "Duplicate entry point name: {}; skipping...".format(ep.name)
-                )
+                log_warning(f"Duplicate entry point name: {ep.name}; skipping...")
                 continue
             elif ep.name in cls.task_class_map:
                 # TODO: support overriding standard tasks?
                 # Maybe when 'exreas=[override]' is passed...
-                log_warning(
-                    "Plugin task name already exists: {}; skipping...".format(ep.name)
-                )
+                log_warning(f"Plugin task name already exists: {ep.name}; skipping...")
                 continue
 
             ep_map[ep.name] = ep

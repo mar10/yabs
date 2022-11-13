@@ -142,11 +142,11 @@ def init_logging(verbose=3, path=None):
 
     if path:
         if os.path.isdir(path):
-            fname = "release-tool_{}.log".format(timetag())
+            fname = f"release-tool_{timetag()}.log"
             path = os.path.join(path, fname)
-        logger.info("Writing log to '{}'".format(path))
+        logger.info(f"Writing log to '{path}'")
         if os.path.isfile(path):
-            logger.warning("Removing log file '{}'".format(path))
+            logger.warning(f"Removing log file '{path}'")
             os.remove(path)
         hdlr = logging.FileHandler(path)
         formatter = logging.Formatter(
@@ -290,7 +290,7 @@ def set_console_ctrl_handler(
         kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
         logger.info("Loaded kernel32 DLL on Windows.")
     except Exception as e:
-        logger.warning("Could not load kernel32 DLL on Windows: {}".format(e))
+        logger.warning(f"Could not load kernel32 DLL on Windows: {e}")
         return False
 
     CTRL_C_EVENT = 0
@@ -469,11 +469,11 @@ def get_dict_attr(d, key_path, default=NO_DEFAULT):
             seg = seg[1:-1]
             value = value[int(seg)]
         else:
-            # raise ValueError("Segment '{}' cannot be nested".format(seg))
+            # raise ValueError(f"Segment '{seg}' cannot be nested")
             try:
                 value = getattr(value, seg)
             except AttributeError:
-                raise  # ValueError("Segment '{}' cannot be nested".format(seg))
+                raise  # ValueError(f"Segment '{seg}' cannot be nested")
 
     return value
 
@@ -508,7 +508,7 @@ def timetag(seconds=True, *, ms=False):
     if ms or seconds:
         s = now.strftime("%Y%m%d_%H%M%S")
         if ms:
-            s = "{}_{}".format(s, now.microsecond)
+            s = f"{s}_{now.microsecond}"
     else:
         s = now.strftime("%Y%m%d_%H%M")
     return s
@@ -522,9 +522,9 @@ def resolve_path(root, path, must_exist=True, check_root=False):
         path = os.path.join(root, path)
     path = os.path.abspath(path)
     if check_root and not path.startswith(root):
-        raise ValueError("Path must be in or below {}: {}".format(root, path))
+        raise ValueError(f"Path must be in or below {root}: {path}")
     if must_exist and not os.path.isfile(path):
-        raise ValueError("File not found: {}".format(path))
+        raise ValueError(f"File not found: {path}")
     return path
 
 
@@ -560,21 +560,21 @@ def remove_directory(path, content_only=False, log=None):
 
     path = Path(path).absolute().resolve()
     if not path.is_dir():
-        raise ValueError("Not a directory: {}".format(path))
+        raise ValueError(f"Not a directory: {path}")
 
     if content_only:
         for p in path.iterdir():
             if p.is_file():
                 if log:
-                    log("Removing file {}".format(p))
+                    log(f"Removing file {p}")
                 p.unlink()
             elif p.is_dir():
                 if log:
-                    log("Removing directory {}".format(p))
+                    log(f"Removing directory {p}")
                 rmtree(p)
     else:
         if log:
-            log("Removing directory {}".format(path))
+            log(f"Removing directory {path}")
         rmtree(path)
     return
 
@@ -980,9 +980,9 @@ def run_process_streamed(
     out = StringIO()
     pid = process.pid
     if name:
-        name = "<{}> {}".format(pid, name)
+        name = f"<{pid}> {name}"
     else:
-        name = "<{}>".format(pid)
+        name = f"<{pid}>"
 
     if on_output is None:
         on_output = logger.info
@@ -1022,7 +1022,7 @@ def run_process_streamed(
                 return
         local_vars["last_flush"] = now
         if prefix_chunks:
-            on_output("process({}) stdout: {}".format(name, line_str))
+            on_output(f"process({name}) stdout: {line_str}")
         else:
             on_output(line_str)
         return
@@ -1035,7 +1035,7 @@ def run_process_streamed(
         return
 
     # TODO: only when logger.LEVEL == DEBUG
-    flusher = Thread(target=flush_handler, name="Flush process output {}".format(name))
+    flusher = Thread(target=flush_handler, name=f"Flush process output {name}")
     flusher.start()
 
     try:

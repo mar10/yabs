@@ -198,7 +198,7 @@ class TaskRunner:
             try:
                 res = yaml.safe_load(f)
             except yaml.parser.ParserError as e:
-                raise RuntimeError("Could not parse YAML: {}".format(e)) from None
+                raise RuntimeError(f"Could not parse YAML: {e}") from None
 
         if not isinstance(res, dict) or not res.get("file_version", "").startswith(
             "yabs#"

@@ -154,7 +154,7 @@ class TextFileParser(VersionFileParser):
         fspec = self.opts.get("file")
         fspec = resolve_path(self.root_path, fspec, must_exist=True)
         if not fspec:
-            raise RuntimeError("Invalid `version.file`: {}".format(fspec))
+            raise RuntimeError(f"Invalid `version.file`: {fspec}")
         return fspec
 
     def parse(self, replace_version=None):
