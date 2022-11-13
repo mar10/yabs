@@ -26,14 +26,14 @@ def handle_run_command(parser: ArgumentParser, args: Namespace):
 
 
 def handle_info_command(parser: ArgumentParser, args: Namespace):
-    tr = TaskRunner(".", parser, args, pick_tasks="check")
+    tr = TaskRunner(".", parser, args)  # , pick_tasks="check")
     tr.log_final_progress = False
 
     context = TaskContext(tr)
 
     if tr.cli_arg("check"):
         # This will also log the info header:
-        return tr.run()
+        return tr.run(pick_tasks="check")
 
     tr.log_header_info(context=context)
 

@@ -385,8 +385,12 @@ class TaskRunner:
         # Latest tag: TAG
         # Parsed version from PATH (VERSION)
 
-    def run(self):
+    def run(self, pick_tasks=None):
         assert_always(self.start is None)
+
+        if pick_tasks is None:
+            pick_tasks = self.pick_tasks
+        pick_tasks = to_set(pick_tasks, or_none=True)
 
         context = TaskContext(self)
         task_map = PluginManager.task_class_map
@@ -421,7 +425,11 @@ class TaskRunner:
             task = task_cls(task_instance)
 
             task_str = task.to_str(context)
-            log_debug(f"Running {task_str}: { task.opts}...")
+
+            if pick_tasks and task.name not in pick_tasks:
+                log_info(f"Skipping {task_str}.")
+                continue
+            log_debug(f"Running {task_str}: {task.opts}...")
 
             task_instance.start(task_str)
 

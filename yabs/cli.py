@@ -19,9 +19,8 @@ from snazzy import Snazzy, enable_colors
 
 from yabs import __version__
 from yabs.commands import handle_info_command, handle_run_command
-
-from .plugin_manager import PluginManager
-from .util import CONFIG_NAME, check_cli_verbose, init_logging
+from yabs.plugin_manager import PluginManager
+from yabs.util import CONFIG_NAME, check_cli_verbose, init_logging
 
 # --- verbose_parser ----------------------------------------------------------
 

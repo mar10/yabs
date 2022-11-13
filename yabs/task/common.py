@@ -197,6 +197,10 @@ class WorkflowTask(ABC):
     def __repr__(self):
         return self.to_str({})
 
+    @property
+    def name(self):
+        return self.task_inst.name
+
     def to_str(self, context: TaskContext):
         return "{}()".format(self.__class__.__name__)
 
