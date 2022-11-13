@@ -480,4 +480,5 @@ class TaskRunner:
             log_warning(
                 "Dry-Run mode: No bits were harmed during the making of this release."
             )
+        context.close()
         return ok

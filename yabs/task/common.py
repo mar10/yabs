@@ -14,7 +14,14 @@ from typing import TYPE_CHECKING, List, Union
 from git import Repo
 from semantic_version import Version
 
-from ..util import assert_always, check_arg, check_dict_keys, log_warning, write
+from ..util import (
+    assert_always,
+    check_arg,
+    check_dict_keys,
+    log_debug,
+    log_warning,
+    write,
+)
 
 if TYPE_CHECKING:  # Imported by type checkers, but prevent circular includes
     from yabs.task_runner import TaskInstance, TaskRunner
@@ -121,6 +128,13 @@ class TaskContext:
             tag = git_repo.git.describe(res, tags=True)
 
         self.org_tag_name = tag
+
+    def close(self):
+        if self.repo_obj:
+            log_debug(f"Closing {self.repo_obj}...")
+            self.repo_obj.close()
+            self.repo_obj = None
+        return
 
 
 class _TaskResult:
