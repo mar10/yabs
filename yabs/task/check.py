@@ -194,16 +194,18 @@ class CheckTask(WorkflowTask):
         #         )
 
         if opts["can_push"]:
-            info = repo_remote.push(dry_run=True)[0]
-
-            if info.flags & FLAG_ERROR:
-                msg = f"`git push` would fail (flags: {info.flags})"
-                _error("can_push", msg, info.summary)
-            elif not (info.flags & FLAG_UP_TO_DATE):
-                msg = f"`git push` would transfer data (flags: {info.flags})"
-                _warn("can_push", msg, info.summary)
-            else:
-                _ok("can_push", "`git push` would succeed.")
+            try:
+                info = repo_remote.push(dry_run=True)[0]
+                if info.flags & FLAG_ERROR:
+                    msg = f"`git push` would fail (flags: {info.flags})"
+                    _error("can_push", msg, info.summary)
+                elif not (info.flags & FLAG_UP_TO_DATE):
+                    msg = f"`git push` would transfer data (flags: {info.flags})"
+                    _warn("can_push", msg, info.summary)
+                else:
+                    _ok("can_push", "`git push` would succeed.")
+            except Exception as e:
+                _error("can_push", f"`git push` would fail: ({e})")
 
         if opts["clean"]:
             if repo.is_dirty():
@@ -228,7 +230,7 @@ class CheckTask(WorkflowTask):
                     f"GitHub repo {repo_name} is accessible: {full_name}",
                 )
             except Exception as e:
-                _error("github" f"Could not access GitHub repo {repo_name}: {e!r}")
+                _error("github", f"Could not access GitHub repo {repo_name}: {e!r}")
 
         if opts["os"]:
             system = platform.system()
@@ -300,13 +302,17 @@ class CheckTask(WorkflowTask):
                     )
 
         if opts["up_to_date"]:
-            repo_remote.update()
-            status = repo.git.status("-uno", porcelain=False)
-            if 'use "git pull"' in status:
-                msg = "Remote branch contains unpulled changes"
-                _error("up_to_date", msg, status)
-            else:
-                _ok("up_to_date", "Remote branch has not diverged.")
+            try:
+                status = None
+                repo_remote.update()
+                status = repo.git.status("-uno", porcelain=False)
+                if 'use "git pull"' in status:
+                    msg = "Remote branch contains unpulled changes"
+                    _error("up_to_date", msg, status)
+                else:
+                    _ok("up_to_date", "Remote branch has not diverged.")
+            except Exception as e:
+                _error("up_to_date", f"Repo update & status failed: {e}")
 
         if opts["venv"]:
             is_venv = hasattr(sys, "real_prefix") or sys.base_prefix != sys.prefix

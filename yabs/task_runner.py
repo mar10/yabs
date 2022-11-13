@@ -427,7 +427,7 @@ class TaskRunner:
             task_str = task.to_str(context)
 
             if pick_tasks and task.name not in pick_tasks:
-                log_info(f"Skipping {task_str}.")
+                log_debug(f"Skipping {task_str}.")
                 continue
             log_debug(f"Running {task_str}: {task.opts}...")
 
