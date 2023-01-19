@@ -116,7 +116,7 @@ class BuildTask(WorkflowTask):
             fcm.changed_or_added_files
         ):
             log_warning(
-                f"No or not all  artifacts created for `add_artifacts: {artifacts_def}`"
+                f"No or not all artifacts created for `add_artifacts: {artifacts_def}`"
             )
         log_debug(f"Available artifacts: {context.artifacts}")
 

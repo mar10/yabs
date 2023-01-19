@@ -236,7 +236,7 @@ winget (bool), default: *null* (depends)
     Also pre-releases will be flagged.
 
     If `null` or undefined, this test is activated if a `winget_release` task
-    is present and `--no-winget` is ot passed.
+    is present and `--no-winget` is not passed.
 
 yabs (str), default: *null*
     Test if the installed Yabs version matches the provided specification. |br|
