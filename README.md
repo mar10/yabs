@@ -29,7 +29,7 @@ A typical release workflow may look like this:
 6. Upload distribution to [PyPI](https://pypi.org).
 7. Create a new release on [GitHub](https://github.com) and upload assets.
 8. Create a new release on the 
-   [Windows Packager Manager Repository](https://github.com/microsoft/winget-pkgs).
+   [Windows Package Manager Repository](https://github.com/microsoft/winget-pkgs).
 9. Bump, tag, commit, and push for post-release.
 
 Custom tasks may be added using the plugin framework.
