@@ -311,6 +311,27 @@ class WorkflowTask(ABC):
         # raise NotImplementedError
         return None  # no errors
 
+    def get_setup_metadata(self, extra_args: list = None) -> dict:
+        """'Query `setup.py` for project name and version."""
+        if extra_args is None:
+            extra_args = []
+
+        _ret_code, real_name = self._exec(["python", "setup.py", "--name"] + extra_args)
+        if "\n" in real_name:
+            # Fix 'No `name` configuration, performing automatic discovery' prefix
+            log_warning(f"`setup.py --name` returned {real_name!r}")
+            real_name = real_name.split("\n")[-1]
+
+        _ret_code, real_version = self._exec(
+            ["python", "setup.py", "--version"] + extra_args
+        )
+        if "\n" in real_version:
+            # Fix 'No `name` configuration, performing automatic discovery' prefix
+            log_warning(f"`setup.py --version` returned {real_version!r}")
+            real_version = real_version.split("\n")[-1]
+
+        return {"name": real_name, "version": real_version}
+
     @classmethod
     def _check_default_opts(
         cls, task_runner: "TaskRunner", task_def: dict, index: int

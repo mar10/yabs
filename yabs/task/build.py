@@ -69,17 +69,18 @@ class BuildTask(WorkflowTask):
             extra_args.append("--quiet")
 
         # Check if setup.py really uses the expected name & version
-        ret_code, real_name = self._exec(["python", "setup.py", "--name"] + extra_args)
-        ret_code, real_version = self._exec(
-            ["python", "setup.py", "--version"] + extra_args
-        )
-
+        setup_info = self.get_setup_metadata(extra_args)
+        real_name = setup_info["name"]
+        real_version = setup_info["version"]
+        # ret_code, real_version = self._exec(
+        # ret_code, real_name = self._exec(["python", "setup.py", "--name"] + extra_args)
+        # ret_code, real_version = self._exec(
+        #     ["python", "setup.py", "--version"] + extra_args
+        # )
         if real_version != str(context.version):
             if not self.dry_run:
                 raise RuntimeError(
-                    "`setup.py --version` returned {} (expected {})".format(
-                        real_version, context.version
-                    )
+                    f"`setup.py --version` returned {real_version!r} (expected {context.version!r})"
                 )
 
         targets = self.opts["targets"]
