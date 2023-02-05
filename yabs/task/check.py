@@ -316,19 +316,19 @@ class CheckTask(WorkflowTask):
                 _error("venv", "Not running inside a virtual environment.")
 
         if opts["version"]:
-            _ret_code, real_version = self._exec(
-                ["python", "setup.py", "--version"], quiet=True
-            )
+            # _ret_code, real_version = self._exec(
+            #     ["python", "setup.py", "--version"], quiet=True
+            # )
+            setup_info = self.get_setup_metadata([])
+            real_version = setup_info["version"]
             vm = context.version_manager
             if real_version != str(vm.master_version):
                 _error(
                     "version",
-                    "`setup.py --version` returned '{}' (expected {}).".format(
-                        real_version, vm.master_version
-                    ),
+                    "`setup.py --version` returned {real_version!r} (expected {vm.master_version!r}).",
                 )
             else:
-                _ok("version", f"`setup.py --version` returned '{real_version}'.")
+                _ok("version", f"`setup.py --version` returned {real_version!r}.")
 
         if opts["winget"]:
             winget_ok = True

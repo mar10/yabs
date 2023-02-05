@@ -29,7 +29,7 @@ A typical release workflow may look like this:
 6. Upload distribution to [PyPI](https://pypi.org).
 7. Create a new release on [GitHub](https://github.com) and upload assets.
 8. Create a new release on the 
-   [Windows Packager Manager Repository](https://github.com/microsoft/winget-pkgs).
+   [Windows Package Manager Repository](https://github.com/microsoft/winget-pkgs).
 9. Bump, tag, commit, and push for post-release.
 
 
@@ -299,12 +299,12 @@ See [Writing Scripts](ug_writing_scripts.rst) for details.
      for *Yabs* workflows, we can reference it here
 
      ```ps1
-     > wingetcreate new --token $env:GITHUB_OAUTH_TOKEN https://github.com/USER/PROJECT/releases/download/v1.2.3/yabs_test-1.2.3.0-win64.msi
+     > wingetcreate new --token $env:GITHUB_OAUTH_TOKEN https://github.com/USER/PROJECT/releases/download/v1.2.3/PROJECT-1.2.3.0-win64.msi
      ```
 
      The manifest can now be edited and sumbitted again like so:
      ```ps1
-     > wingetcreate submit --token $env:GITHUB_OAUTH_TOKEN .\manifests\m\USER\PROJECT\1.2.3.0\
+     > wingetcreate submit --token $env:GITHUB_OAUTH_TOKEN .\manifests\FIRSTCHAR\USER\PROJECT\1.2.3.0\
      ```
 
   5. There is no need to commit the manifest to Git:
@@ -322,9 +322,15 @@ as part of the workflow:
 > yabs run --inc patch
 ```
 
-> **Note**: Pre-releases (`--inc postrelease`) are still not allowed.<br>
-> Make a *real* version: The version increment must tbe at least `--inc patch`.
+> **Note**: Pre-releases (`--inc postrelease`) are still not allowed:<br>
+> Make a *real* version: The version increment must be at least `--inc patch`.
 
 ```ps1
-wingetcreate update --token $env:GITHUB_OAUTH_TOKEN --urls https://github.com/mar10/wsgidav/releases/download/v4.0.2/WsgiDAV-4.0.2.0-win64.msi --version 4.0.2.0 mar10.wsgidav
+wingetcreate update --token $env:GITHUB_OAUTH_TOKEN --urls https://github.com/USER/PROJECT/releases/download/v1.2.3/PROJECT-1.2.3.0-win64.msi --version 1.2.3.0 USER.PROJECT
 ```
+
+**NOTE**: append the `--submit` argument to send the manifest to the repo.
+
+**NOTE**: If submit fails, it may be necessary to synchronize the repository:<br>
+Open your repo fork (e.g. `https://github.com/USER/winget-pkgs`) and click 
+`Sync fork` in the `Code` tab.

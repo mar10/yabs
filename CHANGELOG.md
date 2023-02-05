@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1 (unreleased)
+
+- Handle 'No `name` configuration, performing automatic discovery' by setup.py
+
 ## 0.5.0 (2022-07)
 
 - Add support for winget-pkgs repository

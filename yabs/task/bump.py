@@ -164,12 +164,12 @@ class BumpTask(WorkflowTask):
         context.version = vm.master_version
 
         if opts["check"] and not dry_run:
-            _ret_code, real_version = self._exec(["python", "setup.py", "--version"])
+            # _ret_code, real_version = self._exec(["python", "setup.py", "--version"])
+            setup_info = self.get_setup_metadata()
+            real_version = setup_info["version"]
             if real_version != str(vm.master_version):
                 log_error(
-                    "`setup.py --version` returned {} (expected {}).".format(
-                        real_version, vm.master_version
-                    )
+                    f"`setup.py --version` returned {real_version!r} (expected {vm.master_version!r})."
                 )
                 return False
 

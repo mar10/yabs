@@ -90,4 +90,8 @@ tasks:
     message: |
       Bump prerelease ({version}) [ci skip]
 
+  # - task: winget_release
+  #   upload: bdist_msi
+  #   package_id: 'mar10.yabs'
+
   - task: push
