@@ -137,10 +137,13 @@ class WingetReleaseTask(WorkflowTask):
             args.append("--submit")
 
         ret_code, _out = self._exec(args)
+        if ret_code:
+            log_warning(
+                "If submit fails, it may be necessary to synchronize the repository.\n"
+                + "See https://yabs.readthedocs.io/en/latest/ug_tutorial.html#windows-package-manager"
+            )
 
         ok = ok and (ret_code == 0)
-
-        # self._exec(["wingetcreate", "submit", "-?"])
 
         char0 = context.repo[0]
         # package_name = context.repo_short  # TODO: allow to override

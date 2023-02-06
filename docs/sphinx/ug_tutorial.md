@@ -252,65 +252,65 @@ See [Writing Scripts](ug_writing_scripts.rst) for details.
 
 ### Create the Initial Windows Package Manager Release
 
-  MSI installers can only be created on Windows platforms.
-  Also pre-releases are not allowed.
+> MSI installers can only be created on Windows platforms.<br>
+> Also note that pre-releases cannot be uploaded to the *WPM repo*.
 
-  Pass `--no-winget` to skip building and uploading an MSI installer 
-  to the winget-pkgs repository.
+Pass `--no-winget` to skip building and uploading an MSI installer 
+to the winget-pkgs repository.
 
-  1. Run on Windows, make sure all tests pass.
-     Create an MSI installer:
-     ```ps1
-     > tox
-     > python -m setup_bdist_msi.py bdist_msi
-     ```
-     Since we have a pre-release, the installer will not have a real version, so
-     uploading to *WPM* would fail!
+1. Run on Windows, make sure all tests pass.
+    Create an MSI installer:
+    ```ps1
+    > tox
+    > python -m setup_bdist_msi.py bdist_msi
+    ```
+    Since we have a pre-release, the installer will not have a real version, so
+    uploading to *WPM* would fail!
 
-     **Install and test** the MSI installer anyway:
-     ```ps1
-     > dist/yabs_test-0.0.0.0-win64.msi`
-     ```
+    **Install and test** the MSI installer anyway:
+    ```ps1
+    > dist/yabs_test-0.0.0.0-win64.msi`
+    ```
 
-     **NOTE:** Publishing a pre-release and test the MSI that was uploaded to 
-     GitHub (still version '0.0.0.0') may be a good idea before taking the 
-     next step.
-  
-  2. Release a package with MSI installer:
-     - Pre-releases (`--inc postrelease`) are **not allowed** here!<br>
-       Make a *real* version: 
-       The version increment must tbe at least `--inc patch`.
-       
-     - Pass `--no-winget-release` to prevent uploading (which would fail)
+    **NOTE:** Publishing a pre-release and test the MSI that was uploaded to 
+    GitHub (still version '0.0.0.0') may be a good idea before taking the 
+    next step.
 
-     Example:
-     ```ps1
-     > yabs run --inc patch --no-winget-release
-     ```
+2. Release a package with MSI installer:
+    - Pre-releases (`--inc postrelease`) are **not allowed** here!<br>
+      Make a *real* version: 
+      The version increment must tbe at least `--inc patch`.
+      
+    - Pass `--no-winget-release` to prevent uploading (which would fail)
 
-     We should now have GitHub release with an additional MSI asset, e.g.
-     `yabs_test-0.2.8.0-win64.msi`
+    Example:
+    ```ps1
+    > yabs run --inc patch --no-winget-release
+    ```
 
-  3. Test the MSI installer. The program version must match the tagged release 
-     version.
-  
-  4. Create the initial manifest
-     Since the token is probably already set as environment variable 
-     for *Yabs* workflows, we can reference it here
+    We should now have GitHub release with an additional MSI asset, e.g.
+    `yabs_test-0.2.8.0-win64.msi`
 
-     ```ps1
-     > wingetcreate new --token $env:GITHUB_OAUTH_TOKEN https://github.com/USER/PROJECT/releases/download/v1.2.3/PROJECT-1.2.3.0-win64.msi
-     ```
+3. Test the MSI installer. The program version must match the tagged release 
+    version.
 
-     The manifest can now be edited and sumbitted again like so:
-     ```ps1
-     > wingetcreate submit --token $env:GITHUB_OAUTH_TOKEN .\manifests\FIRSTCHAR\USER\PROJECT\1.2.3.0\
-     ```
+4. Create the initial manifest
+    Since the token is probably already set as environment variable 
+    for *Yabs* workflows, we can reference it here
 
-  5. There is no need to commit the manifest to Git:
-     Add `manifests/` folder to `.gitignore`
+    ```ps1
+    > wingetcreate new --token $env:GITHUB_OAUTH_TOKEN https://github.com/USER/PROJECT/releases/download/v1.2.3/PROJECT-1.2.3.0-win64.msi
+    ```
 
-  ...
+    The manifest can now be edited and sumbitted again like so:
+    ```ps1
+    > wingetcreate submit --token $env:GITHUB_OAUTH_TOKEN .\manifests\FIRSTCHAR\USER\PROJECT\1.2.3.0\
+    ```
+
+5. There is no need to commit the manifest to Git:
+    Add `manifests/` folder to `.gitignore`
+
+...
 
 
 ### Create a Regular Windows Package Manager Release
