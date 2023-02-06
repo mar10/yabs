@@ -1,22 +1,92 @@
-[tool.black]
-line-length = 88
-target-version = ['py35', 'py36', 'py37', 'py38']
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.hg
-  | \.tox
-  | \.venv
-  | \.eggs
-  | \.cache
-  | build
-  | __pycache__
-  | dist
-  | \.*
+[build-system]
+requires = ["setuptools>=61.0", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
 
-)/
-'''
+[project]
+name = "example_package_YOUR_USERNAME_HERE"
+dynamic = ["version"]
+# version = attr: yabs.__version__
+authors = [{ name = "Martin Wendt", email = "yabs@wwwendt.de" }]
+maintainers = [{ name = "Martin Wendt", email = "yabs@wwwendt.de" }]
+description = "Yet Another Build Script"
+keywords = ["build", "setup", "ci", "workflow", "automation"]
+license = { file = "LICENSE.txt" }
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  # "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Software Development :: Build Tools",
+  "Topic :: System :: Installation/Setup",
+  "Topic :: System :: Software Distribution",
+]
+dependencies = [
+  "GitPython",
+  "PyGithub",
+  "PyYAML",
+  "semantic_version",
+  # "setuptools",
+  "snazzy",
+  "toml",
+  "twine",
+  "wheel",
+]
+# long_description = file: README.md
+# long_description_content_type = text/markdown
+# license = MIT
+# license_files = LICENSE.txt
+
+[project.scripts]
+yabs = "yabs.cli:run"
+
+[project.urls]
+"Homepage" = "https://github.com/mar10/yabs"
+"Bug Tracker" = "https://github.com/mar10/yabs/issues"
+"Source Code" = "https://github.com/mar10/yabs"
+"Documentation" = "https://yabs.readthedocs.io"
+"Download" = "https://github.com/mar10/yabs/releases/latest"
+# "Discussions" = "https://github.com/mar10/yabs/discussions"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["yabs"]
+
+[tool.setuptools.package-data]
+my_module = ["py.typed", "*.pyi", "**/*.pyi"]
+
+[tool.black]
+# line-length = 88
+# target-version = ['py35', 'py36', 'py37', 'py38']
+# include = '\.pyi?$'
+# exclude = '''
+# /(
+#     \.git
+#   | \.hg
+#   | \.tox
+#   | \.venv
+#   | \.eggs
+#   | \.cache
+#   | build
+#   | __pycache__
+#   | dist
+#   | \.*
+# 
+# )/
+# '''
 
 [tool.isort]
 # See https://black.readthedocs.io/en/stable/compatible_configs.html
