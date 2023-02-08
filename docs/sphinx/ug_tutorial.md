@@ -262,6 +262,7 @@ to the winget-pkgs repository.
     Create an MSI installer:
     ```ps1
     > tox
+    ...
     > python -m setup_bdist_msi.py bdist_msi
     ```
     Since we have a pre-release, the installer will not have a real version, so
@@ -291,10 +292,10 @@ to the winget-pkgs repository.
     We should now have GitHub release with an additional MSI asset, e.g.
     `yabs_test-0.2.8.0-win64.msi`
 
-3. Test the MSI installer. The program version must match the tagged release 
+3. Test the MSI installer: The program version must match the tagged release 
     version.
 
-4. Create the initial manifest
+4. Create the initial manifest.
     Since the token is probably already set as environment variable 
     for *Yabs* workflows, we can reference it here
 
@@ -310,7 +311,6 @@ to the winget-pkgs repository.
 5. There is no need to commit the manifest to Git:
     Add `manifests/` folder to `.gitignore`
 
-...
 
 
 ### Create a Regular Windows Package Manager Release
