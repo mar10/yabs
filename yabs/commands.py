@@ -7,10 +7,16 @@ from argparse import ArgumentParser, Namespace
 
 import requests
 
+import yabs.cmd_init
 from yabs.task.common import REQUESTS_HEADERS, TaskContext
 from yabs.task_runner import TaskRunner
 
 from .util import log_error, log_info, log_warning, write
+
+
+def handle_init_command(parser: ArgumentParser, args: Namespace):
+    res = yabs.cmd_init.run(parser, args)
+    return res
 
 
 def handle_run_command(parser: ArgumentParser, args: Namespace):

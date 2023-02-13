@@ -18,7 +18,7 @@ import sys
 from snazzy import Snazzy, enable_colors
 
 from yabs import __version__
-from yabs.commands import handle_info_command, handle_run_command
+from yabs.commands import handle_info_command, handle_init_command, handle_run_command
 from yabs.plugin_manager import PluginManager
 from yabs.util import CONFIG_NAME, check_cli_verbose, init_logging
 
@@ -79,6 +79,16 @@ def run():
         help="display version info and exit (combine with -v for more information)",
     )
     subparsers = parser.add_subparsers(help="sub-command help")
+
+    # # --- Create the parser for the "init" command -----------------------------
+
+    sp = subparsers.add_parser(
+        "init",
+        parents=parents,
+        allow_abbrev=False,
+        help="create a new yabs configuration",
+    )
+    sp.set_defaults(cmd_handler=handle_init_command, cmd_name="init")
 
     # # --- Create the parser for the "info" command -----------------------------
 

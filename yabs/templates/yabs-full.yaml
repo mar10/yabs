@@ -1,0 +1,123 @@
+# Release-Tool Workflow Definition
+# See https://github.com/mar10/yabs
+#
+# Created using `yabs init` {{ date }}
+
+
+file_version: yabs#1
+config:
+  # Options used as default for all tools in this workflow
+  repo: '{{ full_repo_name }}'
+  # GitHub access token
+  gh_auth:
+    oauth_token_var: {{ github_token_env_name }}
+  version:
+    - type: __version__        # First entry is master for synchronizing
+      file: src/test_release_tool/__init__.py
+      # match: '__version__\s*=\s*[''\"](\d+\.\d+\.\d+).*[''\"]'
+      # template: '__version__ = "{version}"'
+    # - type: setup_cfg        # First entry is master for synchronizing
+    #  entry: metadata.version
+    #  template:
+  max_increment: minor
+  branches:                  # Allowed git branches
+    - master
+
+
+tasks:
+  # The following tools are available. They are executed in the order
+  # listed here
+
+  # 'check': Assert preconditons and fail otherwise
+  - task: check
+    build: true             # dist/ folder exists
+    can_push: true          # Test if 'git push' would/would not succeed
+    github: true            # GitHub repo name valid and online accessible
+    clean: true             # Repo must/must not contain modifications
+    os: null                # (str, list)
+    python: ">=3.9"         # SemVer specifier
+    twine: true             # `twine` is available
+    up_to_date: true        # everything pulled from remote
+    venv: true              # running inside a virtual environment
+    version: true           # `setup.py --version` returns the configured version
+    # winget: true            # `wingetcreate` is available
+    yabs: ">=0.5"           # SemVer specifier
+
+  # 'run': Run arbitrary shell command
+  - task: exec
+    args: ["tox", "-e", "lint"]     # shell command and optional arguments
+    # dry_run_args: ["pwd"]   #
+    always: true            # `true`: run even in dry-run mode
+    silent: true            # `true`: suppress output
+    ignore_errors: false    # `true`: show warning, but proceed on errors (exit code != 0)
+
+  - task: exec
+    args: ["tox"]           # shell command and optional arguments
+    # dry_run_args: ["pwd"]   #
+    always: true            # `true`: run even in dry-run mode
+    silent: true            # `true`: suppress output
+    ignore_errors: false    # `true`: show warning, but proceed on errors (exit code != 0)
+
+  # 'bump': Increment project version (requires argument: `yabs run --inc INC`)
+  - task: bump
+    inc: null               # Use value passed as 'yabs run --inc INC'
+
+  # # 'replace': In-place string replacements
+  # # (Uses https://github.com/outaTiME/applause)
+  # - task: replace
+  #  files: null               # minimatch globbing pattern
+  #  patterns: []              # See https://github.com/outaTiME/applause
+  #  # Shortcut patterns (pass false to disable):
+  #                            # Replace '@@timestamp' with current datetime
+  #  setVersion: '{version}'   # Replace '@@version' with current version
+
+    # 'commit': Commit modified files
+  - task: commit
+    add: []                 # Also `git add` these files ('.' for all)
+    add_known: true         # Commit with -a flag
+    message: |
+      Bump version to {version}
+
+  # 'tag': Create an annotated tag
+  - task: tag               #
+    name: v{version}        #
+    message: |              #
+      Version {version}
+
+  # 'push': Push changes and tags
+  - task: push
+    tags: true              # Use `--follow-tags`
+
+  # 'pypi_release': Create a release on PyPI
+  - task: pypi_release
+    build:
+      - sdist
+      - bdist_wheel
+    upload: true
+    # revert_bump_on_error: true
+
+  # 'github_release': Create a release on GitHub
+  - task: github_release
+    # Override `config.gh_gh_auth`:
+    gh_auth: null
+    name: 'v{version}'
+    message: |
+      Released {version}
+
+      [Changelog](https://github.com/{repo}/blob/master/CHANGELOG.md),
+      [Commit details](https://github.com/{repo}/compare/{org_tag_name}...{tag_name}).
+    # draft: true
+    prerelease: null  # null: guess from version number format
+    upload:
+      - sdist
+      - bdist_wheel
+
+  - task: bump
+    inc: "postrelease"
+
+  - task: commit
+    add_known: true
+    message: |
+      Bump prerelease ({version}) [ci skip]
+
+  - task: push
