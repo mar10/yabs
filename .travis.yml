@@ -18,6 +18,7 @@ jobs:
       dist: xenial
       before_install:
         # Fix "AttributeError: 'str' object has no attribute 'name'" on Py37
+        - pip install -U pip
         - pip install -U importlib_metadata
     # - python: "3.6"
     #   env: TOXENV=py36
