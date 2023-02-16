@@ -18,7 +18,8 @@ import sys
 from snazzy import Snazzy, enable_colors
 
 from yabs import __version__
-from yabs.commands import handle_info_command, handle_init_command, handle_run_command
+from yabs.cmd_init import handle_init_command
+from yabs.commands import handle_info_command, handle_run_command
 from yabs.plugin_manager import PluginManager
 from yabs.util import CONFIG_NAME, check_cli_verbose, init_logging
 
@@ -80,7 +81,7 @@ def run():
     )
     subparsers = parser.add_subparsers(help="sub-command help")
 
-    # # --- Create the parser for the "init" command -----------------------------
+    # --- Create the parser for the "init" command -----------------------------
 
     sp = subparsers.add_parser(
         "init",
@@ -88,9 +89,15 @@ def run():
         allow_abbrev=False,
         help="create a new yabs configuration",
     )
+    sp.add_argument(
+        "filename",
+        nargs="?",
+        default=f"./{CONFIG_NAME}",
+        help="path to new config file (default: %(default)s)",
+    )
     sp.set_defaults(cmd_handler=handle_init_command, cmd_name="init")
 
-    # # --- Create the parser for the "info" command -----------------------------
+    # --- Create the parser for the "info" command -----------------------------
 
     sp = subparsers.add_parser(
         "info",

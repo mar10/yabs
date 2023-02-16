@@ -12,17 +12,31 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 from .util import datetime_to_iso
 
 
+def handle_init_command(parser: ArgumentParser, args: Namespace):
+    res = run(parser, args)
+    return res
+
+
 def run(parser: ArgumentParser, args: Namespace):
 
-    target = Path(".") / "new-yabs.yaml"
+    target = Path(args.filename)
+    # target = Path(".") / "new-yabs.yaml"
     target = target.absolute()
     if target.exists():
         click.confirm(f"Overwrite {target} ?", abort=True)
 
+    full_repo_name = click.prompt("GitHub Repo name (format: USER/PROJECT)", type=str)
+    if full_repo_name.count("/") != 1:
+        raise click.BadParameter(full_repo_name)
+
+    github_token_env_name = click.prompt(
+        "GitHub OAUTH token environment variable", default="GITHUB_OAUTH_TOKEN"
+    )
+
     context = {
         "date": datetime_to_iso(),
-        "full_repo_name": "mar10/test-release-tool",
-        "github_token_env_name": "GITHUB_OAUTH_TOKEN",
+        "full_repo_name": full_repo_name,
+        "github_token_env_name": github_token_env_name,
     }
     file_type = click.prompt(
         "Type",

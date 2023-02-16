@@ -3,7 +3,9 @@
 file_version: yabs#1
 
 config:
-  repo: 'mar10/test-release-tool'
+  repo: '{{ full_repo_name }}'
+  gh_auth:
+    oauth_token_var: {{ github_token_env_name }}
   version:
     - type: __version__
       file: src/test_release_tool/__init__.py
