@@ -16,7 +16,9 @@ tox = "*"
 yabs = {editable = true, path = "."}
 
 [packages]
+click = "*"
 GitPython = "*"
+jinja2 = "*"
 PyGithub = "*"
 PyYAML = "*"
 requests = "*"

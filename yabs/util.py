@@ -638,12 +638,12 @@ def plural_s(value) -> str:
     return "" if n == 1 else "s"
 
 
-def datetime_to_iso(dt=None, microseconds=False):
+def datetime_to_iso(dt=None, *, microseconds: bool = False) -> str:
     """Return current UTC datetime as ISO formatted string."""
     if dt is None:
         dt = datetime.now()
     if not microseconds:
-        dt.replace(microsecond=0)
+        dt = dt.replace(microsecond=0)
     return dt.isoformat(sep=" ")
 
 
