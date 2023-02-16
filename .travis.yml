@@ -28,13 +28,13 @@ jobs:
     #     - pip install --upgrade virtualenv
     # - python: "3.5"  # EOL 2020-09-13
     #     env: TOXENV=py35
-    # - python: "3.12-dev"
-    #   env: TOXENV=py312
-    #   dist: bionic
+    - python: "3.12-dev"
+      env: TOXENV=py312
+      dist: bionic
   allow_failures:
-    # - python: "3.12-dev"
-    #   env: TOXENV=py312
-    #   dist: bionic
+    - python: "3.12-dev"
+      env: TOXENV=py312
+      dist: bionic
 
 install:
   - pip install tox-travis flake8 coveralls coverage isort
