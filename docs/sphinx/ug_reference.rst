@@ -21,7 +21,8 @@ for all following tasks in this workflow:
           file: src/test_release_tool/__init__.py
       max_increment: minor
       branches:  # Current branch must be in this list
-        - master
+        - main  # Used by GitHub since 2020-11
+        - master  # legacy 
 
 branches (str | list), default: *null*
     Git branch name (or list of such) that are allowed. |br|

@@ -7,7 +7,7 @@ config:
   version:
     - type: __version__
       file: src/test_release_tool/__init__.py
-  branches: master
+  branches: main  # or master?
 
 
 tasks:
