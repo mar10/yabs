@@ -11,13 +11,36 @@ Basic Command
 Use the ``--help`` or ``-h`` argument to get help::
 
     $ yabs --help
-    usage: yabs [-h] [-v | -q] [-n] [--no-color] [-V] {run} ...
+    usage: yabs [-h] [-v | -q] [-n] [--no-color] [-V] {init,info,run} ...
 
     Release workflow automation tools.
 
     positional arguments:
-    {run}          sub-command help
-        run          run a workflow definition
+    {init,info,run}  sub-command help
+        init           create a new yabs configuration
+        info           show project information and optionally run `check` task
+        run            run a workflow definition
+
+    optional arguments:
+    -h, --help       show this help message and exit
+    -v, --verbose    increment verbosity by one (default: 3, range: 0..5)
+    -q, --quiet      decrement verbosity by one
+    -n, --dry-run    just simulate and log results, but don't change anything
+    --no-color       prevent use of ansi terminal color codes
+    -V, --version    display version info and exit (combine with -v for more information)
+
+    See also https://github.com/mar10/yabs
+    $
+
+
+`init` command
+==============
+    
+    $ yabs init --help
+    usage: yabs init [-h] [-v | -q] [-n] [--no-color] [filename]
+
+    positional arguments:
+    filename       path to new config file (default: ./yabs.yaml)
 
     optional arguments:
     -h, --help     show this help message and exit
@@ -25,9 +48,24 @@ Use the ``--help`` or ``-h`` argument to get help::
     -q, --quiet    decrement verbosity by one
     -n, --dry-run  just simulate and log results, but don't change anything
     --no-color     prevent use of ansi terminal color codes
-    -V, --version  display version info and exit (combine with -v for more information)
+    $
 
-    See also https://github.com/mar10/yabs
+
+`info` command
+==============
+
+    $ yabs info --help
+    usage: yabs init [-h] [-v | -q] [-n] [--no-color] [filename]
+
+    positional arguments:
+    filename       path to new config file (default: ./yabs.yaml)
+
+    optional arguments:
+    -h, --help     show this help message and exit
+    -v, --verbose  increment verbosity by one (default: 3, range: 0..5)
+    -q, --quiet    decrement verbosity by one
+    -n, --dry-run  just simulate and log results, but don't change anything
+    --no-color     prevent use of ansi terminal color codes
     $
 
 
@@ -41,13 +79,13 @@ For example, publish a ne patch release::
 See also the help::
 
     $ yabs run --help
-    usage: yabs run [-h] [-v | -q] [-n] [--no-color] [--force] [--no-release] [--no-progress]
-                    [--inc {major,minor,patch,postrelease}] [--no-bump] [--force-pre-bump] [--no-check] [--gh-draft] [--gh-pre]    
-                    [--no-winget-release]
+    usage: yabs run [-h] [-v | -q] [-n] [--no-color] [--force] [--no-release] [--progress]
+                    [--inc {major,minor,patch,postrelease}] [--no-bump] [--force-pre-bump] [--no-check] [--gh-draft]
+                    [--gh-pre] [--no-winget-release]
                     [workflow]
 
     positional arguments:
-    workflow              run a workflow definition
+    workflow              path to workflow definition (default: ./yabs.yaml)
 
     optional arguments:
     -h, --help            show this help message and exit
@@ -57,7 +95,7 @@ See also the help::
     --no-color            prevent use of ansi terminal color codes
     --force               allow to ignore some errors (like bumping above `max_increment`)
     --no-release          don't upload tags and assets to GitHub, PyPI, or winget-pkgs (but still build assets)
-    --no-progress         do not display current progress table between tasks, even if verbose >= 3
+    --progress            display current progress table between tasks
     --inc {major,minor,patch,postrelease}
                             bump semantic version (used as default for `bump` task's `inc` option)
     --no-bump             run all 'bump' tasks in dry-run mode

@@ -25,6 +25,11 @@ A simple confuguration script may look like this: |br|
 See :doc:`ug_sample_yabs_yaml` for a complete configuration with all available
 options and defaults.
 
+.. note::
+
+    To get started, run ``yabs init`` inside your project's directory.
+    This will prompt for a few details and create a fresh ``yabs.yaml`` file.
+
 
 Task Types
 ==========

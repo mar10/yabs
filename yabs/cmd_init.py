@@ -22,8 +22,14 @@ def run(parser: ArgumentParser, args: Namespace):
     target = Path(args.filename)
     # target = Path(".") / "new-yabs.yaml"
     target = target.absolute()
+    if not target.suffix:
+        target = target.with_suffix(".yaml")
+    if target.suffix != ".yaml":
+        raise click.BadArgumentUsage(f"Expected `.yaml` extension: {target}")
     if target.exists():
         click.confirm(f"Overwrite {target} ?", abort=True)
+    else:
+        click.echo(f"Creating {target}...")
 
     full_repo_name = click.prompt("GitHub Repo name (format: USER/PROJECT)", type=str)
     if full_repo_name.count("/") != 1:
