@@ -347,7 +347,7 @@ class CheckTask(WorkflowTask):
                     f"Runinng on {platform.system()} (winget needs MS Windows).",
                 )
 
-            if cli_arg("inc") == "postrelease":
+            if cli_arg("inc") == "postrelease" and not cli_arg("no_winget_release"):
                 _error(
                     "winget",
                     "`--inc postrelease` not allowed (cannot publish pre-releases on winget-pkgs).",

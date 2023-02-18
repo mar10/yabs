@@ -1,19 +1,18 @@
-# sudo: false
 language: python
 os: linux
 jobs:
   include:
-    - python: "3.11"
+    - python: "3.11"  # EOL 2027-10-24
       env: TOXENV=check,py311
       dist: bionic
-    - python: "3.10"
+    - python: "3.10"  # EOL 2026-10-04
       env: TOXENV=py310
       dist: bionic
-    - python: "3.9"
+    - python: "3.9"  # EOL 2025-10-05
       env: TOXENV=py39
-    - python: "3.8"
+    - python: "3.8"  # EOL 2024-10-14
       env: TOXENV=py38
-    - python: "3.7"
+    - python: "3.7"  # EOL 2023-06-27
       env: TOXENV=py37
       dist: xenial
       before_install:
@@ -22,7 +21,7 @@ jobs:
         # Fix "AttributeError: 'str' object has no attribute 'name'" on Py37
         - pip install -U pip importlib_metadata
     # - python: "3.6"
-    #   env: TOXENV=py36
+    #   env: TOXENV=py36  # EOL 2021-12-21
     #   before_install:
     #     # Fix for cryptography on Py36
     #     - pip install --upgrade virtualenv
