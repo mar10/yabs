@@ -14,6 +14,7 @@ import logging
 import os
 import platform
 import sys
+import click
 
 from snazzy import Snazzy, enable_colors
 
@@ -192,7 +193,10 @@ def run():
 
     try:
         return args.cmd_handler(parser, args)
-    except KeyboardInterrupt:
+    except click.ClickException as e:
+        print(f"{e!r}", file=sys.stderr)
+        sys.exit(2)
+    except (KeyboardInterrupt, click.Abort):
         print("\nAborted by user.", file=sys.stderr)
         sys.exit(3)
     # Unreachable...
