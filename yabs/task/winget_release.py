@@ -6,6 +6,8 @@
 import os
 from typing import TYPE_CHECKING
 
+import click
+
 from ..util import check_arg, log_dry, log_warning
 from .common import SkipTaskResult, TaskContext, WarningTaskResult, WorkflowTask
 
@@ -48,6 +50,27 @@ class WingetReleaseTask(WorkflowTask):
 
     @classmethod
     def check_task_def(cls, task_inst: "TaskInstance"):
+        tr = task_inst.task_runner
+        cli_arg = tr.cli_arg
+        if not (
+            cli_arg("no_release")
+            or cli_arg("no_winget_release")
+            # or cli_arg("dry_run")
+        ):
+            log_warning(
+                "Pushing a release to the winget-pkgs repository may fail "
+                "if your fork is outdated."
+            )
+            log_warning("You should now synchronize your repository fork:")
+            log_warning(
+                "  1. Open your repo fork (e.g. `https://github.com/USER/winget-pkgs`)"
+            )
+            log_warning("  2. Click `Sync fork` in the `Code` tab")
+            log_warning("  3. Click [Update branch]")
+            log_warning(
+                "See https://yabs.readthedocs.io/en/latest/ug_tutorial.html#windows-package-manager"
+            )
+            click.confirm("Continue with publish?", abort=True)
         return True
 
     def run(self, context: TaskContext):

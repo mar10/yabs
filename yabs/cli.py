@@ -14,8 +14,8 @@ import logging
 import os
 import platform
 import sys
-import click
 
+import click
 from snazzy import Snazzy, enable_colors
 
 from yabs import __version__

@@ -329,8 +329,9 @@ as part of the workflow:
 wingetcreate update --token $env:GITHUB_OAUTH_TOKEN --urls https://github.com/USER/PROJECT/releases/download/v1.2.3/PROJECT-1.2.3.0-win64.msi --version 1.2.3.0 USER.PROJECT
 ```
 
-**NOTE**: append the `--submit` argument to send the manifest to the repo.
+**NOTE**: Append the `--submit` argument to send the manifest to the repo.
 
 **NOTE**: If submit fails, it may be necessary to synchronize the repository:<br>
-Open your repo fork (e.g. `https://github.com/USER/winget-pkgs`) and click 
-`Sync fork` in the `Code` tab.
+Open your repo fork (e.g. `https://github.com/USER/winget-pkgs`), 
+switch to the `Code` tab, click `Sync fork` and then [Update branch]:<br>
+![Sync](../sync_fork.png)

@@ -298,7 +298,7 @@ class TaskRunner:
             if err_list:
                 errors.extend(err_list)
 
-            # Let overridden clasmethods do some custom checks:
+            # Let overridden classmethods do some custom checks:
             res = task_cls.check_task_def(task_inst)
             if res in (None, True):
                 continue
@@ -395,10 +395,11 @@ class TaskRunner:
         context = TaskContext(self)
         task_map = PluginManager.task_class_map
 
+        #
         # --- Write Header -----------------------------------------------------
         self.log_header_info(context=context)
 
-        # --- Write Header -----------------------------------------------------
+        # --- Run task sequence ------------------------------------------------
 
         ok = True
         self.start = time.monotonic()
@@ -412,7 +413,7 @@ class TaskRunner:
             task_cls = task_map.get(task_type)
             if not task_cls:
                 raise ConfigError(
-                    "Invalid task type: {} (expected {})".format(
+                    "Invalid task type: {!r} (expected {})".format(
                         task_type, ", ".join(task_map.keys())
                     )
                 )
