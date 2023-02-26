@@ -61,20 +61,6 @@ extensions = [
     'sphinxcontrib.mermaid',
 ]
 
-# def setup(app: Sphinx):
-#     """Add functions to the Sphinx setup."""
-#     from myst_parser._docs import (
-#         DirectiveDoc,
-#         DocutilsCliHelpDirective,
-#         MystConfigDirective,
-#     )
-
-#     app.add_css_file("custom.css")
-#     app.add_directive("myst-config", MystConfigDirective)
-#     app.add_directive("docutils-cli-help", DocutilsCliHelpDirective)
-#     app.add_directive("doc-directive", DirectiveDoc)
-
-
 # A string of reStructuredText that will be included at the end of every source file that is read.
 # This is the right place to add substitutions that should be available in every file. An example:
 rst_epilog = """
@@ -228,13 +214,6 @@ todo_include_todos = True
 # a list of builtin themes.
 # html_theme = 'alabaster'
 html_theme = "furo"
-# if not on_rtd:
-#     # only import and set the theme if we're building docs locally
-#     # otherwise, readthedocs.org uses their theme by default, so no need to specify it
-#     import sphinx_rtd_theme
-#     html_theme = 'sphinx_rtd_theme'
-#     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
