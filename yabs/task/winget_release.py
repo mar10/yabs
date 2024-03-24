@@ -22,6 +22,7 @@ class WingetReleaseTask(WorkflowTask):
         "package_id": None,
         # "token": None,
         "upload": None,  # Must be "bdist_msi",
+        "assume_synced": None,  # If True, skip warning about outdated fork
     }
     MANDATORY_OPTS = {"package_id", "upload"}
 
@@ -33,6 +34,7 @@ class WingetReleaseTask(WorkflowTask):
         check_arg(opts["package_id"], str)
         check_arg(opts["upload"], str, opts["upload"] == "bdist_msi")
         check_arg(opts["out"], str, or_none=True)
+        check_arg(opts["assume_synced"], bool, or_none=True)
 
     # def to_str(self, context :TaskContext):
     #     add = self.opts["add"] or self.opts["add_known"]
@@ -56,7 +58,10 @@ class WingetReleaseTask(WorkflowTask):
             cli_arg("no_release")
             or cli_arg("no_winget_release")
             # or cli_arg("dry_run")
+            or tr.command == "info"
+            or task_inst.task_def.get("assume_synced") is True
         ):
+            print(task_inst.task_def)
             log_warning(
                 "Pushing a release to the winget-pkgs repository may fail "
                 "if your fork is outdated."
@@ -67,6 +72,9 @@ class WingetReleaseTask(WorkflowTask):
             )
             log_warning("  2. Click `Sync fork` in the `Code` tab")
             log_warning("  3. Click [Update branch]")
+            log_warning(
+                "This warning can be suppressed by adding `assume_synced: true` to the task definition."
+            )
             log_warning(
                 "See https://yabs.readthedocs.io/en/latest/ug_tutorial.html#windows-package-manager"
             )
