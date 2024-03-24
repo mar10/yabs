@@ -110,6 +110,12 @@ tasks:
       - sdist
       - bdist_wheel
 
+  # Windows Packager Manager release 
+  - task: winget_release
+    upload: bdist_msi
+    package_id: 'USER.PROJECT'
+    assume_synced: false  # If True, skip warning about outdated fork
+
   - task: bump
     inc: "postrelease"
 

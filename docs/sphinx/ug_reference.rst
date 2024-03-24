@@ -510,14 +510,21 @@ Command Line Arguments:
 'winget_release' Task
 ---------------------
 
-Call ``wingetcreate update`` to updte an existing 
+Call ``wingetcreate update`` to update an existing 
 `release on winget-pkgs <https://github.com/microsoft/winget-pkgs>`_:
 
 .. code-block:: yaml
 
     - task: winget_release
       upload: 'bdist_msi'
-      package_id: foobar
+      package_id: 'foo.bar'
+      assume_synced: false 
+
+assume_synced (bool), default: *false*
+    If true, skip warning about outdated fork.
+
+package_id (str)
+    Package id in the WPM repo. Typically USER.PROJECT.
 
 upload (str), default: *'bdist_msi'*
     The artifact-id that was created using an upstream exec task.
