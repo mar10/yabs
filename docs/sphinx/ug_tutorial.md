@@ -218,7 +218,7 @@ Remarks:
      then `--inc postrelease` will **not** tag:<br>
      `v1.2.3-a1` &#x21d2; `v1.2.3-a1`
 
-     Reason: we assume that `1.2.3` is already released and follwoing workflow
+     Reason: we assume that `1.2.3` is already released and following workflow
      steps will tag and release `v1.2.3-a1` (which does not yet exist).
      Otherwise `...-a2` would be released, leaving a gap in the tag sequence.
 
@@ -322,16 +322,42 @@ as part of the workflow:
 > yabs run --inc patch
 ```
 
-> **Note**: Pre-releases (`--inc postrelease`) are still not allowed:<br>
-> Make a *real* version: The version increment must be at least `--inc patch`.
+Pre-releases (`--inc postrelease`) are still not allowed:<br>
+In order to make a *real* version: The version increment must be at least 
+`--inc patch`.
 
-```ps1
-wingetcreate update --token $env:GITHUB_OAUTH_TOKEN --urls https://github.com/USER/PROJECT/releases/download/v1.2.3/PROJECT-1.2.3.0-win64.msi --version 1.2.3.0 USER.PROJECT
-```
 
-**NOTE**: Append the `--submit` argument to send the manifest to the repo.
+> **NOTE** <br> 
+> If something went wrong, i.e. we see an error about 'WingetReleaseTask failed',
+> one reason could be that the repository is not in sync with the forked repo.
+> This can be fixed by synchronizing the repository as explained below.
+>
+>
+> Anyway, we can execute the missing steps manually:
+>
+>   1. Update the manifest (also validates):<br>
+>      ```ps1
+>      wingetcreate update --token $env:GITHUB_OAUTH_TOKEN --urls https://github.com/USER/PROJECT/releases/download/v1.2.3/PROJECT-1.2.3.0-win64.msi --version 1.2.3.0 USER.PROJECT
+>      ```
+> 
+>   2. Submit the manifest:<br>
+>      Same command as 1.) but append the `--submit` argument to send the manifest to the repo.
+> 
+>   3. Bump: <br>
+>      Edit `PROJECT/__init__.py: __version__ = "1.2.3" -> "1.2.4-a1"`
+>
+>   4. Commit:<br>
+>      "Bump prerelease (1.2.4-a1) [ci skip]"
+>
+>   5. Push
 
-**NOTE**: If submit fails, it may be necessary to synchronize the repository:<br>
+
+#### Syncronize the WPM Fork
+
+If submit fails, it may be necessary to synchronize the repository:<br>
 Open your repo fork (e.g. `https://github.com/USER/winget-pkgs`), 
 switch to the `Code` tab, click `Sync fork` and then [Update branch]:<br>
 ![Sync](../sync_fork.png)
+
+  Execute the missing steps:
+  [how to do it in the docs](https://yabs.readthedocs.io/en/latest/ug_tutorial.html#create-a-regular-windows-package-manager-release)

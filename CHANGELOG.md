@@ -1,7 +1,10 @@
 # Changelog
 
 ## 0.6.1 (unreleased)
-- 
+- Deprecate Python 3.7
+- Add Python 3.12
+- Add warning before pushing a winget release: "Did you force-sync your branch?"  (`click.confirm()`)
+- Use furo theme for online docs
 
 ## 0.6.0 (2023-02-18)
 

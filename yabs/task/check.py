@@ -385,13 +385,17 @@ class CheckTask(WorkflowTask):
                         log_warning(
                             "Note that Yabs only supports updating existing winget packages."
                         )
-                        log_warning("Run `wingetcreate new` manually.")
+                        log_warning(
+                            "Run `wingetcreate new` manually, "
+                            "see https://yabs.readthedocs.io/en/latest/ug_tutorial.html#windows-package-manager"
+                        )
                     else:
                         _error(
                             "winget",
                             f"Could not find package `{package_name}` on winget-pkgs "
                             f"(return code: 0x{ret_code:08x}): "
                             "Yabs supports updating existing packages only.",
+                            "see https://yabs.readthedocs.io/en/latest/ug_tutorial.html#windows-package-manager",
                         )
                 else:
                     _ok(
