@@ -331,7 +331,7 @@ class CheckTask(WorkflowTask):
             if real_version != str(vm.master_version):
                 _error(
                     "version",
-                    "`setup.py --version` returned {real_version!r} (expected {vm.master_version!r}).",
+                    f"`setup.py --version` returned {real_version!r} (expected {vm.master_version!r}).",
                 )
             else:
                 _ok("version", f"`setup.py --version` returned {real_version!r}.")
