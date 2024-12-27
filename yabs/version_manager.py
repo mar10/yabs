@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
-"""
-"""
+""" """
+
 import os
 import re
 import tempfile
@@ -251,7 +251,7 @@ class PyprojectTomlParser(VersionFileParser):
     # - support poetry
     # - support flit
 
-    def _find_config_file(self, root):
+    def _find_config_file(self):
         fspec = self.opts.get("file", "pyproject.toml")
         fspec = resolve_path(self.root_path, fspec, must_exist=True)
         return fspec
