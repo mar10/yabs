@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
-"""
-"""
+""" """
+
 from typing import TYPE_CHECKING
 
 from ..util import ConfigError, check_arg, log_error, log_info, log_warning
@@ -52,7 +51,10 @@ class BumpTask(WorkflowTask):
             "--inc",
             choices=["major", "minor", "patch", "postrelease"],
             default=None,
-            help="bump semantic version (used as default for `bump` task's `inc` option)",
+            help=(
+                "bump semantic version (used as default for "
+                "`bump` task's `inc` option)"
+            ),
         )
         run_parser.add_argument(
             "--no-bump",
@@ -81,7 +83,7 @@ class BumpTask(WorkflowTask):
 
         inc = task_def.get("inc") or cli_arg("inc")
         if not inc:
-            return "'bump' tasks require `--inc` argument or `inc` option"
+            return "'bump' tasks require `--inc` argument or `inc` option."
 
         max_increment = config.get("max_increment", "minor")
         max_idx = ORDERED_INCREMENTS.index(max_increment)
@@ -89,14 +91,14 @@ class BumpTask(WorkflowTask):
         if inc_idx > max_idx:
             if cli_arg("force"):
                 log_warning(
-                    "Enforcing `--inc {}` although `max_increment` option is set to '{}'".format(
-                        cli_arg("inc"), max_increment
-                    )
+                    f"Enforcing `--inc {cli_arg('inc')}` "
+                    f"although `max_increment` option is set to '{max_increment}'."
                 )
             else:
                 return (
-                    "`--inc {}` was passed, but the `max_increment` option is set to '{}' "
-                    "(pass `--force` to ignore).".format(cli_arg("inc"), max_increment)
+                    f"`--inc {cli_arg('inc')}` was passed, "
+                    f"but the `max_increment` option is set to '{max_increment}' "
+                    "(pass `--force` to ignore)."
                 )
 
         return True
@@ -116,7 +118,8 @@ class BumpTask(WorkflowTask):
                 inc = context.inc
             else:
                 raise ConfigError(
-                    "Missing bump increment: either define `inc` option or pass `--inc` argument."
+                    "Missing bump increment: either define `inc` option "
+                    "or pass `--inc` argument."
                 )
 
         if inc not in INCREMENTS:
@@ -144,18 +147,21 @@ class BumpTask(WorkflowTask):
             # not bumped again.
             if is_version_tagged:
                 log_info(
-                    f"Bump `--inc postrelease` is applied for TAGGED pre release {org_version}."
+                    "Bump `--inc postrelease` is applied for TAGGED "
+                    f"pre release {org_version}."
                 )
             elif self.cli_arg("force_pre_bump"):
                 log_warning(
-                    f"Bump `--inc postrelease` was used for UNTAGGED pre release {org_version}. "
+                    "Bump `--inc postrelease` was used for UNTAGGED "
+                    f"pre release {org_version}. "
                     "`--force-pre-bump` is set: bumping anyway..."
                 )
             else:
                 log_warning(
                     "Bump `--inc postrelease` is ignored, because current version "
                     f"{org_version} is already a pre-release and not yet tagged "
-                    f"(assuming the following tasks will tag and release {org_version}).\n"
+                    "(assuming the following tasks will tag and release "
+                    f"{org_version}).\n"
                     "Pass `--force-pre-bump` to bump anyway."
                 )
                 return SkipTaskResult("Ignored for untagged pre-relase.")
@@ -165,11 +171,12 @@ class BumpTask(WorkflowTask):
 
         if opts["check"] and not dry_run:
             # _ret_code, real_version = self._exec(["python", "setup.py", "--version"])
-            setup_info = self.get_setup_metadata()
+            setup_info = self.get_project_metadata()
             real_version = setup_info["version"]
             if real_version != str(vm.master_version):
                 log_error(
-                    f"`setup.py --version` returned {real_version!r} (expected {vm.master_version!r})."
+                    f"`Detected version {real_version!r} "
+                    f"(expected {vm.master_version!r})."
                 )
                 return False
 

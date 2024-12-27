@@ -1,6 +1,9 @@
 # Changelog
 
-## 0.6.2 (unreleased)
+## 0.7.0 (unreleased)
+- Use ruff
+- Add Python 3.13
+- Support `version=` in pyproject.toml
 
 ## 0.6.1 (2024-03-24)
 - Deprecate Python 3.7

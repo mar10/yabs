@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
-"""
-"""
+""" """
+
 import json
 import platform
 import re
@@ -15,9 +14,16 @@ import requests
 from github import Github
 from semantic_version import SimpleSpec, Version
 
-from ..util import check_arg, log_debug, log_error, log_info, log_warning
+from ..util import (
+    check_arg,
+    log_debug,
+    log_error,
+    log_info,
+    log_warning,
+    to_list,
+    write,
+)
 from ..util import plural_s as ps
-from ..util import to_list, write
 from .common import (
     DEFAULT_USER_AGENT,
     REQUESTS_HEADERS,
@@ -100,11 +106,13 @@ class CheckTask(WorkflowTask):
             ) and not self.cli_arg("no_winget_release"):
                 opts["winget"] = True
                 log_debug(
-                    "Assuming `check.winget: true`, because `winget_release` task is active."
+                    "Assuming `check.winget: true`, because `winget_release` "
+                    "task is active."
                 )
             else:
                 log_debug(
-                    "Assuming `check.winget: false`, because no `winget_release` task is active."
+                    "Assuming `check.winget: false`, because no `winget_release` "
+                    "task is active."
                 )
 
         self.enabled_checks = [k for k, v in sorted(self.opts.items()) if v]
@@ -173,7 +181,8 @@ class CheckTask(WorkflowTask):
             else:
                 _error(
                     "build",
-                    f"Dist folder missing: {dist_dir}: Please create and add to .gitignore",
+                    f"Dist folder missing: {dist_dir}: Please create "
+                    "and add to .gitignore",
                 )
 
         # if opts["branches"]:
@@ -279,7 +288,8 @@ class CheckTask(WorkflowTask):
                 _ok(
                     "pypi",
                     f"Package `{package_name}` is registered on PyPI "
-                    f"(name: '{pypi_info['name']}', version: '{pypi_info['version']}').",
+                    f"(name: '{pypi_info['name']}', "
+                    f"version: '{pypi_info['version']}').",
                 )
             except Exception as e:
                 if isinstance(e, requests.HTTPError) and resp.status_code == 404:
@@ -290,10 +300,12 @@ class CheckTask(WorkflowTask):
                         "Continuing would register the new package.",
                     )
                     log_warning(
-                        "This is not an error, just a warning to prevent accidental registration:"
+                        "This is not an error, just a warning to prevent "
+                        "accidental registration:"
                     )
                     log_warning(
-                        "Ignore checks using `--no-checks` or run `twine upload` manually."
+                        "Ignore checks using `--no-checks` or run `twine upload` "
+                        "manually."
                     )
                 else:
                     _error(
@@ -325,16 +337,17 @@ class CheckTask(WorkflowTask):
             # _ret_code, real_version = self._exec(
             #     ["python", "setup.py", "--version"], quiet=True
             # )
-            setup_info = self.get_setup_metadata([])
+            setup_info = self.get_project_metadata([])
             real_version = setup_info["version"]
             vm = context.version_manager
             if real_version != str(vm.master_version):
                 _error(
                     "version",
-                    f"`setup.py --version` returned {real_version!r} (expected {vm.master_version!r}).",
+                    f"`Detected version {real_version!r} "
+                    f"(expected {vm.master_version!r}).",
                 )
             else:
-                _ok("version", f"`setup.py --version` returned {real_version!r}.")
+                _ok("version", f"`Detected version {real_version!r}.")
 
         if opts["winget"]:
             winget_ok = True
@@ -350,7 +363,8 @@ class CheckTask(WorkflowTask):
             if cli_arg("inc") == "postrelease" and not cli_arg("no_winget_release"):
                 _error(
                     "winget",
-                    "`--inc postrelease` not allowed (cannot publish pre-releases on winget-pkgs).",
+                    "`--inc postrelease` not allowed "
+                    "(cannot publish pre-releases on winget-pkgs).",
                 )
 
             if shutil.which("winget") and shutil.which("wingetcreate"):
@@ -375,19 +389,21 @@ class CheckTask(WorkflowTask):
                     elif ret_code == 0x8A150014:
                         _error(
                             "winget",
-                            f"Package `{package_name}` not yet registered on winget-pkgs: "
+                            f"Package `{package_name}` not yet registered on "
+                            "winget-pkgs: "
                             "Yabs supports updating existing packages only.",
                         )
                         log_warning(
                             f"winget returned code 0x{ret_code:08x}, "
-                            "see https://github.com/microsoft/winget-cli/blob/master/src/AppInstallerCommonCore/Public/AppInstallerErrors.h"
+                            "see https://github.com/microsoft/winget-cli/blob/master/src/AppInstallerCommonCore/Public/AppInstallerErrors.h"  # noqa: E501
                         )
                         log_warning(
-                            "Note that Yabs only supports updating existing winget packages."
+                            "Note that Yabs only supports updating existing "
+                            "winget packages."
                         )
                         log_warning(
                             "Run `wingetcreate new` manually, "
-                            "see https://yabs.readthedocs.io/en/latest/ug_tutorial.html#windows-package-manager"
+                            "see https://yabs.readthedocs.io/en/latest/ug_tutorial.html#windows-package-manager"  # noqa: E501
                         )
                     else:
                         _error(
@@ -395,7 +411,7 @@ class CheckTask(WorkflowTask):
                             f"Could not find package `{package_name}` on winget-pkgs "
                             f"(return code: 0x{ret_code:08x}): "
                             "Yabs supports updating existing packages only.",
-                            "see https://yabs.readthedocs.io/en/latest/ug_tutorial.html#windows-package-manager",
+                            "see https://yabs.readthedocs.io/en/latest/ug_tutorial.html#windows-package-manager",  # noqa: E501
                         )
                 else:
                     _ok(

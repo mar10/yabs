@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
-"""
-"""
-import pytest
+""" """
 
+import pytest
 from yabs.util import (
     assert_always,
     check_arg,
@@ -41,7 +39,6 @@ class TestBasics:
         return
 
     def test_get_attr(self):
-
         # next_
         class TestClass:  # noqa: B903
             def __init__(self, val):
@@ -89,7 +86,8 @@ class TestBasics:
     def test_shorten_string(self):
         s = (
             "Do you see any Teletubbies in here?"
-            "Do you see a slender plastic tag clipped to my shirt with my name printed on it?"
+            "Do you see a slender plastic tag clipped to my shirt with my name "
+            "printed on it?"
         )
         assert shorten_string(None, 10) is None
         assert len(shorten_string(s, 20)) == 20

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 A collection of tools for tox release workflows.
 
@@ -9,6 +8,7 @@ Usage examples:
     $ yabs --help
     $ yabs run --dry-run
 """
+
 import argparse
 import logging
 import os
@@ -173,9 +173,8 @@ def run():
 
     if getattr(args, "version", None):
         if args.verbose >= 4:
-            PYTHON_VERSION = "{}.{}.{}".format(
-                sys.version_info[0], sys.version_info[1], sys.version_info[2]
-            )
+            pvi = sys.version_info
+            PYTHON_VERSION = f"{pvi[0]}.{pvi[1]}.{pvi[2]}"
             version_info = "yabs/{} {}/{}({} bit) {}".format(
                 __version__,
                 platform.python_implementation(),
@@ -186,7 +185,7 @@ def run():
             version_info += f"\nPython from: {sys.executable}"
         else:
             version_info = __version__
-        print(version_info)
+        print(version_info)  # noqa: T201
         sys.exit(0)
 
     if not callable(getattr(args, "cmd_handler", None)):
@@ -195,10 +194,10 @@ def run():
     try:
         return args.cmd_handler(parser, args)
     except click.ClickException as e:
-        print(f"{e!r}", file=sys.stderr)
+        print(f"{e!r}", file=sys.stderr)  # noqa: T201
         sys.exit(2)
     except (KeyboardInterrupt, click.Abort):
-        print("\nAborted by user.", file=sys.stderr)
+        print("\nAborted by user.", file=sys.stderr)  # noqa: T201
         sys.exit(3)
     # Unreachable...
     return

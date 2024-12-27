@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
-"""
-"""
+""" """
+
 import os
 from typing import TYPE_CHECKING
 
@@ -35,7 +34,7 @@ class CommitTask(WorkflowTask):
         opts = self.opts
         add = opts["add"] or opts["add_known"]
         message = opts["message"].format(**vars(context))
-        return "{}(add: {}, '{}')".format(self.__class__.__name__, add, message.strip())
+        return f"{self.__class__.__name__}(add: {add}, '{message.strip()}')"
 
     @classmethod
     def register_cli_command(cls, subparsers, parents, run_parser):

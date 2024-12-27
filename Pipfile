@@ -4,18 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
-black = "~=22.12"
-flake8 = "*"
-flake8-bugbear = "*"
-flake8-quotes = "*"
-isort = "*"
-pylint = "*"
 pytest = "*"
 pytest-cov = "*"
+ruff = "*"
 tox = "*"
 yabs = {editable = true, path = "."}
 
 [packages]
+build = "*"
 click = "*"
 GitPython = "*"
 jinja2 = "*"

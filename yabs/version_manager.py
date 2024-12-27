@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """ """
@@ -103,7 +102,7 @@ class VersionFileParser(ABC):
         self.version = None
 
     def __str__(self):
-        return "{}(v{})@{}".format(self.__class__.__name__, self.version, self.fspec)
+        return f"{self.__class__.__name__}(v{self.version})@{self.fspec}"
 
     @abstractmethod
     def _find_config_file(self):
@@ -162,7 +161,7 @@ class TextFileParser(VersionFileParser):
         version = None
         pattern = self.opts.get("match")
         pattern = re.compile(pattern)
-        with open(self.fspec, "rt") as fp:
+        with open(self.fspec) as fp:
             for line in fp.readlines():
                 # log_debug(line.rstrip())
                 res = pattern.search(line)
@@ -173,9 +172,7 @@ class TextFileParser(VersionFileParser):
 
         if version is None:
             raise RuntimeError(
-                "Could not match version pattern `{}` in {}".format(
-                    pattern.pattern, self.fspec
-                )
+                f"Could not match version pattern `{pattern.pattern}` in {self.fspec}"
             )
         version = Version(version)
         self.version = version
@@ -190,7 +187,7 @@ class TextFileParser(VersionFileParser):
         with SafeFileWriter(self.fspec, "wt", keep_backup=False) as target:
             # target is a temporary file until __exit__, so we can open
             # the source file again here
-            with open(self.fspec, "rt") as source:
+            with open(self.fspec) as source:
                 for line in source.readlines():
                     # log_debug(line.rstrip())
                     res = pattern.search(line)
@@ -198,9 +195,7 @@ class TextFileParser(VersionFileParser):
                         # version = res.groups()[0]
                         target.write(template + "\n")
                         log_debug(
-                            "Write line `{}` -> `{}`".format(
-                                line.strip(), template.strip()
-                            )
+                            f"Write line `{line.strip()}` -> `{template.strip()}`"
                         )
                     else:
                         target.write(line)
@@ -305,7 +300,7 @@ class VersionFileManager:
             check_arg(vo, dict)
             cfg_type = vo.get("type")
             if cfg_type is None:
-                raise RuntimeError("Missing `version.type`: {}".format(vo))
+                raise RuntimeError(f"Missing `version.type`: {vo}")
 
             if cfg_type in TextFileParser.pattern_map:
                 parser_cls = TextFileParser
@@ -335,11 +330,11 @@ class VersionFileManager:
             if self.master_version is None:
                 if not version:
                     raise RuntimeError("Invalid version or no version found.")
-                log_debug("Parsed project version: {}".format(version))
+                log_debug(f"Parsed project version: {version}")
                 self.master_version = version
                 self.org_version = version
             else:
-                log_info("Secondary project version: {}".format(version))
+                log_info(f"Secondary project version: {version}")
             self.parsers.append(parser)
         return
 
@@ -351,9 +346,7 @@ class VersionFileManager:
         if len(pre_tuple) == 0:  # "1.2.3" -> "1.2.3-0"
             return copy_version(v, [prefix + str(int(start_idx))])
         if len(pre_tuple) > 1:
-            log_warning(
-                "Discarding multiple prerelase identifiers in {}.".format(pre_tuple)
-            )
+            log_warning(f"Discarding multiple prerelase identifiers in {pre_tuple}.")
         pre = pre_tuple[0]
         # We already have a prerelease like "1.2.3-0", "1.2.3-alpha3", "1.2.3-rc1"
         # TODO: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
@@ -361,14 +354,10 @@ class VersionFileManager:
         cur_prefix, number, rest = match.groups()
         number = int(number)
         if cur_prefix != prefix:
-            log_warning(
-                "Changing prerelase prefix from {!r} to {!r}.".format(
-                    cur_prefix, prefix
-                )
-            )
+            log_warning(f"Changing prerelase prefix from {cur_prefix!r} to {prefix!r}.")
         if rest:
-            log_warning("Discarding prerelase sufffix {!r}.".format(rest))
-        pre = "{}{}".format(prefix, number + 1)
+            log_warning(f"Discarding prerelase sufffix {rest!r}.")
+        pre = f"{prefix}{number + 1}"
         v_new = copy_version(v, [pre])
         return v_new
 
@@ -377,14 +366,12 @@ class VersionFileManager:
         check_arg(write, bool)
         self.master_version = semver
         for parser in self.parsers:
-            log_debug("Set version {}...".format(parser))
+            log_debug(f"Set version {parser}...")
             parser.set_version(semver, write)
         return
 
     def reset_version(self, write):
-        log_warning(
-            "Reset version {} => {}...".format(self.org_version, self.master_version)
-        )
+        log_warning(f"Reset version {self.org_version} => {self.master_version}...")
         if self.master_version != self.org_version:
             self.set_version(self.org_version, write)
         return
@@ -434,7 +421,7 @@ class VersionFileManager:
         else:
             raise NotImplementedError
 
-        log_debug("bump({}): {} -> {}".format(inc, v, v_next))
+        log_debug(f"bump({inc}): {v} -> {v_next}")
         if calc_only:
             return v_next
         self.set_version(v_next, write)

@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
-"""
-"""
+""" """
+
+import logging
 import os
 import shutil
 import subprocess
@@ -19,7 +19,9 @@ from ..util import (
     check_arg,
     check_dict_keys,
     log_debug,
+    log_info,
     log_warning,
+    logger,
     write,
 )
 
@@ -85,7 +87,6 @@ class TaskContext:
         return vars(self)
 
     def initialize(self):
-
         if self.task_runner:
             tr = self.task_runner
             self.repo = tr.get_config("repo")
@@ -194,7 +195,7 @@ class WorkflowTask(ABC):
         assert self.DEFAULT_OPTS is not None
 
         #: (TaskInstance)
-        self.task_inst: "TaskInstance" = task_inst
+        self.task_inst: TaskInstance = task_inst
         #: (dict) The actual arguments, i.e. the default values merged with
         #: (dict) passed options
         self.opts: dict = self.DEFAULT_OPTS.copy()
@@ -216,7 +217,7 @@ class WorkflowTask(ABC):
         return self.task_inst.name
 
     def to_str(self, context: TaskContext):
-        return "{}()".format(self.__class__.__name__)
+        return f"{self.__class__.__name__}()"
 
     def cli_arg(self, key: str, default=None):
         """Return a value from command line args.
@@ -273,7 +274,6 @@ class WorkflowTask(ABC):
         return ret_code, output
 
     def _check_twine_availability(self) -> Union[str, None]:
-
         # --- 1. twine available?
 
         if not shutil.which("twine"):
@@ -311,7 +311,7 @@ class WorkflowTask(ABC):
         # raise NotImplementedError
         return None  # no errors
 
-    def get_setup_metadata(self, extra_args: list = None) -> dict:
+    def _get_setup_metadata(self, extra_args: list = None) -> dict:
         """'Query `setup.py` for project name and version."""
         if extra_args is None:
             extra_args = []
@@ -331,6 +331,27 @@ class WorkflowTask(ABC):
             real_version = real_version.split("\n")[-1]
 
         return {"name": real_name, "version": real_version}
+
+    def get_project_metadata(self, extra_args: list = None) -> dict:
+        import build.util
+
+        build_logger = logging.getLogger("build")
+        prev_level = build_logger.level
+        if logger.root.level > logging.DEBUG:
+            log_info("Building isolated wheel for version detection.")
+        else:
+            build_logger.setLevel("ERROR")
+
+        wm = build.util.project_wheel_metadata(".")
+        build_logger.setLevel(prev_level)
+
+        pn = wm.get("name")
+        pv = wm.get("version")
+        if pn and pv:
+            return {"name": pn, "version": pv}
+
+        # Fallback to `setup.py` metadata
+        return self._get_setup_metadata(extra_args)
 
     @classmethod
     def _check_default_opts(

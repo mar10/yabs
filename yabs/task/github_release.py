@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
-"""
-"""
+""" """
+
 import os
 from typing import TYPE_CHECKING
 
@@ -31,9 +30,9 @@ class GithubReleaseTask(WorkflowTask):
         "message": "Released {version}\n"
         + "\n"
         + "[Changelog](https://github.com/{repo}/blob/master/CHANGELOG.md),\n"
-        + "[Commit details](https://github.com/{repo}/compare/{org_tag_name}...{tag_name}).",
+        + "[Commit details](https://github.com/{repo}/compare/{org_tag_name}...{tag_name}).",  # noqa E501
         "name": "v{version}",
-        "prerelease": None,  # None: guess from version number; Use `--gh-pre` to override
+        "prerelease": None,  # None: guess from version number; Use `--gh-pre` to override # noqa E501
         "repo": None,  # `owner/repo`, defaults to yaml setting
         "tag": None,
         "target_commitish": None,
@@ -140,7 +139,8 @@ class GithubReleaseTask(WorkflowTask):
 
         if not gh_tag:
             log_error(
-                f"Could not find tag '{tag_name}' on Github (did you run 'bump' and 'tag' tasks first?)"
+                f"Could not find tag '{tag_name}' on Github "
+                "(did you run 'bump' and 'tag' tasks first?)"
             )
             return False
 
@@ -154,9 +154,7 @@ class GithubReleaseTask(WorkflowTask):
             prerelease = opts["prerelease"]
             if prerelease is None:
                 prerelease = "-" in tag_name or "+" in tag_name
-                log_info(
-                    "Tag '{}': assuming prerelease={}".format(tag_name, prerelease)
-                )
+                log_info(f"Tag '{tag_name}': assuming prerelease={prerelease}")
 
         name = opts["name"].format(**vars(context))
         message = opts["message"].format(**vars(context))
@@ -188,7 +186,7 @@ class GithubReleaseTask(WorkflowTask):
             url = f"https://github.com/{context.repo}/releases/tag/{context.tag_name}"
 
             self.task_inst.task_runner.add_summary(
-                f"Created GitHub release with {len(artifacts)} artifact{ps(context.artifacts)} "
-                f"at {url}"
+                f"Created GitHub release with {len(artifacts)} "
+                f"artifact{ps(context.artifacts)} at {url}"
             )
         return ok
