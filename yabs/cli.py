@@ -176,8 +176,9 @@ def run():
             PYTHON_VERSION = "{}.{}.{}".format(
                 sys.version_info[0], sys.version_info[1], sys.version_info[2]
             )
-            version_info = "yabs/{} Python/{}({} bit) {}".format(
+            version_info = "yabs/{} {}/{}({} bit) {}".format(
                 __version__,
+                platform.python_implementation(),
                 PYTHON_VERSION,
                 "64" if sys.maxsize > 2**32 else "32",
                 platform.platform(),
