@@ -1,13 +1,11 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
-"""
-"""
+""" """
+
 import os
 
 import pytest
 from semantic_version import Version
-
 from yabs.task_runner import TaskRunner
 
 

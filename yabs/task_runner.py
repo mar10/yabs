@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
-"""
-"""
+""" """
+
 import time
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
@@ -61,7 +60,10 @@ class TaskInstance:
         self.task_str: str = None
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(#{self.index}, {self.name})({self.result or self.status})"
+        return (
+            f"{self.__class__.__name__}(#{self.index}, "
+            f"{self.name})({self.result or self.status})"
+        )
 
     def __str__(self) -> str:
         status = self.status
@@ -160,7 +162,7 @@ class TaskRunner:
         task_type: str,
         *,
         status: Union[str, list, tuple, set, None] = None,
-        check_single=False
+        check_single=False,
     ) -> Union[TaskInstance, None]:
         tis = self.get_task_instances(task_type, status=status)
         if check_single and len(tis) > 1:
@@ -194,7 +196,7 @@ class TaskRunner:
         self.summaries.append(msg)
 
     def _load(self):
-        with open(self.fspec, "rt") as f:
+        with open(self.fspec) as f:
             try:
                 res = yaml.safe_load(f)
             except yaml.parser.ParserError as e:
@@ -227,7 +229,8 @@ class TaskRunner:
         if validation_errors:
             findings = "\n  - ".join(validation_errors)
             raise ConfigError(
-                f"Found {len(validation_errors)} errors in {self.fspec}:\n  - {findings}"
+                f"Found {len(validation_errors)} errors in {self.fspec}:\n"
+                f"  - {findings}"
             )
         return
 
@@ -327,10 +330,10 @@ class TaskRunner:
         }
         wf_elap = time.monotonic() - self.start if self.elap is None else self.elap
         count = len(self.task_instances)
-        done_count = sum((1 for t in self.task_instances if t.result is not None))
-        skip_count = sum((1 for t in self.task_instances if t.status == "warning"))
-        warn_count = sum((1 for t in self.task_instances if t.status == "warning"))
-        err_count = sum((1 for t in self.task_instances if t.status == "error"))
+        done_count = sum(1 for t in self.task_instances if t.result is not None)
+        skip_count = sum(1 for t in self.task_instances if t.status == "warning")
+        warn_count = sum(1 for t in self.task_instances if t.status == "warning")
+        err_count = sum(1 for t in self.task_instances if t.status == "error")
 
         summary = f"{done_count}/{count} tasks in {format_elap(wf_elap)}"
         if skip_count:
@@ -350,7 +353,7 @@ class TaskRunner:
                 if inst.elap is None
                 else format_elap(inst.elap, short_suffix=True)
             )
-            print(f"  {prefix} {bar},  {elap:>8}:  {wrapper(inst)}")
+            print(f"  {prefix} {bar},  {elap:>8}:  {wrapper(inst)}")  # noqa: T201
         return
 
     def log_header_info(self, *, context):

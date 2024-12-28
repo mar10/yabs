@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
-"""
-"""
+""" """
+
 import os
 from typing import TYPE_CHECKING
 
@@ -61,7 +60,7 @@ class WingetReleaseTask(WorkflowTask):
             or tr.command == "info"
             or task_inst.task_def.get("assume_synced") is True
         ):
-            print(task_inst.task_def)
+            print(task_inst.task_def)  # noqa T201
             log_warning(
                 "Pushing a release to the winget-pkgs repository may fail "
                 "if your fork is outdated."
@@ -73,10 +72,11 @@ class WingetReleaseTask(WorkflowTask):
             log_warning("  2. Click `Sync fork` in the `Code` tab")
             log_warning("  3. Click [Update branch]")
             log_warning(
-                "This warning can be suppressed by adding `assume_synced: true` to the task definition."
+                "This warning can be suppressed by adding `assume_synced: true` "
+                "to the task definition."
             )
             log_warning(
-                "See https://yabs.readthedocs.io/en/latest/ug_tutorial.html#windows-package-manager"
+                "See https://yabs.readthedocs.io/en/latest/ug_tutorial.html#windows-package-manager"  # noqa: E501
             )
             click.confirm("Continue with publish?", abort=True)
         return True
@@ -103,7 +103,8 @@ class WingetReleaseTask(WorkflowTask):
             )
         elif not is_version_tagged:
             return WarningTaskResult(
-                f"Cannot publish untagged releases to winget-pkgs: {cur_version}: skipping."
+                "Cannot publish untagged releases to winget-pkgs: "
+                f"{cur_version}: skipping."
             )
 
         wpm_version = f"{cur_version}.0"
@@ -119,7 +120,7 @@ class WingetReleaseTask(WorkflowTask):
         #             f"Could not open repo '{context.repo}' with GitHub token."
         #         )
         # except Exception as e:
-        #     log_error(f"Could not open repo '{context.repo}' with GitHub token: {e!r}")
+        #     log_error(f"Could not open repo '{context.repo}' with GitHub token: {e!r}") # noqa: E501
         #     return False
 
         # Check if artifact is created
@@ -129,12 +130,14 @@ class WingetReleaseTask(WorkflowTask):
         upload_path = context.artifacts.get(upload_target)
         if not upload_path or not os.path.isfile(upload_path):
             log_warning(
-                f"Artifact type '{upload_target}' does not exist (not created): {upload_path}\n"
+                f"Artifact type '{upload_target}' does not exist (not created):"
+                f"{upload_path}\n"
                 "Did you forget to add an `exec` task to build one?"
             )
         if wpm_version not in str(upload_path):
             log_warning(
-                f"Artifact file name does not contain the expected version {wpm_version}: {upload_path}"
+                "Artifact file name does not contain the expected version "
+                f"{wpm_version}: {upload_path}"
             )
 
         file_name = upload_path.name

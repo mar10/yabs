@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """
@@ -30,11 +29,11 @@ class Timing:
 
     def __exit__(self, exc_type, exc_value, traceback):
         elap = time.monotonic() - self.start
-        msg = ["Timing {:<20} took {:>6.3f} sec".format(repr(self.name), elap)]
+        msg = [f"Timing {repr(self.name):<20} took {elap:>6.3f} sec"]
         if self.count:
             fmt = self.fmt or "{:0,.1f} bytes/sec"
             msg.append(fmt.format(float(self.count) / elap))
         if self.count2:
             fmt = self.fmt2 or "{:0,.1f} bytes/sec"
             msg.append(fmt.format(float(self.count2) / elap))
-        print(", ".join(msg))
+        # print(", ".join(msg))

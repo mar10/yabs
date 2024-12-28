@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
-"""
-"""
+""" """
+
 from typing import TYPE_CHECKING
 
 from ..util import ConfigError, check_arg, log_dry, log_info, log_warning
@@ -61,7 +60,8 @@ class PypiReleaseTask(WorkflowTask):
 
         if cli_arg("no_release"):
             log_warning(
-                "`--no-release` was passed: skipping 'pypi_release' task (`twine upload`)."
+                "`--no-release` was passed: skipping 'pypi_release' task "
+                "(`twine upload`)."
             )
             return True
 

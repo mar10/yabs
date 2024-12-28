@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
-"""
-"""
+""" """
+
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -10,6 +9,7 @@ from ..util import (
     ConfigError,
     FolderContentMonitor,
     check_arg,
+    check_versions_equal,
     log_debug,
     log_error,
     log_info,
@@ -46,7 +46,7 @@ class BuildTask(WorkflowTask):
     def to_str(self, context: TaskContext):
         opts = self.opts
         args = "{}".format(", ".join(opts["targets"]))
-        return "{}(targets {})".format(self.__class__.__name__, args)
+        return f"{self.__class__.__name__}(targets {args})"
 
     @classmethod
     def register_cli_command(cls, subparsers, parents, run_parser):
@@ -59,7 +59,8 @@ class BuildTask(WorkflowTask):
         extra_args = []
         # NOTE: `--dry-run` flag does not work well with setup.py?
         #    Seems to produce errors like
-        #    "error: [Errno 2] No such file or directory: 'test-release-tool-0.0.1/PKG-INFO'"
+        #    "error: [Errno 2] No such file or directory:
+        #      'test-release-tool-0.0.1/PKG-INFO'"
         # if self.dry_run:
         #     extra_args.append("--dry-run")
 
@@ -69,18 +70,19 @@ class BuildTask(WorkflowTask):
             extra_args.append("--quiet")
 
         # Check if setup.py really uses the expected name & version
-        setup_info = self.get_setup_metadata(extra_args)
+        setup_info = self.get_project_metadata(extra_args)
         real_name = setup_info["name"]
         real_version = setup_info["version"]
         # ret_code, real_version = self._exec(
-        # ret_code, real_name = self._exec(["python", "setup.py", "--name"] + extra_args)
+        # ret_code, real_name = self._exec(["python", "setup.py", "--name"]+extra_args)
         # ret_code, real_version = self._exec(
         #     ["python", "setup.py", "--version"] + extra_args
         # )
-        if real_version != str(context.version):
+        if not check_versions_equal(real_version, context.version):
+            # if real_version != str(context.version):
             if not self.dry_run:
                 raise RuntimeError(
-                    f"`setup.py --version` returned {real_version!r} (expected {context.version!r})"
+                    f"Detected version {real_version!r} (expected {context.version!r})."
                 )
 
         targets = self.opts["targets"]
@@ -139,10 +141,10 @@ class BuildTask(WorkflowTask):
             if res:
                 return res
         except Exception as e:
-            log_error("{}".format(e))
+            log_error(f"{e}")
 
         if self.opts["revert_bump_on_error"] and not self.dry_run:
-            # log_warning("Reverting bump {} => {} ...".format(vm.master_version, context.version))
+            # log_warning(f"Reverting bump {vm.master_version} => {context.version} ..."
             vm = context.version_manager
             vm.reset_version(write=not self.dry_run)
             context.version = vm.master_version

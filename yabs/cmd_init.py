@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
-"""
-"""
+""" """
+
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
@@ -18,7 +17,6 @@ def handle_init_command(parser: ArgumentParser, args: Namespace):
 
 
 def run(parser: ArgumentParser, args: Namespace):
-
     target = Path(args.filename)
     # target = Path(".") / "new-yabs.yaml"
     target = target.absolute()

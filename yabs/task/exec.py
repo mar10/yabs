@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
-"""
-"""
+""" """
+
 import re
 import subprocess
 import sys
@@ -102,7 +101,8 @@ class ExecTask(WorkflowTask):
                     re.compile(pattern)
                 except re.error:
                     errors.append(
-                        f"Invalid regex: add_artifacts.matches.pattern: {tag}: {pattern!r}"
+                        f"Invalid regex: add_artifacts.matches.pattern: {tag}: "
+                        f"{pattern!r}"
                     )
         return errors or True
 
@@ -123,7 +123,7 @@ class ExecTask(WorkflowTask):
             if opts["dry_run_args"] is not None:
                 args = opts["dry_run_args"]
         if opts["log_start"]:
-            msg = "Running {}...".format(name)
+            msg = f"Running {name}..."
             log_info(msg)
 
         timeout = opts["timeout"]
@@ -156,7 +156,7 @@ class ExecTask(WorkflowTask):
         log_debug(f"Available artifacts: {context.artifacts}")
 
         elap = time.time() - start
-        msg = "{} returned code {} ({})".format(name, ret_code, format_elap(elap))
+        msg = f"{name} returned code {ret_code} ({format_elap(elap)})"
 
         if ret_code != 0:
             if opts["ignore_errors"]:

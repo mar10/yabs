@@ -1,28 +1,89 @@
-[tool.black]
-line-length = 88
-target-version = ['py35', 'py36', 'py37', 'py38']
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.hg
-  | \.tox
-  | \.venv
-  | \.eggs
-  | \.cache
-  | build
-  | __pycache__
-  | dist
-  | \.*
+# --- Ruff Settings ------------------------------------------------------------
+[tool.ruff]
+target-version = "py38"
+src = ["benchman", "tests"]
 
-)/
-'''
+[tool.ruff.lint]
+select = [
+  "B",  # bugbear
+  "E",  # pycodestyle
+  "F",  # pyflakes
+  "G",  # flake8-logging-format
+  "I",  # isort
+  "UP", # pyupgrade
+  "T",  # print, ...
+  # "D",   # pydocstyle
+]
+ignore = [
+  # We need the old syntax for python <= 3.9
+  "UP006", # Use `list` instead of `List` for type annotations (since Py39)
+  "UP007", # Use `X | Y` for type annotations (since Py310)
+  "E721",  # Do not compare types, use `isinstance()`
+  "G004",  # Logging statement uses f-string
+]
 
-[tool.isort]
-# See https://black.readthedocs.io/en/stable/compatible_configs.html
-profile = "black"
-src_paths = ["yabs", "tests"]
+[tool.ruff.lint.per-file-ignores]
+"*.ipynb" = [  # Jupyter Notebooks
+  "T20",  # print statement
+  "E402",  # module level import not at top of file
+]
 
-# [tool.flake8]
-# Flake8 currently does not support pyproject.toml.
-# See [flake8] section in setup.cfg instead.
+# [tool.ruff.lint.isort]
+# case-sensitive = true
+
+# [tool.ruff.pydocstyle]
+# convention = "google"
+
+# # --- Pyright Settings ---------------------------------------------------------
+#! Use .vscode/setttings.json instead
+# [tool.pyright]
+# autoSearchPaths = true
+# indexing= true
+# extraPaths = ["src", "tests"]
+# typeCheckingMode = "standard"
+# reportMissingImports = "none"
+# include = ["/Users/martin/prj/git/benchman_pre/src", "tests"]
+# logLevel = "Trace"
+
+# # https://github.com/microsoft/pyright/blob/main/docs/configuration.md#sample-pyprojecttoml-file
+# reportUnnecessaryTypeIgnoreComment = true
+
+# --- Mypy Settings ------------------------------------------------------------
+# [tool.mypy]
+# warn_return_any = true
+# warn_unused_configs = true
+# # warn_unused_ignores = true
+# # warn_redundant_casts = true
+# # ignore_missing_imports = true
+
+# [[tool.mypy.overrides]]
+# module = [
+#     # "click",
+#     "build.util",
+#     "pytest",
+#     "psutil",
+#     "setuptools.config",
+#     "snazzy",
+#     "tablib",
+#     "toml",
+# ]
+# ignore_missing_imports = true
+# # ignore_missing_module_source = true
+
+# --- Pytest and Coverage Settings ---------------------------------------------
+[tool.pytest.ini_options]
+# Required for pytest / coverage  to find the package in tox
+pythonpath = "src"
+
+addopts = "-ra -q --cov=benchman"
+# addopts = "-ra -q --cov=src"
+# addopts = "--cov=benchman --cov-report=html --cov-report=term-missing"
+
+
+[tool.coverage.run]
+# branch = true
+omit = [
+    "tests/*",
+    # "setup.py",
+]
+# debug = ["dataop","pathmap"]

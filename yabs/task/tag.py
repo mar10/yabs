@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
-"""
-"""
+""" """
+
 import os
 from typing import TYPE_CHECKING
 
@@ -54,7 +53,7 @@ class TagTask(WorkflowTask):
         git = repo.git
 
         if self.dry_run:
-            log_dry("git tag -a {}".format(name))
+            log_dry(f"git tag -a {name}")
             context.tag_name = name
             return True
         try:
@@ -65,9 +64,9 @@ class TagTask(WorkflowTask):
                 dry_run=self.dry_run,
                 verbose=self.verbose >= 4,
             )
-            log_response("git tag {}".format(name), res, "info", self.dry_run)
+            log_response(f"git tag {name}", res, "info", self.dry_run)
             context.tag_name = name
         except GitCommandError as e:
-            log_response("git tag", "{}".format(e), "error", self.dry_run)
+            log_response("git tag", f"{e}", "error", self.dry_run)
             return False
         return True

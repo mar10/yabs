@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
 # (c) 2020-2022 Martin Wendt and contributors; see https://github.com/mar10/yabs
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
-"""
-"""
+""" """
+
+from __future__ import annotations
+
 import logging
 import math
 import os
@@ -18,6 +19,7 @@ from shutil import rmtree
 from threading import Event, RLock, Thread
 from typing import List, Tuple, Union
 
+from semantic_version import Version
 from snazzy import Snazzy, emoji, gray, green, red, yellow
 
 logger = logging.getLogger("yabs")
@@ -133,7 +135,7 @@ def init_logging(verbose=3, path=None):
         level=level,
         format="%(message)s",
         # format="%(asctime)-8s.%(msecs)-3d <%(thread)05d> %(levelname)-7s %(message)s",
-        # format="%(asctime)s.%(msecs)03d <%(process)d.%(thread)d> %(levelname)-8s %(message)s",
+        # format="%(asctime)s.%(msecs)03d <%(process)d.%(thread)d> %(levelname)-8s %(message)s",  # noqa
         datefmt="%H:%M:%S",
     )
     # If basicConfig() was already called before, the above call was a no-op.
@@ -142,7 +144,7 @@ def init_logging(verbose=3, path=None):
 
     if path:
         if os.path.isdir(path):
-            fname = f"release-tool_{timetag()}.log"
+            fname = f"yabs_{timetag()}.log"
             path = os.path.join(path, fname)
         logger.info(f"Writing log to '{path}'")
         if os.path.isfile(path):
@@ -155,8 +157,8 @@ def init_logging(verbose=3, path=None):
         hdlr.setFormatter(formatter)
         logger.addHandler(hdlr)
         # logger.setLevel(logging.DEBUG)
-        logger.info("Start log ({})".format(datetime.now()))
-        logger.info("Running {}".format(" ".join(sys.argv)))
+        logger.info(f"Start log ({datetime.now()})")
+        logger.info(f"Running {' '.join(sys.argv)}")
 
         # redirect `logger` to our special log file as well:
         logger.addHandler(hdlr)
@@ -171,7 +173,8 @@ def init_logging(verbose=3, path=None):
 
 
 def check_cli_verbose(default=3):
-    """Check for presence of `--verbose`/`--quiet` or `-v`/`-q` without using argparse."""
+    """Check for presence of `--verbose`/`--quiet` or `-v`/`-q` without using
+    argparse."""
     args = sys.argv[1:]
     verbose = default + args.count("--verbose") - args.count("--quiet")
 
@@ -180,6 +183,19 @@ def check_cli_verbose(default=3):
             verbose += arg[1:].count("v")
             verbose -= arg[1:].count("q")
     return verbose
+
+
+def check_versions_equal(v1: str | Version, v2: str | Version) -> bool:
+    """Check if two version strings are equal.
+
+    Assume '1.2.3-a1' and '1.2.3a1' as equal.
+    https://peps.python.org/pep-0440/#pre-release-separators
+    """
+    v1 = str(v1).replace("-", "")
+    v2 = str(v2).replace("-", "")
+    assert re.match(r"^\d+\.\d+\.\d+.+$", v1), v1
+    assert re.match(r"^\d+\.\d+\.\d+.+$", v2), v2
+    return v1 == v2
 
 
 _prefix_map = None
@@ -220,7 +236,7 @@ def write(msg: str, *, level="info", prefix=False, output=None, output_level=Non
         output_level = logging._nameToLevel[output_level.upper()]
 
     prefix = _prefix_map[prefix].get(level_name, "")
-    logger.log(level, prefix + msg)
+    logger.log(level, f"{prefix}{msg}")
 
     if output:
         prefix_len = len(Snazzy.cleanup(prefix))
@@ -324,7 +340,7 @@ def assert_always(condition, msg=None):
         if not condition:
             raise AssertionError(msg) if msg is not None else AssertionError
     except AssertionError as e:
-        if sys.version_info < (3, 7):
+        if sys.version_info < (3, 7):  # noqa
             raise
         # Strip last frames, so the exception's stacktrace points to the call
         # Credits: https://stackoverflow.com/a/58821552/19166
@@ -337,12 +353,15 @@ def assert_always(condition, msg=None):
             tb_lasti=back_frame.f_lasti,
             tb_lineno=back_frame.f_lineno,
         )
-        raise e.with_traceback(back_tb)
+        raise e.with_traceback(back_tb) from None
 
 
 def _check_arg(argument, types, condition, accept_none):
     if __debug__:
-        err_msg = "`allowed_types` must be a type or class (or a tuple thereof): got instance of {}"
+        err_msg = (
+            "`allowed_types` must be a type or class (or a tuple thereof): "
+            "got instance of {}"
+        )
         if isinstance(types, tuple):
             for t in types:
                 assert isinstance(t, type), err_msg.format(type(t))
@@ -357,13 +376,9 @@ def _check_arg(argument, types, condition, accept_none):
         extra_msg = ""
 
     if not isinstance(argument, types):
-        raise TypeError(
-            "Expected {}{}, but got {}".format(extra_msg, types, type(argument))
-        )
+        raise TypeError(f"Expected {extra_msg}{types}, but got {type(argument)}")
     if condition is not NO_DEFAULT and not bool(condition):
-        raise ValueError(
-            "Invalid argument value: {} {}".format(type(argument), argument)
-        )
+        raise ValueError(f"Invalid argument value: {type(argument)} {argument}")
 
 
 def check_arg(argument, allowed_types, condition=NO_DEFAULT, *, or_none=False):
@@ -396,7 +411,7 @@ def check_arg(argument, allowed_types, condition=NO_DEFAULT, *, or_none=False):
     try:
         _check_arg(argument, allowed_types, condition, accept_none=or_none)
     except (TypeError, ValueError) as e:
-        if sys.version_info < (3, 7):
+        if sys.version_info < (3, 7):  # noqa
             raise
         # Strip last frames, so the exception's stacktrace points to the call
         _exc_type, _exc_value, traceback = sys.exc_info()
@@ -408,7 +423,7 @@ def check_arg(argument, allowed_types, condition=NO_DEFAULT, *, or_none=False):
             tb_lasti=back_frame.f_lasti,
             tb_lineno=back_frame.f_lineno,
         )
-        raise e.with_traceback(back_tb)
+        raise e.with_traceback(back_tb) from None
 
 
 def to_list(obj, or_none=False):
@@ -503,7 +518,8 @@ def check_dict_keys(
 
 
 def timetag(seconds=True, *, ms=False):
-    """Return a time stamp string that can be used as (part of a) filename (also sorts well)."""
+    """Return a time stamp string that can be used as (part of a) filename
+    (also sorts well)."""
     now = datetime.now()
     if ms or seconds:
         s = now.strftime("%Y%m%d_%H%M%S")
@@ -583,7 +599,8 @@ def shorten_string(long_string, max_chars, min_tail_chars=0, place_holder="[...]
     """Return string, shortened to max_chars characters.
 
     long_string = "This is a long string, that will be truncated."
-    trunacated_string = truncate_string(long_string, max_chars=26, min_tail_chars=11, place_holder="[...]")
+    trunacated_string = truncate_string(long_string, max_chars=26, min_tail_chars=11,
+    place_holder="[...]")
     print trunacated_string
     >> This is a [...] truncated.
 
@@ -698,7 +715,7 @@ def format_elap(
 
     if count and (seconds > 0):
         suff = "s" if short_suffix else "sec"
-        res += ", {:,.1f} {}/{}".format(float(count) / seconds, unit, suff)
+        res += f", {float(count) / seconds:,.1f} {unit}/{suff}"
     return res
 
 
@@ -709,13 +726,13 @@ def format_rate(count, time, unit=None, high_prec=False):
 
     rate = float(count) / float(time)
     if rate >= 1000:
-        res = "{}".format(int(round(rate)))
+        res = f"{int(round(rate))}"
     elif rate >= 100:
-        res = "{}".format(round(rate, 1))
+        res = f"{round(rate, 1)}"
     elif rate >= 10:
-        res = "{}".format(round(rate, 2))
+        res = f"{round(rate, 2)}"
     else:
-        res = "{}".format(round(rate, 3))
+        res = f"{round(rate, 3)}"
     return res
 
 
@@ -783,7 +800,8 @@ def format_rate(count, time, unit=None, high_prec=False):
 #             return False
 #         elif default is not None:
 #             return default
-#     raise ValueError("Argument string is not boolean: %r default: %r." % (arg_, default))
+#     raise ValueError("Argument string is not boolean: %r default: %r."
+# % (arg_, default))
 
 
 # def byteNumberString(number, thousandsSep=True, partition=False,
@@ -912,7 +930,7 @@ def progress_bar_str(
         line = f"{border[0]}{line}{border[1]}"
     if add_percentage:
         p100 = f"{100.0*real_progress:.1f}"
-        line += " {: >5}%".format(p100)
+        line += f" {p100: >5}%"
     return line
 
 
@@ -1015,8 +1033,9 @@ def run_process_streamed(
                 # we have nothing to write: print a ping every n seconds
                 if local_vars["last_flush"] == 0 or elap < log_alive:
                     return
-                line_str = LINE_PREFIX + "<Yabs task running since {}...>".format(
-                    format_elap(now - start)
+                line_str = (
+                    LINE_PREFIX
+                    + f"<Yabs task running since {format_elap(now - start)}...>"
                 )
             else:
                 return
@@ -1052,9 +1071,7 @@ def run_process_streamed(
 
             if kill_time and time.time() > kill_time:
                 local_vars["is_timed_out"] = True
-                log_warning(
-                    "Killing {}... (timeout: {:0.1f} seconds)".format(name, timeout)
-                )
+                log_warning(f"Killing {name}... (timeout: {timeout:0.1f} seconds)")
                 process.kill()
                 break
             # logger.debug("run_process_streamed({}) Done.".format(process.pid))
@@ -1064,5 +1081,5 @@ def run_process_streamed(
     flush_lines()
 
     if local_vars["is_timed_out"]:
-        log_error("{} killed (timeout: {:0.1f} seconds)".format(name, timeout))
+        log_error(f"{name} killed (timeout: {timeout:0.1f} seconds)")
     return process.returncode, out.getvalue()
