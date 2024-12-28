@@ -16,6 +16,7 @@ from semantic_version import SimpleSpec, Version
 
 from ..util import (
     check_arg,
+    check_versions_equal,
     log_debug,
     log_error,
     log_info,
@@ -340,14 +341,14 @@ class CheckTask(WorkflowTask):
             setup_info = self.get_project_metadata([])
             real_version = setup_info["version"]
             vm = context.version_manager
-            if real_version != str(vm.master_version):
+            if not check_versions_equal(real_version, vm.master_version):
                 _error(
                     "version",
-                    f"`Detected version {real_version!r} "
+                    f"Detected version {real_version!r} "
                     f"(expected {vm.master_version!r}).",
                 )
             else:
-                _ok("version", f"`Detected version {real_version!r}.")
+                _ok("version", f"Detected version {real_version!r}.")
 
         if opts["winget"]:
             winget_ok = True

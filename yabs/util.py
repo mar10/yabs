@@ -2,6 +2,8 @@
 # Licensed under the MIT license: https://www.opensource.org/licenses/mit-license.php
 """ """
 
+from __future__ import annotations
+
 import logging
 import math
 import os
@@ -17,6 +19,7 @@ from shutil import rmtree
 from threading import Event, RLock, Thread
 from typing import List, Tuple, Union
 
+from semantic_version import Version
 from snazzy import Snazzy, emoji, gray, green, red, yellow
 
 logger = logging.getLogger("yabs")
@@ -180,6 +183,19 @@ def check_cli_verbose(default=3):
             verbose += arg[1:].count("v")
             verbose -= arg[1:].count("q")
     return verbose
+
+
+def check_versions_equal(v1: str | Version, v2: str | Version) -> bool:
+    """Check if two version strings are equal.
+
+    Assume '1.2.3-a1' and '1.2.3a1' as equal.
+    https://peps.python.org/pep-0440/#pre-release-separators
+    """
+    v1 = str(v1).replace("-", "")
+    v2 = str(v2).replace("-", "")
+    assert re.match(r"^\d+\.\d+\.\d+.+$", v1), v1
+    assert re.match(r"^\d+\.\d+\.\d+.+$", v2), v2
+    return v1 == v2
 
 
 _prefix_map = None

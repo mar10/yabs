@@ -9,6 +9,7 @@ from ..util import (
     ConfigError,
     FolderContentMonitor,
     check_arg,
+    check_versions_equal,
     log_debug,
     log_error,
     log_info,
@@ -77,11 +78,11 @@ class BuildTask(WorkflowTask):
         # ret_code, real_version = self._exec(
         #     ["python", "setup.py", "--version"] + extra_args
         # )
-        if real_version != str(context.version):
+        if not check_versions_equal(real_version, context.version):
+            # if real_version != str(context.version):
             if not self.dry_run:
                 raise RuntimeError(
-                    f"`Detected version` {real_version!r} "
-                    f"(expected {context.version!r})."
+                    f"Detected version {real_version!r} (expected {context.version!r})."
                 )
 
         targets = self.opts["targets"]

@@ -335,15 +335,18 @@ class WorkflowTask(ABC):
     def get_project_metadata(self, extra_args: list = None) -> dict:
         import build.util
 
-        build_logger = logging.getLogger("build")
-        prev_level = build_logger.level
-        if logger.root.level > logging.DEBUG:
-            log_info("Building isolated wheel for version detection.")
-        else:
-            build_logger.setLevel("ERROR")
-
+        # Building isolated wheel for version detection.
+        # This is a bit hacky, but the only way to get the correct version
+        # from `setup.py` without running it in the current environment.
+        # This is necessary, because `setup.py` may have dependencies that
+        # are not installed in the current environment.
+        root_logger = logging.getLogger()
+        prev_level = root_logger.level
+        if prev_level > logging.DEBUG:
+            # Suppress build output if yabs is not running in debug mode (-v)
+            root_logger.setLevel("ERROR")
         wm = build.util.project_wheel_metadata(".")
-        build_logger.setLevel(prev_level)
+        root_logger.setLevel(prev_level)
 
         pn = wm.get("name")
         pv = wm.get("version")

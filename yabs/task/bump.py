@@ -4,7 +4,14 @@
 
 from typing import TYPE_CHECKING
 
-from ..util import ConfigError, check_arg, log_error, log_info, log_warning
+from ..util import (
+    ConfigError,
+    check_arg,
+    check_versions_equal,
+    log_error,
+    log_info,
+    log_warning,
+)
 from ..version_manager import INCREMENTS, ORDERED_INCREMENTS
 from .common import SkipTaskResult, TaskContext, WorkflowTask
 
@@ -173,9 +180,10 @@ class BumpTask(WorkflowTask):
             # _ret_code, real_version = self._exec(["python", "setup.py", "--version"])
             setup_info = self.get_project_metadata()
             real_version = setup_info["version"]
-            if real_version != str(vm.master_version):
+            if not check_versions_equal(real_version, vm.master_version):
+                # if real_version != str(vm.master_version):
                 log_error(
-                    f"`Detected version {real_version!r} "
+                    f"Detected version {real_version!r} "
                     f"(expected {vm.master_version!r})."
                 )
                 return False
